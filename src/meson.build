@@ -1,3 +1,5 @@
+add_project_arguments('-Wl,--export-dynamic', language: 'c')
+
 mendingwall_sources = [
   'main.c',
 ]
@@ -26,9 +28,21 @@ resources = gnome.compile_resources('mendingwall-resources',
 )
 mendingwall_sources += resources
 
-add_project_arguments('-Wl,--export-dynamic', language: 'c')
-
 executable('mendingwall', mendingwall_sources,
   dependencies: mendingwall_deps,
        install: true,
 )
+
+mendingwall_monitor_sources = [
+  'monitor.c',
+]
+
+mendingwall_monitor_deps = [
+  dependency('gtk4')
+]
+
+executable('mendingwall-monitor', mendingwall_monitor_sources,
+  dependencies: mendingwall_monitor_deps,
+       install: true,
+)
+
