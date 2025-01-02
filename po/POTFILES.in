@@ -1,0 +1,8 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+data/org.indii.mendingwall.desktop.in
+data/org.indii.mendingwall.metainfo.xml.in
+data/org.indii.mendingwall.gschema.xml
+src/main.c
+src/mendingwall-window.c
+src/mendingwall-window.ui

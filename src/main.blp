@@ -1,0 +1,74 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow main {
+  title: _("Mending Wall");
+  width-request: 600;
+
+  Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      //
+    }
+
+    Adw.StatusPage {
+      icon-name: "org.indii.mendingwall";
+      title: _("Good Fences Make Good Neighbors");
+      description: _("Fix issues when both GNOME and KDE Plasma are installed");
+
+      Adw.Clamp clamp {
+        maximum-size: 600;
+
+        Box {
+          orientation: vertical;
+
+          ListBox {
+            selection-mode: none;
+
+            styles [
+              "boxed-list"
+            ]
+
+            Adw.SwitchRow preserve_theme {
+              title: _("Activate");
+              subtitle: _("Run in the background to monitor and fix issues");
+            }
+          }
+
+          ListBox {
+            margin-top: 20;
+            selection-mode: none;
+
+            styles [
+              "boxed-list"
+            ]
+
+            Adw.ActionRow {
+              title: _("Restore Default GNOME Theme");
+              subtitle: _("Apply once if the theme is already broken");
+
+              [suffix]
+              Button fix_theme {
+                label: _("Apply");
+                valign: center;
+              }
+            }
+
+            Adw.ActionRow {
+              title: _("Hide Equivalent Applications");
+              subtitle: _("Apply once to hide equivalent applications in each desktop environment, e.g. Files, Console and Calculator will only show in GNOME, whereas the equivalent Dolphin, Konsole and KCalc will only show in KDE Plasma");
+
+              [suffix]
+              Button separate_applications {
+                label: _("Apply");
+                valign: center;
+              }
+            }
+
+          }
+        }
+      }
+    }
+  }
+}

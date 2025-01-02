@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="mendingwall">
+	<schema id="org.indii.mendingwall" path="/org/indii/mendingwall/">
+	</schema>
+</schemalist>

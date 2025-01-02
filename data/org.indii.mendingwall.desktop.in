@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=mendingwall
+Exec=mendingwall
+Icon=org.indii.mendingwall
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=GTK;
+StartupNotify=true
+DBusActivatable=true
