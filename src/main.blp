@@ -4,6 +4,7 @@ using Adw 1;
 Adw.ApplicationWindow main {
   title: _("Mending Wall");
   width-request: 600;
+  height-request: 750;
 
   Box {
     orientation: vertical;
@@ -30,42 +31,91 @@ Adw.ApplicationWindow main {
               "boxed-list"
             ]
 
-            Adw.SwitchRow preserve_theme {
-              title: _("Activate");
-              subtitle: _("Run in the background to monitor and fix issues");
+            Adw.SwitchRow manage_theme {
+              title: _("Maintain Themes");
+              subtitle: _("Prevent theme interference between desktop environments");
             }
-          }
 
-          ListBox {
-            margin-top: 20;
-            selection-mode: none;
+            Adw.ExpanderRow manage_counterparts {
+              title: _("Manage Counterpart Applications");
+              subtitle: _("Hide counterpart applications from menus in each desktop environment");
+              expanded: false;
+              show-enable-switch: true;
+              enable-expansion: false;
 
-            styles [
-              "boxed-list"
-            ]
+              Box {
+                orientation: vertical;
+                margin-start: 15;
+                margin-end: 15;
+                margin-top: 15;
+                margin-bottom: 15;
+
+                Label {
+                  label: _("Applications to show in all desktop environments");
+                  halign: start;
+
+                  styles [ "flat" ]
+                }
+
+                ScrolledWindow {
+                  height-request: 100;
+                  hexpand: true;
+                  vexpand: true;
+                  margin-top: 15;
+                  has-frame: true;
+
+                  ListView excludes {
+                    factory: BuilderListItemFactory {
+                      template ListItem {
+                        focusable: false;
+                        child: Box {
+                          Button {
+                            icon-name: "list-remove-symbolic";
+                            clicked => $remove_exclude(position);
+                            styles [ "flat" ]
+                          }
+                          Text {
+                            buffer: EntryBuffer {
+                              text: bind template.item as <StringObject>.string;
+                            };
+                            hexpand: true;
+                          }
+
+                          /* hidden label holds the item position for removal
+                           * operations */
+                          Label position {
+                            label: bind template.position;
+                            visible: false;
+                          }
+                        };
+                      }
+                    };
+                  }
+                }
+
+                Button {
+                  halign: start;
+                  margin-top: 5;
+                  icon-name: "list-add-symbolic";
+                  tooltip-text: _("Add Application");
+
+                  styles [ "flat" ]
+                  clicked => $add_exclude(excludes);
+                }
+              }
+            }
 
             Adw.ActionRow {
               title: _("Restore Default GNOME Theme");
-              subtitle: _("Apply once if the theme is already broken");
+              subtitle: _("Use if the GNOME theme is already broken");
 
               [suffix]
-              Button fix_theme {
-                label: _("Apply");
+              Button {
+                label: _("Restore");
                 valign: center;
+                clicked => $restore_theme(main);
               }
             }
-
-            Adw.ActionRow {
-              title: _("Hide Counterpart Applications");
-              subtitle: _("Apply once to hide counterpart applications in each desktop environment, e.g. Files, Console and Calculator will only show in GNOME, whereas the equivalent Dolphin, Konsole and KCalc will only show in KDE Plasma");
-
-              [suffix]
-              Button separate_applications {
-                label: _("Apply");
-                valign: center;
-              }
-            }
-
           }
         }
       }
