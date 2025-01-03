@@ -51,11 +51,6 @@ void activate(GtkApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
   GObject* window = gtk_builder_get_object(builder, "main");
 
-  const gchar* strv[] = {"a", "b", "c", NULL};
-  GtkStringList* model = gtk_string_list_new(strv);
-  GObject* excludes = gtk_builder_get_object(builder, "excludes");
-  custom_pill_box_bind_model(CUSTOM_PILL_BOX(excludes), G_LIST_MODEL(model));
-
   /* bind gsettings */
   //GSettings* settings = g_settings_new("org.indii.mendingwall");
   //g_settings_bind(settings, "preserve-themes", gtk_builder_get_object(builder, "preserve-themes"), "active", G_SETTINGS_BIND_DEFAULT);

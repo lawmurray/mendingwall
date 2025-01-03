@@ -1,29 +1,25 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $CustomPill {
-  FlowBoxChild {
-    focusable: false;
+template $CustomPill : Button {
+  valign: center;
 
-    Button {
-      valign: center;
+  CenterBox {
+    margin-start: 10;
+    margin-end: 10;
+    hexpand: true;
 
-      CenterBox {
-        margin-start: 10;
-        margin-end: 10;
+    [center]
+    Label {
+      name: "label";
+      hexpand: true;
+    }
 
-        [center]
-        Label {
-          name: "label";
-        }
-
-        [end]
-        Image {
-          icon-name: "window-close-symbolic";
-        }
-      }
-
-      styles [ "circular" ]
+    [end]
+    Image {
+      icon-name: "window-close-symbolic";
     }
   }
+
+  styles [ "circular" ]
 }

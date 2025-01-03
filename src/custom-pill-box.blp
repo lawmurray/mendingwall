@@ -8,28 +8,17 @@ template $CustomPillBox {
 
     Adw.EntryRow {
       title: _("Add");
+      name: "add_entry";
       hexpand: true;
-
-      [suffix]
-      Button add {
-        icon-name: "list-add-symbolic";
-        valign: center;
-      }
+      show-apply-button: true;
     }
 
-    ScrolledWindow {
-      propagate-natural-height: true;
-      has-frame: false;
+    FlowBox {
+      name: "flow_box";
+      selection-mode: none;
+      orientation: horizontal;
       focusable: false;
       hexpand: true;
-
-      FlowBox {
-        name: "flow_box";
-        selection-mode: none;
-        orientation: horizontal;
-        focusable: false;
-        hexpand: true;
-      }
     }
   }
 }

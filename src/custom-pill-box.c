@@ -64,9 +64,47 @@ static void custom_pill_box_get_property(GObject* object, guint property_id, GVa
 
 struct _CustomPillBox {
   GtkWidget parent_instance;
+  GtkStringList* model;
 };
 
 G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_WIDGET)
+
+static void add_pill(GtkWidget* add_entry, gpointer user_data) {
+  CustomPillBox* self = CUSTOM_PILL_BOX(user_data);
+  const char* str = gtk_editable_get_text(GTK_EDITABLE(add_entry));
+
+  guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
+  for (guint i = 0; i < n; ++i) {
+    if (g_strcmp0(str, gtk_string_list_get_string(self->model, i)) == 0) {
+      /* already exists, don't add it again */
+      return;
+    }
+  }
+  gtk_string_list_append(self->model, str);
+  gtk_editable_set_text(GTK_EDITABLE(add_entry), "");
+}
+
+static void remove_pill(GtkWidget* pill, gpointer user_data) {
+  CustomPillBox* self = CUSTOM_PILL_BOX(user_data);
+  const char* str = custom_pill_get_label(CUSTOM_PILL(pill));
+
+  guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
+  for (guint i = 0; i < n; ++i) {
+    if (g_strcmp0(str, gtk_string_list_get_string(self->model, i)) == 0) {
+      gtk_string_list_remove(self->model, i);
+      break;
+    }
+  }
+}
+
+static GtkWidget* pill_factory(void* item, gpointer user_data) {
+  const gchar* label = gtk_string_object_get_string(GTK_STRING_OBJECT(item));
+  CustomPillBox* self = CUSTOM_PILL_BOX(user_data);
+
+  CustomPill* pill = custom_pill_new(label);
+  g_signal_connect(pill, "clicked", G_CALLBACK(remove_pill), self);
+  return GTK_WIDGET(pill);
+}
 
 static void custom_pill_box_class_init(CustomPillBoxClass* klass) {
   GObjectClass* gobject_class = G_OBJECT_CLASS(klass);
@@ -82,6 +120,17 @@ static void custom_pill_box_class_init(CustomPillBoxClass* klass) {
 
 static void custom_pill_box_init(CustomPillBox* self) {
   gtk_widget_init_template(GTK_WIDGET(self));
+
+  /* named widgets */
+  GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
+  GtkWidget* add_entry = find_descendant(GTK_WIDGET(self), "add_entry");
+
+  /* configure model */
+  self->model = gtk_string_list_new(NULL);
+  gtk_flow_box_bind_model(GTK_FLOW_BOX(flow_box), G_LIST_MODEL(self->model), pill_factory, self, NULL);
+
+  /* configure signals */
+  g_signal_connect(add_entry, "apply", G_CALLBACK(add_pill), self);
 }
 
 static void custom_pill_box_dispose(GObject* self) {
@@ -91,15 +140,5 @@ static void custom_pill_box_dispose(GObject* self) {
 
 static void custom_pill_box_finalize(GObject* self) {
   G_OBJECT_CLASS(custom_pill_box_parent_class)->finalize(self);
-}
-
-static GtkWidget* pill_factory(void* item, gpointer user_data) {
-  const gchar* label = gtk_string_object_get_string(GTK_STRING_OBJECT(item));
-  return GTK_WIDGET(custom_pill_new(label));
-}
-
-void custom_pill_box_bind_model(CustomPillBox* self, GListModel* model) {
-  GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
-  gtk_flow_box_bind_model(GTK_FLOW_BOX(flow_box), model, pill_factory, NULL, NULL);
 }
 
