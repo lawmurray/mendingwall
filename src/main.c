@@ -2,6 +2,7 @@
 #include <mendingwall-resources.h>
 #include <adwaita.h>
 #include <glib/gi18n.h>
+#include <custom-pill-box.h>
 
 void restore_theme_response(AdwAlertDialog* self, gchar* response) {
   if (strcmp(response, "restore") == 0) {
@@ -23,42 +24,43 @@ void restore_theme(GtkWidget* main) {
   adw_dialog_present (dialog, main);
 }
 
-void scroll_to_end(gpointer user_data) {
-  GtkWidget* scroller = GTK_WIDGET(user_data);
-  GtkAdjustment* adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scroller));
-  double upper = gtk_adjustment_get_upper(adjustment);
-  gtk_adjustment_set_value(adjustment, upper);
+//void add_exclude(GtkWidget* list_view) {
+//  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
+//  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
+//  gtk_string_list_append(string_model, "");
+//}
+
+//void remove_exclude(GtkWidget* label) {
+//  GtkWidget* list_view = gtk_widget_get_ancestor(label, GTK_TYPE_LIST_VIEW);
+//  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
+//  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
+//  guint pos = atoi(gtk_label_get_label(GTK_LABEL(label)));
+//  gtk_string_list_remove(string_model, pos);
+//}
+
+gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
+  g_value_set_variant(value, variant);
+  return true;
 }
 
-void add_exclude(GtkWidget* list_view) {
-  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
-  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
-  gtk_string_list_append(string_model, "");
-
-  /* scroll to bottom; the size of the contents needs to be updated before this
-   * works, and a short timeout suffices; g_idle_add_once() seems not to work */
-  GtkWidget* scroller = gtk_widget_get_ancestor(list_view, GTK_TYPE_SCROLLED_WINDOW);
-  g_timeout_add_once(20, scroll_to_end, scroller);
-}
-
-void remove_exclude(GtkWidget* label) {
-  GtkWidget* list_view = gtk_widget_get_ancestor(label, GTK_TYPE_LIST_VIEW);
-  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
-  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
-  guint pos = atoi(gtk_label_get_label(GTK_LABEL(label)));
-  gtk_string_list_remove(string_model, pos);
+GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
+  return g_value_dup_variant(value);
 }
 
 void activate(GtkApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
   GObject* window = gtk_builder_get_object(builder, "main");
 
-  /* populate exclusions */
+  const gchar* strv[] = {"a", "b", "c", NULL};
+  GtkStringList* model = gtk_string_list_new(strv);
   GObject* excludes = gtk_builder_get_object(builder, "excludes");
-  const char* values[] = {"Krita", NULL};
-  GtkStringList* string_model = gtk_string_list_new(values);
-  GtkNoSelection* model = gtk_no_selection_new(G_LIST_MODEL(string_model));
-  gtk_list_view_set_model(GTK_LIST_VIEW(excludes), GTK_SELECTION_MODEL(model));
+  custom_pill_box_bind_model(CUSTOM_PILL_BOX(excludes), G_LIST_MODEL(model));
+
+  /* bind gsettings */
+  //GSettings* settings = g_settings_new("org.indii.mendingwall");
+  //g_settings_bind(settings, "preserve-themes", gtk_builder_get_object(builder, "preserve-themes"), "active", G_SETTINGS_BIND_DEFAULT);
+  //g_settings_bind(settings, "manage-counterparts", gtk_builder_get_object(builder, "manage-counterparts"), "enable-expansion", G_SETTINGS_BIND_DEFAULT);
+  //g_settings_bind_with_mapping(settings, "excludes", model, "model", G_SETTINGS_BIND_GET, get_mapping, set_mapping, model, NULL);
 
   gtk_window_set_application(GTK_WINDOW(window), app);
   gtk_window_present(GTK_WINDOW(window));

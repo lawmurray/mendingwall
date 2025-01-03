@@ -1,10 +1,15 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
 mendingwall_sources = [
+  'custom-pill.c',
+  'custom-pill-box.c',
   'main.c',
+  'utility.c'
 ]
 
 mendingwall_blueprints = files(
+  'custom-pill.blp',
+  'custom-pill-box.blp',
   'main.blp',
 )
 

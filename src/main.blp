@@ -43,65 +43,8 @@ Adw.ApplicationWindow main {
               show-enable-switch: true;
               enable-expansion: false;
 
-              Box {
-                orientation: vertical;
-                margin-start: 15;
-                margin-end: 15;
-                margin-top: 15;
-                margin-bottom: 15;
-
-                Label {
-                  label: _("Applications to show in all desktop environments");
-                  halign: start;
-
-                  styles [ "flat" ]
-                }
-
-                ScrolledWindow {
-                  height-request: 100;
-                  hexpand: true;
-                  vexpand: true;
-                  margin-top: 15;
-                  has-frame: true;
-
-                  ListView excludes {
-                    factory: BuilderListItemFactory {
-                      template ListItem {
-                        focusable: false;
-                        child: Box {
-                          Button {
-                            icon-name: "list-remove-symbolic";
-                            clicked => $remove_exclude(position);
-                            styles [ "flat" ]
-                          }
-                          Text {
-                            buffer: EntryBuffer {
-                              text: bind template.item as <StringObject>.string;
-                            };
-                            hexpand: true;
-                          }
-
-                          /* hidden label holds the item position for removal
-                           * operations */
-                          Label position {
-                            label: bind template.position;
-                            visible: false;
-                          }
-                        };
-                      }
-                    };
-                  }
-                }
-
-                Button {
-                  halign: start;
-                  margin-top: 5;
-                  icon-name: "list-add-symbolic";
-                  tooltip-text: _("Add Application");
-
-                  styles [ "flat" ]
-                  clicked => $add_exclude(excludes);
-                }
+              $CustomPillBox excludes {
+                hexpand: true;
               }
             }
 

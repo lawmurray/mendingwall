@@ -1,0 +1,35 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $CustomPillBox {
+  Box {
+    orientation: vertical;
+    hexpand: true;
+
+    Adw.EntryRow {
+      title: _("Add");
+      hexpand: true;
+
+      [suffix]
+      Button add {
+        icon-name: "list-add-symbolic";
+        valign: center;
+      }
+    }
+
+    ScrolledWindow {
+      propagate-natural-height: true;
+      has-frame: false;
+      focusable: false;
+      hexpand: true;
+
+      FlowBox {
+        name: "flow_box";
+        selection-mode: none;
+        orientation: horizontal;
+        focusable: false;
+        hexpand: true;
+      }
+    }
+  }
+}
