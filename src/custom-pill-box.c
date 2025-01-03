@@ -69,6 +69,10 @@ struct _CustomPillBox {
 
 G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_WIDGET)
 
+static void restore_pill(gpointer user_data) {
+  gtk_widget_remove_css_class(GTK_WIDGET(user_data), "error");
+}
+
 static void add_pill(GtkWidget* add_entry, gpointer user_data) {
   CustomPillBox* self = CUSTOM_PILL_BOX(user_data);
   const char* str = gtk_editable_get_text(GTK_EDITABLE(add_entry));
@@ -77,6 +81,14 @@ static void add_pill(GtkWidget* add_entry, gpointer user_data) {
   for (guint i = 0; i < n; ++i) {
     if (g_strcmp0(str, gtk_string_list_get_string(self->model, i)) == 0) {
       /* already exists, don't add it again */
+      GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
+
+      /* turn the conflicting pill red for a few moments as feedback */
+      GtkFlowBoxChild* flow_box_child = gtk_flow_box_get_child_at_index(GTK_FLOW_BOX(flow_box), i);
+      GtkWidget* button = gtk_flow_box_child_get_child(flow_box_child);
+      gtk_widget_add_css_class(GTK_WIDGET(button), "error");
+      g_timeout_add_once(200, restore_pill, button);
+
       return;
     }
   }
