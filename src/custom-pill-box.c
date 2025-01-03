@@ -78,21 +78,23 @@ static void add_pill(GtkWidget* add_entry, gpointer user_data) {
   const char* str = gtk_editable_get_text(GTK_EDITABLE(add_entry));
 
   guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
-  for (guint i = 0; i < n; ++i) {
+  bool already_exists = false;
+  for (guint i = 0; i < n && !already_exists; ++i) {
     if (g_strcmp0(str, gtk_string_list_get_string(self->model, i)) == 0) {
       /* already exists, don't add it again */
-      GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
+      already_exists = true;
 
-      /* turn the conflicting pill red for a few moments as feedback */
+      /* flash the existing pill as feedback */
+      GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
       GtkFlowBoxChild* flow_box_child = gtk_flow_box_get_child_at_index(GTK_FLOW_BOX(flow_box), i);
       GtkWidget* button = gtk_flow_box_child_get_child(flow_box_child);
       gtk_widget_add_css_class(GTK_WIDGET(button), "error");
-      g_timeout_add_once(200, restore_pill, button);
-
-      return;
+      g_timeout_add_once(150, restore_pill, button);
     }
   }
-  gtk_string_list_append(self->model, str);
+  if (!already_exists) {
+    gtk_string_list_append(self->model, str);
+  }
   gtk_editable_set_text(GTK_EDITABLE(add_entry), "");
 }
 
