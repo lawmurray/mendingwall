@@ -22,12 +22,12 @@ void restore_theme_confirm(GtkWidget* main) {
   adw_dialog_present (dialog, main);
 }
 
-static gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
+gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
   g_value_set_variant(value, variant);
   return true;
 }
 
-static GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
+GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
   return g_value_dup_variant(value);
 }
 
@@ -36,10 +36,10 @@ void activate(GtkApplication *app) {
   GObject* window = gtk_builder_get_object(builder, "main");
 
   /* bind gsettings */
-  //GSettings* settings = g_settings_new("org.indii.mendingwall");
-  //g_settings_bind(settings, "preserve-themes", gtk_builder_get_object(builder, "preserve-themes"), "active", G_SETTINGS_BIND_DEFAULT);
-  //g_settings_bind(settings, "manage-counterparts", gtk_builder_get_object(builder, "manage-counterparts"), "enable-expansion", G_SETTINGS_BIND_DEFAULT);
-  //g_settings_bind_with_mapping(settings, "excludes", model, "model", G_SETTINGS_BIND_GET, get_mapping, set_mapping, model, NULL);
+  GSettings* settings = g_settings_new("org.indii.mendingwall");
+  g_settings_bind(settings, "preserve-themes", gtk_builder_get_object(builder, "preserve-themes"), "active", G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind(settings, "manage-counterparts", gtk_builder_get_object(builder, "manage-counterparts"), "enable-expansion", G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind_with_mapping(settings, "exclude-applications", gtk_builder_get_object(builder, "exclude-applications"), "strings", G_SETTINGS_BIND_DEFAULT, get_mapping, set_mapping, NULL, NULL);
 
   gtk_window_set_application(GTK_WINDOW(window), app);
   gtk_window_present(GTK_WINDOW(window));

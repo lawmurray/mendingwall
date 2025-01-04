@@ -31,19 +31,19 @@ Adw.ApplicationWindow main {
               "boxed-list"
             ]
 
-            Adw.SwitchRow manage_theme {
-              title: _("Maintain Themes");
+            Adw.SwitchRow preserve-themes {
+              title: _("Preserve Themes");
               subtitle: _("Prevent theme interference between desktop environments");
             }
 
-            Adw.ExpanderRow manage_counterparts {
+            Adw.ExpanderRow manage-counterparts {
               title: _("Manage Counterpart Applications");
               subtitle: _("Hide counterpart applications from menus in each desktop environment");
               expanded: false;
               show-enable-switch: true;
               enable-expansion: false;
 
-              $CustomPillBox excludes {
+              $CustomPillBox exclude-applications {
                 title: _("Do not manage these applications");
                 hexpand: true;
               }
