@@ -17,7 +17,8 @@
 //}
 
 typedef enum {
-  PROP_STRINGS = 1,
+  PROP_TITLE = 1,
+  PROP_STRINGS,
   N_PROPERTIES
 } CustomPillBoxProperty;
 
@@ -25,7 +26,14 @@ static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 static void custom_pill_box_set_property(GObject* object, guint property_id, const GValue* value, GParamSpec* pspec) {
   CustomPillBox* self = CUSTOM_PILL_BOX(object);
-  if ((CustomPillBoxProperty)property_id == PROP_STRINGS) {
+
+  switch ((CustomPillBoxProperty)property_id) {
+  case PROP_TITLE:
+    const gchar* string = g_value_get_string(value);
+    GtkWidget* add_entry = find_descendant(GTK_WIDGET(self), "add_entry");
+    adw_preferences_row_set_title(ADW_PREFERENCES_ROW(add_entry), string);
+    break;
+  case PROP_STRINGS:
     GVariant* variant = g_value_get_variant(value);
     const gchar** strings = g_variant_get_strv(variant, NULL);
 
@@ -36,7 +44,8 @@ static void custom_pill_box_set_property(GObject* object, guint property_id, con
     //GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
     //guint n = g_list_model_get_n_items(G_LIST_MODEL(string_model));
     //gtk_string_list_splice(string_model, 0, n, strings);
-  } else {
+    break;
+  default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
   }
 }
@@ -138,6 +147,7 @@ static void custom_pill_box_class_init(CustomPillBoxClass* klass) {
   gtk_widget_class_set_layout_manager_type(GTK_WIDGET_CLASS(klass), GTK_TYPE_BOX_LAYOUT);
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(klass), "/org/indii/mendingwall/custom-pill-box.ui");
 
+  obj_properties[PROP_TITLE] = g_param_spec_string("title", NULL, NULL, "Add", G_PARAM_READWRITE);
   obj_properties[PROP_STRINGS] = g_param_spec_variant("strings", NULL, NULL, g_variant_type_new("as"), NULL, G_PARAM_READWRITE);
   gobject_class->set_property = custom_pill_box_set_property;
   gobject_class->get_property = custom_pill_box_get_property;
