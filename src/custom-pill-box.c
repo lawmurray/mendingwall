@@ -70,32 +70,44 @@ struct _CustomPillBox {
 G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_WIDGET)
 
 static void restore_pill(gpointer user_data) {
-  gtk_widget_remove_css_class(GTK_WIDGET(user_data), "error");
+  gtk_widget_remove_css_class(GTK_WIDGET(user_data), "success");
+}
+
+static void flash_pill(CustomPillBox* self, const guint pos) {
+  GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
+  GtkFlowBoxChild* flow_box_child = gtk_flow_box_get_child_at_index(GTK_FLOW_BOX(flow_box), pos);
+  GtkWidget* button = gtk_flow_box_child_get_child(flow_box_child);
+  gtk_widget_add_css_class(GTK_WIDGET(button), "success");
+  g_timeout_add_once(150, restore_pill, button);
 }
 
 static void add_pill(GtkWidget* add_entry, gpointer user_data) {
   CustomPillBox* self = CUSTOM_PILL_BOX(user_data);
   const char* str = gtk_editable_get_text(GTK_EDITABLE(add_entry));
+  if (g_strcmp0(str, "") != 0) {
+    /* remove whitespace from start and end */
+    char* stripped = g_strdup(str);
+    g_strstrip(stripped);
 
-  guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
-  bool already_exists = false;
-  for (guint i = 0; i < n && !already_exists; ++i) {
-    if (g_strcmp0(str, gtk_string_list_get_string(self->model, i)) == 0) {
-      /* already exists, don't add it again */
-      already_exists = true;
-
-      /* flash the existing pill as feedback */
-      GtkWidget* flow_box = find_descendant(GTK_WIDGET(self), "flow_box");
-      GtkFlowBoxChild* flow_box_child = gtk_flow_box_get_child_at_index(GTK_FLOW_BOX(flow_box), i);
-      GtkWidget* button = gtk_flow_box_child_get_child(flow_box_child);
-      gtk_widget_add_css_class(GTK_WIDGET(button), "error");
-      g_timeout_add_once(150, restore_pill, button);
+    /* check if the string already exists */
+    guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
+    bool already_exists = false;
+    guint pos = 0;
+    while (pos < n && !already_exists) {
+      if (g_strcmp0(stripped, gtk_string_list_get_string(self->model, pos)) == 0) {
+        /* already exists, don't add it again */
+        already_exists = true;
+        break;
+      }
+      ++pos;
     }
+    if (!already_exists) {
+      gtk_string_list_append(self->model, stripped);
+    }
+
+    flash_pill(self, pos);
+    gtk_editable_set_text(GTK_EDITABLE(add_entry), "");
   }
-  if (!already_exists) {
-    gtk_string_list_append(self->model, str);
-  }
-  gtk_editable_set_text(GTK_EDITABLE(add_entry), "");
 }
 
 static void remove_pill(GtkWidget* pill, gpointer user_data) {
@@ -155,4 +167,6 @@ static void custom_pill_box_dispose(GObject* self) {
 static void custom_pill_box_finalize(GObject* self) {
   G_OBJECT_CLASS(custom_pill_box_parent_class)->finalize(self);
 }
+
+
 
