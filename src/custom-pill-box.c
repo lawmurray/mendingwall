@@ -92,6 +92,7 @@ static void custom_pill_box_set_property(GObject* object, guint property_id, con
     const gchar** strv = g_variant_get_strv(variant, NULL);
     guint n = g_list_model_get_n_items(G_LIST_MODEL(self->model));
     gtk_string_list_splice(self->model, 0, n, strv);
+    g_free(strv);
   } else {
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
   }
@@ -122,11 +123,13 @@ void custom_pill_box_class_init(CustomPillBoxClass* klass) {
   gtk_widget_class_set_layout_manager_type(GTK_WIDGET_CLASS(klass), GTK_TYPE_BOX_LAYOUT);
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(klass), "/org/indii/mendingwall/custom-pill-box.ui");
 
+  GVariantType* strv_type = g_variant_type_new("as");
   obj_properties[PROP_TITLE] = g_param_spec_string("title", NULL, NULL, "Add", G_PARAM_READWRITE);
-  obj_properties[PROP_STRINGS] = g_param_spec_variant("strings", NULL, NULL, g_variant_type_new("as"), NULL, G_PARAM_READWRITE);
+  obj_properties[PROP_STRINGS] = g_param_spec_variant("strings", NULL, NULL, strv_type, NULL, G_PARAM_READWRITE);
   gobject_class->set_property = custom_pill_box_set_property;
   gobject_class->get_property = custom_pill_box_get_property;
   g_object_class_install_properties(gobject_class, G_N_ELEMENTS(obj_properties), obj_properties);
+  g_free(strv_type);
 }
 
 void custom_pill_box_init(CustomPillBox* self) {
