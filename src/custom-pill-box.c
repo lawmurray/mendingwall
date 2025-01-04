@@ -11,11 +11,11 @@ typedef enum {
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
 struct _CustomPillBox {
-  GtkWidget parent_instance;
+  GtkBox parent_instance;
   GtkStringList* model;
 };
 
-G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_WIDGET)
+G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_BOX)
 
 static void unflash_pill(gpointer user_data) {
   gtk_widget_remove_css_class(GTK_WIDGET(user_data), "success");
