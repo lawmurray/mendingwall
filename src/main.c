@@ -15,11 +15,11 @@ static void restore_theme(AdwAlertDialog* self, gchar* response) {
 void restore_theme_confirm(GtkWidget* main) {
   AdwDialog* dialog = adw_alert_dialog_new(_("Restore Default GNOME Theme?"), NULL);
   adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(dialog), "cancel",  _("Cancel"), "restore", _("Restore"), NULL);
-  adw_alert_dialog_set_response_appearance(ADW_ALERT_DIALOG (dialog), "restore", ADW_RESPONSE_SUGGESTED);
+  adw_alert_dialog_set_response_appearance(ADW_ALERT_DIALOG(dialog), "restore", ADW_RESPONSE_SUGGESTED);
   adw_alert_dialog_set_default_response(ADW_ALERT_DIALOG(dialog), "cancel");
   adw_alert_dialog_set_close_response(ADW_ALERT_DIALOG(dialog), "cancel");
   g_signal_connect(dialog, "response", G_CALLBACK(restore_theme), NULL);
-  adw_dialog_present (dialog, main);
+  adw_dialog_present(dialog, main);
 }
 
 gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {

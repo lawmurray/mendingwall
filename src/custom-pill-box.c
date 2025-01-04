@@ -34,7 +34,7 @@ static void add_pill(GtkWidget* add_entry, gpointer user_data) {
   const char* str = gtk_editable_get_text(GTK_EDITABLE(add_entry));
   if (g_strcmp0(str, "") != 0) {
     /* remove whitespace from start and end */
-    char* stripped = g_strdup(str);
+    gchar* stripped = g_strdup(str);
     g_strstrip(stripped);
 
     /* check if the string already exists */
@@ -53,9 +53,9 @@ static void add_pill(GtkWidget* add_entry, gpointer user_data) {
       gtk_string_list_append(self->model, stripped);
       g_object_notify(G_OBJECT(self), "strings");
     }
-
-    flash_pill(self, pos);
     gtk_editable_set_text(GTK_EDITABLE(add_entry), "");
+    flash_pill(self, pos);
+    g_free(stripped);
   }
 }
 
