@@ -24,7 +24,7 @@ typedef enum {
 
 static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 
-static void custom_pill_box_set_property(GObject* object, guint property_id, const GValue* value, GParamSpec* pspec) {
+void custom_pill_box_set_property(GObject* object, guint property_id, const GValue* value, GParamSpec* pspec) {
   CustomPillBox* self = CUSTOM_PILL_BOX(object);
 
   switch ((CustomPillBoxProperty)property_id) {
@@ -50,7 +50,7 @@ static void custom_pill_box_set_property(GObject* object, guint property_id, con
   }
 }
 
-static void custom_pill_box_get_property(GObject* object, guint property_id, GValue* value, GParamSpec* pspec) {
+void custom_pill_box_get_property(GObject* object, guint property_id, GValue* value, GParamSpec* pspec) {
   CustomPillBox* self = CUSTOM_PILL_BOX(object);
   if ((CustomPillBoxProperty)property_id == PROP_STRINGS) {
     //GtkWidget* box = gtk_widget_get_first_child(GTK_WIDGET(self));
@@ -78,7 +78,7 @@ struct _CustomPillBox {
 
 G_DEFINE_TYPE(CustomPillBox, custom_pill_box, GTK_TYPE_WIDGET)
 
-static void restore_pill(gpointer user_data) {
+static void unflash_pill(gpointer user_data) {
   gtk_widget_remove_css_class(GTK_WIDGET(user_data), "success");
 }
 
@@ -87,7 +87,7 @@ static void flash_pill(CustomPillBox* self, const guint pos) {
   GtkFlowBoxChild* flow_box_child = gtk_flow_box_get_child_at_index(GTK_FLOW_BOX(flow_box), pos);
   GtkWidget* button = gtk_flow_box_child_get_child(flow_box_child);
   gtk_widget_add_css_class(GTK_WIDGET(button), "success");
-  g_timeout_add_once(150, restore_pill, button);
+  g_timeout_add_once(150, unflash_pill, button);
 }
 
 static void add_pill(GtkWidget* add_entry, gpointer user_data) {
@@ -141,7 +141,7 @@ static GtkWidget* pill_factory(void* item, gpointer user_data) {
   return GTK_WIDGET(pill);
 }
 
-static void custom_pill_box_class_init(CustomPillBoxClass* klass) {
+void custom_pill_box_class_init(CustomPillBoxClass* klass) {
   GObjectClass* gobject_class = G_OBJECT_CLASS(klass);
 
   gtk_widget_class_set_layout_manager_type(GTK_WIDGET_CLASS(klass), GTK_TYPE_BOX_LAYOUT);
@@ -154,7 +154,7 @@ static void custom_pill_box_class_init(CustomPillBoxClass* klass) {
   g_object_class_install_properties(gobject_class, G_N_ELEMENTS(obj_properties), obj_properties);
 }
 
-static void custom_pill_box_init(CustomPillBox* self) {
+void custom_pill_box_init(CustomPillBox* self) {
   gtk_widget_init_template(GTK_WIDGET(self));
 
   /* named widgets */
@@ -169,12 +169,12 @@ static void custom_pill_box_init(CustomPillBox* self) {
   g_signal_connect(add_entry, "apply", G_CALLBACK(add_pill), self);
 }
 
-static void custom_pill_box_dispose(GObject* self) {
+void custom_pill_box_dispose(GObject* self) {
   gtk_widget_dispose_template(GTK_WIDGET(self), CUSTOM_TYPE_PILL_BOX);
   G_OBJECT_CLASS(custom_pill_box_parent_class)->dispose(self);
 }
 
-static void custom_pill_box_finalize(GObject* self) {
+void custom_pill_box_finalize(GObject* self) {
   G_OBJECT_CLASS(custom_pill_box_parent_class)->finalize(self);
 }
 

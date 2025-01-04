@@ -1,49 +1,33 @@
 #include <config.h>
-#include <mendingwall-resources.h>
-#include <adwaita.h>
-#include <glib/gi18n.h>
 #include <custom-pill-box.h>
+#include <mendingwall-resources.h>
 
-void restore_theme_response(AdwAlertDialog* self, gchar* response) {
+#include <adwaita.h>
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
+
+static void restore_theme(AdwAlertDialog* self, gchar* response) {
   if (strcmp(response, "restore") == 0) {
     printf("restoring default theme\n");
   }
 }
 
-void restore_theme(GtkWidget* main) {
+void restore_theme_confirm(GtkWidget* main) {
   AdwDialog* dialog = adw_alert_dialog_new(_("Restore Default GNOME Theme?"), NULL);
-  adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(dialog),
-                                  "cancel",  _("Cancel"),
-                                  "restore", _("Restore"),
-                                  NULL);
+  adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(dialog), "cancel",  _("Cancel"), "restore", _("Restore"), NULL);
   adw_alert_dialog_set_response_appearance(ADW_ALERT_DIALOG (dialog), "restore", ADW_RESPONSE_SUGGESTED);
   adw_alert_dialog_set_default_response(ADW_ALERT_DIALOG(dialog), "cancel");
   adw_alert_dialog_set_close_response(ADW_ALERT_DIALOG(dialog), "cancel");
-
-  g_signal_connect(dialog, "response", G_CALLBACK(restore_theme_response), NULL);
+  g_signal_connect(dialog, "response", G_CALLBACK(restore_theme), NULL);
   adw_dialog_present (dialog, main);
 }
 
-//void add_exclude(GtkWidget* list_view) {
-//  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
-//  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
-//  gtk_string_list_append(string_model, "");
-//}
-
-//void remove_exclude(GtkWidget* label) {
-//  GtkWidget* list_view = gtk_widget_get_ancestor(label, GTK_TYPE_LIST_VIEW);
-//  GtkSelectionModel* model = gtk_list_view_get_model(GTK_LIST_VIEW(list_view));
-//  GtkStringList* string_model = GTK_STRING_LIST(gtk_no_selection_get_model(GTK_NO_SELECTION(model)));
-//  guint pos = atoi(gtk_label_get_label(GTK_LABEL(label)));
-//  gtk_string_list_remove(string_model, pos);
-//}
-
-gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
+static gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
   g_value_set_variant(value, variant);
   return true;
 }
 
-GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
+static GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
   return g_value_dup_variant(value);
 }
 

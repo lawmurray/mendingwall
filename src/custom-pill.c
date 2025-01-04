@@ -1,5 +1,6 @@
-#include <custom-pill.h>
+#include <config.h>
 #include <utility.h>
+#include <custom-pill.h>
 
 struct _CustomPill {
   GtkButton parent_instance;
@@ -7,21 +8,21 @@ struct _CustomPill {
 
 G_DEFINE_TYPE(CustomPill, custom_pill, GTK_TYPE_BUTTON)
 
-static void custom_pill_class_init(CustomPillClass* klass) {
+void custom_pill_class_init(CustomPillClass* klass) {
   gtk_widget_class_set_layout_manager_type(GTK_WIDGET_CLASS(klass), GTK_TYPE_BOX_LAYOUT);
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(klass), "/org/indii/mendingwall/custom-pill.ui");
 }
 
-static void custom_pill_init(CustomPill* self) {
+void custom_pill_init(CustomPill* self) {
   gtk_widget_init_template(GTK_WIDGET(self));
 }
 
-static void custom_pill_dispose(GObject* self) {
+void custom_pill_dispose(GObject* self) {
   gtk_widget_dispose_template(GTK_WIDGET(self), CUSTOM_TYPE_PILL);
   G_OBJECT_CLASS(custom_pill_parent_class)->dispose(self);
 }
 
-static void custom_pill_finalize(GObject* self) {
+void custom_pill_finalize(GObject* self) {
   G_OBJECT_CLASS(custom_pill_parent_class)->finalize(self);
 }
 

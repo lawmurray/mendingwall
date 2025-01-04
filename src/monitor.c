@@ -1,3 +1,4 @@
+#include <config.h>
 #include <gtk/gtk.h>
 
 void mendingwall_changed(GSettings* mendingwall, gchar* key, gpointer user_data) {

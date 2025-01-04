@@ -1,3 +1,4 @@
+#include <config.h>
 #include <utility.h>
 
 GtkWidget* find_descendant(GtkWidget* widget, const char* name) {
