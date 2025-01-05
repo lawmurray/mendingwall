@@ -68,7 +68,14 @@ plugins:
 nav:
   - index.md
   - getting-started.md
-  - how-it-works.md
-  - how-you-can-help.md
+  - basic.md
+  - Advanced Usage:
+    - advanced/index.md
+    - advanced/preserve-themes.md
+    - advanced/counterpart-applications.md
+  - How You Can Help:
+    - help/index.md
+    - help/preserve-themes.md
+    - help/counterpart-applications.md
   - questions-and-answers.md
 

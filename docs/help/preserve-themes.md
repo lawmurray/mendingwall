@@ -1,6 +1,4 @@
-# How You Can Help
-
-Mending Wall is designed so that you can contribute to it without programming experience. As described in [How It Works](how-it-works.md), it relies on config files that define patterns to apply while running each desktop environment. You can edit these config files to help yourself, and commit them back to the project to help others. This is particular important because the developers cannot exhaustively test all combinations of desktop environment and Linux distributions, it must be a collaborative effort.
+# How You Can Help: Preserve Themes
 
 ## Choosing a test environment
 
@@ -24,7 +22,7 @@ You should now have four complete copies of the configuration in various steps, 
 !!! tip
     Now is a great time to [open an issue](https://github.com/lawmurray/mendingwall/issues/) on the Mending Wall GitHub repository to report the preliminary results of your investigation. Other users may be able to help in understanding the problem and contributing a fix.
 
-### How to copy the configuration
+## How to copy the configuration
 
 GTK-based desktop environments (e.g. GNOME, Cinnamon, Pantheon) keep their configuration in one of two places:
 
@@ -33,26 +31,17 @@ GTK-based desktop environments (e.g. GNOME, Cinnamon, Pantheon) keep their confi
 
 
 
-### How to compare configurations
+## How to compare configurations
 
 If you have multiple copies of the configuration using the process described above, you can make comparisons just by using a recursive `diff`:
 ```
 diff -qr config1 config2
 ```
 
-### Automating your repairs
+## How to fix the configurations
 
 Now that you understand the changes being made, you can automate the repair via Mending Wall's `preserve-themes.conf` configuration file. 
 
-## Cleaning up counterpart applications
-
-This is a simpler task to investigating breakages. Most desktop environments have core applications such as a file manager, text editor, and calculator, perhaps dictionary or maps, that have counterparts in other desktop environments. Some desktop environments mark these only for display in that desktop environment, others desktop environments do not, which can clutter menus.
-
-To declutter the menus, applications can be restricted to only appear in certain desktop environments via Mending Wall's `counterpart-applications.conf` configuration file.
-
-## Contributing repairs back
-
-To contribute your repairs for other users, submit a pull request on the [GitHub repository](https://github.com/lawmurray/mendingwall). You will need to sign up for a GitHub account if you do not have one already. 
 
 ## Useful tools
 
