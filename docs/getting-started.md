@@ -2,7 +2,7 @@
 
 Install Mending Wall from your package manager by adding appropriate repository for your Linux distribution below. If your distribution is not listed, you can instead [install from source](#install-from-source).
 
-??? info ":simple-ubuntu: Ubuntu 24.10 Oracular Oriole (amd64)"
+??? success ":simple-ubuntu: Ubuntu 24.10 Oracular Oriole (amd64)"
     Install Doxide:
     ```
     echo 'deb http://download.indii.org/deb oracular main' | sudo tee /etc/apt/sources.list.d/indii.org.list
@@ -11,7 +11,7 @@ Install Mending Wall from your package manager by adding appropriate repository 
     sudo apt install mendingwall
     ```
 
-??? info ":simple-ubuntu: Ubuntu 24.04 Noble Numbat (amd64)"
+??? success ":simple-ubuntu: Ubuntu 24.04 Noble Numbat (amd64)"
     Install Doxide:
     ```
     echo 'deb http://download.indii.org/deb noble main' | sudo tee /etc/apt/sources.list.d/indii.org.list
@@ -20,7 +20,7 @@ Install Mending Wall from your package manager by adding appropriate repository 
     sudo apt install mendingwall
     ```
 
-??? info ":simple-debian: Debian 12 Bookworm (amd64)"
+??? success ":simple-debian: Debian 12 Bookworm (amd64)"
     Install Doxide:
     ```
     echo 'deb http://download.indii.org/deb bookworm main' | sudo tee /etc/apt/sources.list.d/indii.org.list
@@ -29,7 +29,7 @@ Install Mending Wall from your package manager by adding appropriate repository 
     sudo apt install mendingwall
     ```
 
-??? info ":simple-fedora: Fedora 40 (x86_64)"
+??? success ":simple-fedora: Fedora 40 (x86_64)"
     Install Doxide:
     ```
     sudo dnf config-manager --add-repo https://download.indii.org/rpm/fedora/40/indii.org.repo
@@ -37,7 +37,7 @@ Install Mending Wall from your package manager by adding appropriate repository 
     sudo dnf install mendingwall
     ```
 
-??? info ":simple-fedora: Fedora 39 (x86_64)"
+??? success ":simple-fedora: Fedora 39 (x86_64)"
     Install Doxide:
     ```
     sudo dnf config-manager --add-repo https://download.indii.org/rpm/fedora/39/indii.org.repo
@@ -45,7 +45,7 @@ Install Mending Wall from your package manager by adding appropriate repository 
     sudo dnf install mendingwall
     ```
 
-??? info ":simple-opensuse: openSUSE Tumbleweed (x86_64)"
+??? success ":simple-opensuse: openSUSE Tumbleweed (x86_64)"
     Install Doxide:
     ```
     sudo zypper addrepo https://download.indii.org/rpm/opensuse/tumbleweed/indii.org.repo

@@ -40,6 +40,8 @@ theme:
         name: Switch to light mode
   icon:
     repo: material/github
+    admonition:
+      success: material/package-down
 
 markdown_extensions:
   - def_list
