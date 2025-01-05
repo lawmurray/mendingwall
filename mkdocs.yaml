@@ -17,7 +17,7 @@ extra:
 theme:
   name: material
   logo: assets/logo_white.svg
-  favicon: assets/logo.svg
+  favicon: assets/favicon.svg
   features:
     - navigation.indexes
     - navigation.footer
