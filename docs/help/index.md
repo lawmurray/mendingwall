@@ -7,8 +7,5 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 - [Reporting issues](https://github.com/lawmurray/mendingwall/issues), e.g. bugs in the app, problems with the above features on particular Linux distributions or in particular desktop environments, etc.
 - Adding whole new features. This requires programming. Mending Wall is written in C as a GNOME application using Adwaita, GTK4, and [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/).
 
-All contributions can be made via the [GitHub repository](https://github.com/lawmurray/mendingwall), either via an [issue](https://github.com/lawmurray/mendingwall/issues) or a [pull request](https://github.com/lawmurray/mendingwall/pull_requests).
-
-!!! tip
-    If GitHub is unfamiliar to you, just start by opening an issue to describe the problem that you have found, the results of your investigation so far, and a proposed fix if you have one. Others can help from there.
+All contributions can be made via the [GitHub repository](https://github.com/lawmurray/mendingwall), either via an [issue](https://github.com/lawmurray/mendingwall/issues) or a [pull request](https://github.com/lawmurray/mendingwall/pull_requests). If GitHub is unfamiliar to you, just start by opening an issue to describe the problem that you have found, the results of your investigation so far, and a proposed fix if you have one. Others can help from there.
 

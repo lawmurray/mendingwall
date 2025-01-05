@@ -18,14 +18,14 @@ gsettings=/org/gnome/desktop/interface/
 [KDE]
 files=~/.config/kwinrc;.config/kcminputrc
 ```
+The group headers are surrounded by square brackets (`[...]`) and specify a desktop environment. The environment variable `$XDG_CURRENT_DESKTOP` is used to determine which desktop environment is running and so which group to use. If `$XDG_CURRENT_DESKTOP` lists multiple desktop environments (e.g. `GNOME;Unity`), then the union of multiple groups is used (values for the same key are concatenated with duplicates removed).
+
 Each key is followed by an equal sign (`=`), and where multiple values are required they are separated by semicolons (`;`). Recognized keys are:
 
 | Key | Value |
 | --- | ----- |
-| `gsettings` | GSettings paths to save and restore. Each should begin and end with a forward slash (`/`). All entries at the path are saved and restored, but there is no recursion into children, so these should be specified separately if desired. |
-| `files` | Configuration files to save and restore. Each should start with a tilde (`~`) so as to be relative to the user's home directory. |
-
-The group headers are surrounded by square brackets (`[...]`) and specify a desktop environment. The environment variable `$XDG_CURRENT_DESKTOP` is used to determine which desktop environment is running and so which group to use. If `$XDG_CURRENT_DESKTOP` lists multiple desktop environments (e.g. `GNOME;Unity`), then the union of multiple groups is used (values for the same key are concatenated with duplicates removed).
+| `GSettings` | GSettings paths to save and restore. Each should begin and end with a forward slash (`/`). All entries at the path are saved and restored, but there is no recursion into children, so these should be specified separately if desired. |
+| `Files` | Configuration files to save and restore. Each should start with a tilde (`~`) so as to be relative to the user's home directory. |
 
 ## Related links
 

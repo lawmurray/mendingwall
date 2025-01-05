@@ -71,11 +71,11 @@ nav:
   - basic.md
   - Advanced Usage:
     - advanced/index.md
-    - advanced/preserve-themes.md
     - advanced/counterpart-applications.md
+    - advanced/preserve-themes.md
   - How You Can Help:
     - help/index.md
-    - help/preserve-themes.md
     - help/counterpart-applications.md
+    - help/preserve-themes.md
   - questions-and-answers.md
 
