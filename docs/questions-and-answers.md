@@ -10,4 +10,7 @@ When it comes to desktop environments, it is unclear where walls should and shou
 
 At this stage only GNOME and KDE Plasma are supported. If other desktop environments are installed, these two are likely protected from them, but they are likely not protected from these two.
 
-[Contributions are sought](how-you-can-help.md) to add support for additional desktop environments, especially from daily drivers of those desktop environments whose regular usage can help discover issues to fix.
+[Contributions are sought](how-you-can-help.md) to add support for additional desktop environments, especially from daily drivers of those desktop environments whose regular usage can help discover issues and their fixes.
+
+This can be done just by changing config files. No coding is required. As long as the config files used by Mending Wall contain rules for a particular desktop environment, as identified by its setting of the `XDK_CURRENT_DESKTOP` environment variable, Mending Wall will apply the rules when running in that desktop environment.
+
