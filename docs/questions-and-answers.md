@@ -6,3 +6,8 @@
 
 When it comes to desktop environments, it is unclear where walls should and should not exist, and user preference surely has a role. Mending Wall, the app, expresses the view that the current state needs some repair.
 
+## Which desktop environments are supported?
+
+At this stage only GNOME and KDE Plasma are supported. If other desktop environments are installed, these two are likely protected from them, but they are likely not protected from these two.
+
+[Contributions are sought](how-you-can-help.md) to add support for additional desktop environments, especially from daily drivers of those desktop environments whose regular usage can help discover issues to fix.

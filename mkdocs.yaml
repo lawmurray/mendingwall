@@ -25,7 +25,7 @@ theme:
   palette:
     # Palette toggle for light mode
     - scheme: default
-      primary: grey
+      primary: blue-grey
       accent: green
       toggle:
         icon: material/brightness-7
@@ -33,7 +33,7 @@ theme:
 
     # Palette toggle for dark mode
     - scheme: slate
-      primary: grey
+      primary: blue-grey
       accent: green
       toggle:
         icon: material/brightness-4
@@ -68,14 +68,8 @@ plugins:
 nav:
   - index.md
   - getting-started.md
-  - basic.md
-  - Advanced Usage:
-    - advanced/index.md
-    - advanced/counterpart-applications.md
-    - advanced/preserve-themes.md
-  - How You Can Help:
-    - help/index.md
-    - help/counterpart-applications.md
-    - help/preserve-themes.md
+  - manage-menus.md
+  - protect-themes.md
+  - how-you-can-help.md
   - questions-and-answers.md
 
