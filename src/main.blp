@@ -31,14 +31,9 @@ Adw.ApplicationWindow main {
               "boxed-list"
             ]
 
-            Adw.SwitchRow preserve-themes {
-              title: _("Preserve Themes");
-              subtitle: _("Prevent theme interference between desktop environments");
-            }
-
             Adw.ExpanderRow manage-counterparts {
-              title: _("Manage Counterpart Applications");
-              subtitle: _("Hide counterpart applications from menus in each desktop environment");
+              title: _("Manage Menus");
+              subtitle: _("Show core applications in their native desktop environment only");
               expanded: false;
               show-enable-switch: true;
               enable-expansion: false;
@@ -47,6 +42,11 @@ Adw.ApplicationWindow main {
                 title: _("But do not manage these applications");
                 hexpand: true;
               }
+            }
+
+            Adw.SwitchRow preserve-themes {
+              title: _("Protect Themes");
+              subtitle: _("Prevent theme interference between desktop environments");
             }
 
             Adw.ActionRow {
