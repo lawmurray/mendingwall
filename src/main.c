@@ -1,5 +1,4 @@
 #include <config.h>
-#include <custom-pill-box.h>
 #include <mendingwall-resources.h>
 
 #include <adwaita.h>
@@ -22,24 +21,14 @@ void restore_theme_confirm(GtkWidget* main) {
   adw_dialog_present(dialog, main);
 }
 
-gboolean get_mapping(GValue* value, GVariant* variant, gpointer user_data) {
-  g_value_set_variant(value, variant);
-  return true;
-}
-
-GVariant* set_mapping(const GValue* value, const GVariantType* expected_type, gpointer user_data) {
-  return g_value_dup_variant(value);
-}
-
 void activate(GtkApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
   GObject* window = gtk_builder_get_object(builder, "main");
 
   /* bind gsettings */
   GSettings* settings = g_settings_new("org.indii.mendingwall");
-  g_settings_bind(settings, "preserve-themes", gtk_builder_get_object(builder, "preserve-themes"), "active", G_SETTINGS_BIND_DEFAULT);
-  g_settings_bind(settings, "manage-counterparts", gtk_builder_get_object(builder, "manage-counterparts"), "enable-expansion", G_SETTINGS_BIND_DEFAULT);
-  g_settings_bind_with_mapping(settings, "exclude-applications", gtk_builder_get_object(builder, "exclude-applications"), "strings", G_SETTINGS_BIND_DEFAULT, get_mapping, set_mapping, NULL, NULL);
+  g_settings_bind(settings, "themes", gtk_builder_get_object(builder, "themes"), "themes", G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind(settings, "menus", gtk_builder_get_object(builder, "menus"), "menus", G_SETTINGS_BIND_DEFAULT);
 
   gtk_window_set_application(GTK_WINDOW(window), app);
   gtk_window_present(GTK_WINDOW(window));

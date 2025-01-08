@@ -1,9 +1,12 @@
 #include <config.h>
-#include <gtk/gtk.h>
+
+#include <gio/gio.h>
+#include <glib.h>
+#include <glib/gprintf.h>
 
 void mendingwall_changed(GSettings* mendingwall, gchar* key, gpointer user_data) {
   GSettings* gnome = G_SETTINGS(user_data);
-  printf("changed: %s\n", key);
+  g_printf("changed: %s\n", key);
 
   //g_main_loop_quit();
   //g_clear_object(&mendingwall);
@@ -13,7 +16,7 @@ void mendingwall_changed(GSettings* mendingwall, gchar* key, gpointer user_data)
 void gnome_changed(GSettings* gnome, gchar* key, gpointer user_data) {
   GSettings* mendingwall = G_SETTINGS(user_data);
 
-    /* keys of interest in org.gnome.desktop.interface */
+  /* keys of interest in org.gnome.desktop.interface */
   static const char* keys[] = {
     "color-scheme",
     "icon-theme",
@@ -23,12 +26,12 @@ void gnome_changed(GSettings* gnome, gchar* key, gpointer user_data) {
 
   for (int i = 0; i < sizeof(keys); ++i) {
     if (strcmp(key, keys[i]) == 0) {
-      printf("changed: %s\n", key);
+      g_printf("changed: %s\n", key);
     }
   }
 }
 
-void activate(GtkApplication *app) {
+void activate(GApplication *app) {
   GSettings* mendingwall = g_settings_new("org.indii.mendingwall");
   GSettings* gnome = g_settings_new("org.gnome.desktop.interface");
 
@@ -41,7 +44,7 @@ void activate(GtkApplication *app) {
 }
 
 int main(int argc, char* argv[]) {
-  GtkApplication* app = gtk_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
+  GApplication* app = g_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   return g_application_run(G_APPLICATION(app), argc, argv);
 }

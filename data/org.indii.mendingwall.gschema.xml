@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="mendingwall">
 	<schema id="org.indii.mendingwall" path="/org/indii/mendingwall/">
-	  <key name="preserve-themes" type="b">
-	    <default>false</default>
-	    <summary>Preserve themes</summary>
-	    <description>
-	      Prevent theme interference between desktop environments
-	    </description>
-	  </key>
-	  <key name="manage-counterparts" type="b">
-	    <default>false</default>
-	    <summary>Manage counterpart applications</summary>
-	    <description>
-	      Hide counterpart applications from menus in each desktop environment
-	    </description>
-	  </key>
-	  <key name="exclude-applications" type="as">
-	    <default>['Krita']</default>
-	    <summary>Do not manage these applications</summary>
-	    <description>
-	      These applications are excluded from management of counterpart applications
-	    </description>
-	  </key>
-	  <child name="gnome" schema="org.gnome.desktop.interface"/>
+		<key name="themes" type="b">
+			<default>false</default>
+			<summary>Protect themes</summary>
+			<description>
+				Prevent theme interference between desktop environments
+			</description>
+		</key>
+		<key name="menus" type="b">
+			<default>false</default>
+			<summary>Manage menus</summary>
+			<description>
+				Show core applications in their native desktop environment only
+			</description>
+		</key>
 	</schema>
 </schemalist>
 

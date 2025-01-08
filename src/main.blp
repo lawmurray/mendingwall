@@ -31,20 +31,12 @@ Adw.ApplicationWindow main {
               "boxed-list"
             ]
 
-            Adw.ExpanderRow manage-counterparts {
+            Adw.SwitchRow menus {
               title: _("Manage Menus");
               subtitle: _("Show core applications in their native desktop environment only");
-              expanded: false;
-              show-enable-switch: true;
-              enable-expansion: false;
-
-              $CustomPillBox exclude-applications {
-                title: _("But do not manage these applications");
-                hexpand: true;
-              }
             }
 
-            Adw.SwitchRow preserve-themes {
+            Adw.SwitchRow themes {
               title: _("Protect Themes");
               subtitle: _("Prevent theme interference between desktop environments");
             }

@@ -1,15 +1,11 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
 mendingwall_sources = [
-  'custom-pill.c',
-  'custom-pill-box.c',
   'main.c',
   'utility.c'
 ]
 
 mendingwall_blueprints = files(
-  'custom-pill.blp',
-  'custom-pill-box.blp',
   'main.blp',
 )
 
@@ -38,16 +34,30 @@ executable('mendingwall', mendingwall_sources,
        install: true,
 )
 
-mendingwall_monitor_sources = [
-  'monitor.c',
+mendingwall_menus_sources = [
+  'mendingwall-menus.c',
 ]
 
-mendingwall_monitor_deps = [
-  dependency('gtk4')
+mendingwall_menus_deps = [
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
 ]
 
-executable('mendingwall-monitor', mendingwall_monitor_sources,
-  dependencies: mendingwall_monitor_deps,
+executable('mendingwall-menus', mendingwall_menus_sources,
+  dependencies: mendingwall_menus_deps,
        install: true,
 )
 
+mendingwall_themes_sources = [
+  'mendingwall-themes.c',
+]
+
+mendingwall_themes_deps = [
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
+]
+
+executable('mendingwall-themes', mendingwall_themes_sources,
+  dependencies: mendingwall_themes_deps,
+       install: true,
+)
