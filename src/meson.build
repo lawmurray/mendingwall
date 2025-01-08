@@ -1,7 +1,7 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
 blueprints = custom_target('blueprints',
-  input: ['main.blp'],
+  input: ['mendingwall.blp'],
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
@@ -14,7 +14,7 @@ resources = gnome.compile_resources('mendingwall-resources',
 
 # mendingwall program
 mendingwall_sources = [
-  'main.c',
+  'mendingwall.c',
   'utility.c'
 ]
 mendingwall_sources += blueprints

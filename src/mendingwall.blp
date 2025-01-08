@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-Adw.ApplicationWindow main {
+Adw.ApplicationWindow mendingwall {
   title: _("Mending Wall");
   width-request: 600;
   height-request: 750;
@@ -49,7 +49,7 @@ Adw.ApplicationWindow main {
               Button {
                 label: _("Restore");
                 valign: center;
-                clicked => $restore_theme_confirm(main);
+                clicked => $restore_theme_confirm(mendingwall);
               }
             }
           }
