@@ -2,50 +2,27 @@
 
 #include <gio/gio.h>
 #include <glib.h>
-#include <glib/gprintf.h>
+#include <glib-object.h>
 
-void mendingwall_changed(GSettings* mendingwall, gchar* key, gpointer user_data) {
-  GSettings* gnome = G_SETTINGS(user_data);
-  g_printf("changed: %s\n", key);
-
-  //g_main_loop_quit();
-  //g_clear_object(&mendingwall);
-  //g_clear_object(&gnome);
-}
-
-void gnome_changed(GSettings* gnome, gchar* key, gpointer user_data) {
-  GSettings* mendingwall = G_SETTINGS(user_data);
-
-  /* keys of interest in org.gnome.desktop.interface */
-  static const char* keys[] = {
-    "color-scheme",
-    "icon-theme",
-    "cursor-theme",
-    "gtk-theme"
-  };
-
-  for (int i = 0; i < sizeof(keys); ++i) {
-    if (strcmp(key, keys[i]) == 0) {
-      g_printf("changed: %s\n", key);
-    }
+void settings_changed(GSettings* settings, gchar* key, GMainLoop* loop) {
+  if (g_strcmp0(key, "themes") == 0 && !g_settings_get_boolean(settings, key)) {
+    /* feature has been disabled, terminate */
+    g_main_loop_quit(loop);
   }
 }
 
 void activate(GApplication *app) {
-  GSettings* mendingwall = g_settings_new("org.indii.mendingwall");
-  GSettings* gnome = g_settings_new("org.gnome.desktop.interface");
-
-  g_signal_connect(mendingwall, "changed", G_CALLBACK(mendingwall_changed), gnome);
-  g_signal_connect(gnome, "changed", G_CALLBACK(gnome_changed), mendingwall);
-
-  g_autoptr(GMainLoop) loop = NULL;
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
+  g_autoptr(GSettings) settings = g_settings_new("org.indii.mendingwall");
+  if (g_settings_get_boolean(settings, "themes")) {
+    /* feature is enabled, start */
+    g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
+    g_signal_connect(settings, "changed", G_CALLBACK(settings_changed), loop);
+    g_main_loop_run(loop);
+  }
 }
 
 int main(int argc, char* argv[]) {
-  GApplication* app = g_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
+  GApplication* app = g_application_new("org.indii.mendingwall-themes", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   return g_application_run(G_APPLICATION(app), argc, argv);
 }
-

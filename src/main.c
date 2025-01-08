@@ -27,8 +27,8 @@ void activate(GtkApplication *app) {
 
   /* bind gsettings */
   GSettings* settings = g_settings_new("org.indii.mendingwall");
-  g_settings_bind(settings, "themes", gtk_builder_get_object(builder, "themes"), "themes", G_SETTINGS_BIND_DEFAULT);
-  g_settings_bind(settings, "menus", gtk_builder_get_object(builder, "menus"), "menus", G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind(settings, "themes", gtk_builder_get_object(builder, "themes"), "active", G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind(settings, "menus", gtk_builder_get_object(builder, "menus"), "active", G_SETTINGS_BIND_DEFAULT);
 
   gtk_window_set_application(GTK_WINDOW(window), app);
   gtk_window_present(GTK_WINDOW(window));
