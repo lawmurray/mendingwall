@@ -10,6 +10,14 @@ void settings_changed(GSettings* settings, gchar* key, GMainLoop* loop) {
   }
 }
 
+void gsettings_changed(GSettings* gsettings, gchar* key) {
+  GValue path = G_VALUE_INIT;
+  g_value_init(&path, G_TYPE_STRING);
+  g_object_get_property(G_OBJECT(gsettings), "path", &path);
+  g_printerr("changed: %s%s\n", g_value_get_string(&path), key);
+  g_value_unset(&path);
+}
+
 void activate(GApplication *app, GMainLoop* loop) {
   g_main_loop_run(loop);
 }
@@ -24,7 +32,7 @@ int main(int argc, char* argv[]) {
   }
 
   /* determine desktop environment */
-  gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
   if (!desktop) {
     g_error("environment variable XDG_CURRENT_DESKTOP is not set");
   }
@@ -37,6 +45,19 @@ int main(int argc, char* argv[]) {
   if (!g_key_file_has_group(config, desktop)) {
     g_error("desktop environment %s not found in mendingwall/themes.conf", desktop);
   }
+
+  /* watch gsettings */
+  gsize len = 0;
+  gchar** paths = g_key_file_get_string_list(config, desktop, "GSettings", &len, NULL);
+  GPtrArray* gsettings = g_ptr_array_new();
+  for (guint i = 0; i < len; ++i) {
+    g_printerr("watching: %s\n", paths[i]);
+    GSettings* g = g_settings_new(paths[i]);
+    g_signal_connect(g, "changed", G_CALLBACK(gsettings_changed), NULL);
+    g_ptr_array_add(gsettings, g);
+  }
+  g_ptr_array_free(gsettings, TRUE);
+  g_strfreev(paths);
 
   /* proceed */
   g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
