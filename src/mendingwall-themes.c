@@ -4,27 +4,53 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void settings_changed(GSettings* settings, gchar* key, GMainLoop* loop) {
-  if (g_strcmp0(key, "themes") == 0 && !g_settings_get_boolean(settings, key)) {
-    g_main_loop_quit(loop);
-  }
-}
-
-void gsettings_changed(GSettings* gsettings, gchar* key) {
+void save_settings(GSettings* settings) {
   GValue path = G_VALUE_INIT;
   g_value_init(&path, G_TYPE_STRING);
-  g_object_get_property(G_OBJECT(gsettings), "path", &path);
-  g_printerr("changed: %s%s\n", g_value_get_string(&path), key);
+  g_object_get_property(G_OBJECT(settings), "path", &path);
+  g_printerr("save: %s\n", g_value_get_string(&path));
   g_value_unset(&path);
 }
 
-void file_changed(GFileMonitor* self, GFile* file, GFile* other_file,
+void restore_settings(GSettings* settings) {
+  GValue path = G_VALUE_INIT;
+  g_value_init(&path, G_TYPE_STRING);
+  g_object_get_property(G_OBJECT(settings), "path", &path);
+  g_printerr("restore: %s\n", g_value_get_string(&path));
+  g_value_unset(&path);
+}
+
+void forget_settings(GSettings* settings) {
+  GValue path = G_VALUE_INIT;
+  g_value_init(&path, G_TYPE_STRING);
+  g_object_get_property(G_OBJECT(settings), "path", &path);
+  g_printerr("forget: %s\n", g_value_get_string(&path));
+  g_value_unset(&path);
+}
+
+void save_file(GFile* file) {
+  g_printerr("save: %s\n", g_file_get_path(file));
+}
+
+void restore_file(GFile* file) {
+  g_printerr("restore: %s\n", g_file_get_path(file));
+}
+
+void forget_file(GFile* file) {
+  g_printerr("forget: %s\n", g_file_get_path(file));
+}
+
+void changed_settings(GSettings* settings, gchar* key) {
+  save_settings(settings);
+}
+
+void changed_file(GFileMonitor* self, GFile* file, GFile* other_file,
     GFileMonitorEvent event_type, gpointer user_data) {
   if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
       event_type == G_FILE_MONITOR_EVENT_CHANGED) {
-    g_printerr("created or changed: %s\n", g_file_get_path(file));
+    save_file(file);
   } else if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
-    g_printerr("deleted: %s\n", g_file_get_path(file));
+    forget_file(file);
   }
 }
 
@@ -32,12 +58,18 @@ void activate(GApplication *app, GMainLoop* loop) {
   g_main_loop_run(loop);
 }
 
+void deactivate(GSettings* settings, gchar* key, GMainLoop* loop) {
+  if (g_strcmp0(key, "themes") == 0 && !g_settings_get_boolean(settings, key)) {
+    g_main_loop_quit(loop);
+  }
+}
+
 int main(int argc, char* argv[]) {
   /* settings */
-  g_autoptr(GSettings) settings = g_settings_new("org.indii.mendingwall");
+  g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
 
   /* check if feature is enabled */
-  if (!g_settings_get_boolean(settings, "themes")) {
+  if (!g_settings_get_boolean(global, "themes")) {
     return 0;
   }
 
@@ -57,18 +89,18 @@ int main(int argc, char* argv[]) {
   }
 
   /* monitor */
-  GPtrArray* gsettings = g_ptr_array_new_with_free_func(g_object_unref);
+  GPtrArray* settings = g_ptr_array_new_with_free_func(g_object_unref);
   GPtrArray* files = g_ptr_array_new_with_free_func(g_object_unref);
   GPtrArray* monitors = g_ptr_array_new_with_free_func(g_object_unref);
   gsize len = 0;
 
-  /* monitor gsettings schemas */
+  /* monitor settings schemas */
   gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", &len, NULL);
   for (guint i = 0; i < len; ++i) {
-    g_printerr("watching schema: %s\n", schemas[i]);
+    g_printerr("watching: %s\n", schemas[i]);
     GSettings* setting = g_settings_new(schemas[i]);
-    g_signal_connect(setting, "changed", G_CALLBACK(gsettings_changed), NULL);
-    g_ptr_array_add(gsettings, setting);
+    g_signal_connect(setting, "changed", G_CALLBACK(changed_settings), NULL);
+    g_ptr_array_add(settings, setting);
   }
   g_strfreev(schemas);
 
@@ -77,10 +109,10 @@ int main(int argc, char* argv[]) {
   for (guint i = 0; i < len; ++i) {
     char* filename = g_build_filename(g_get_user_config_dir(), paths[i], NULL);
     GFile* file = g_file_new_for_path(filename);
-    g_printerr("watching file: %s\n", filename);
+    g_printerr("watching: %s\n", filename);
     g_free(filename);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
-    g_signal_connect(monitor, "changed", G_CALLBACK(file_changed), NULL);
+    g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
     g_ptr_array_add(files, file);
     g_ptr_array_add(monitors, monitor);
   }
@@ -88,13 +120,13 @@ int main(int argc, char* argv[]) {
 
   /* start main loop */
   g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
-  g_signal_connect(settings, "changed", G_CALLBACK(settings_changed), loop);
   GApplication* app = g_application_new("org.indii.mendingwall-themes", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
+  g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
   int result = g_application_run(G_APPLICATION(app), argc, argv);
 
   /* clean up */
-  g_ptr_array_unref(gsettings);
+  g_ptr_array_unref(settings);
   g_ptr_array_unref(files);
   g_ptr_array_unref(monitors);
 
