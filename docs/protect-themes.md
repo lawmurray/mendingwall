@@ -40,7 +40,7 @@ If `themes.conf` is in a system directory and you wish to make changes to it, fi
 The config file is in the [KeyFile](https://docs.gtk.org/glib/struct.KeyFile.html) format. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:
 ```
 [GNOME]
-GSettings=/org/gnome/desktop/interface/
+GSettings=org.gnome.desktop.interface
 
 [KDE]
 ConfigFiles=kwinrc;kcminputrc
@@ -52,7 +52,7 @@ Each key is followed by an equals sign (`=`), and where multiple values are requ
 
 | Key | Value |
 | --- | ----- |
-| `GSettings` | GSettings paths to save and restore. Each should begin and end with a forward slash (`/`). All entries at the path are saved and restored, but there is no recursion into children, so these should be specified separately if desired. |
+| `GSettings` | GSettings schemas to save and restore. The whole schema is saved, including children. |
 | `ConfigFiles` | Config files to save and restore. Each should be relative to the `$XDG_CONFIG_HOME/` (or default `$HOME/.config/`) directory. There is no support for directories or recursion. |
 
 
