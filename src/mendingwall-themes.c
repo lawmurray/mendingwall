@@ -13,7 +13,7 @@ void save_settings(GSettings* from) {
 
   const gchar* id = g_settings_schema_get_id(schema);
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+  g_autofree gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
 
   g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
   g_autoptr(GSettings) to = g_settings_new_with_backend(id, backend);
@@ -24,7 +24,6 @@ void save_settings(GSettings* from) {
     g_settings_set_value(to, *key, value);
   }
   g_strfreev(keys);
-  g_free(filename);
 }
 
 void restore_settings(GSettings* to) {
@@ -33,7 +32,7 @@ void restore_settings(GSettings* to) {
 
   const gchar* id = g_settings_schema_get_id(schema);
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+  g_autofree gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
 
   g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
   g_autoptr(GSettings) from = g_settings_new_with_backend(id, backend);
@@ -44,7 +43,6 @@ void restore_settings(GSettings* to) {
     g_settings_set_value(to, *key, value);
   }
   g_strfreev(keys);
-  g_free(filename);
 }
 
 void save_file(GFile* from) {
@@ -131,7 +129,6 @@ int main(int argc, char* argv[]) {
   /* monitor settings schemas */
   gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", &len, NULL);
   for (guint i = 0; i < len; ++i) {
-    g_printerr("watching: %s\n", schemas[i]);
     GSettings* setting = g_settings_new(schemas[i]);
     g_signal_connect(setting, "changed", G_CALLBACK(changed_settings), NULL);
     g_ptr_array_add(settings, setting);
@@ -141,10 +138,8 @@ int main(int argc, char* argv[]) {
   /* monitor files */
   gchar** paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", &len, NULL);
   for (guint i = 0; i < len; ++i) {
-    char* filename = g_build_filename(g_get_user_config_dir(), paths[i], NULL);
+    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), paths[i], NULL);
     GFile* file = g_file_new_for_path(filename);
-    g_printerr("watching: %s\n", filename);
-    g_free(filename);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
     g_ptr_array_add(files, file);
