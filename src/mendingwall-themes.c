@@ -124,21 +124,20 @@ int main(int argc, char* argv[]) {
   g_autoptr(GPtrArray) settings = g_ptr_array_new_with_free_func(g_object_unref);
   g_autoptr(GPtrArray) files = g_ptr_array_new_with_free_func(g_object_unref);
   g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
-  gsize len = 0;
 
   /* monitor settings schemas */
-  gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", &len, NULL);
-  for (guint i = 0; i < len; ++i) {
-    GSettings* setting = g_settings_new(schemas[i]);
+  gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", NULL, NULL);
+  for (gchar** schema = schemas; *schema; ++schema) {
+    GSettings* setting = g_settings_new(*schema);
     g_signal_connect(setting, "changed", G_CALLBACK(changed_settings), NULL);
     g_ptr_array_add(settings, setting);
   }
   g_strfreev(schemas);
 
   /* monitor files */
-  gchar** paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", &len, NULL);
-  for (guint i = 0; i < len; ++i) {
-    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), paths[i], NULL);
+  gchar** paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", NULL, NULL);
+  for (gchar** path = paths; *path; ++path) {
+    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
     GFile* file = g_file_new_for_path(filename);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
