@@ -22,8 +22,8 @@ When *Protect Themes* is enabled, Mending Wall starts a background process named
 
 A backup includes:
 
-1. Any number of [GSettings](https://docs.gtk.org/gio/class.Settings.html) paths. These are typically used for configuration by desktop environments based on [GTK](https://gtk.org), such as GNOME and Cinnamon. The backup is also kept in GSettings under the path `/org/indii/mendingwall/backup/$XDG_CURRENT_DESKTOP/`.
-2. Any number of config files under `$XDG_CONFIG_HOME/`. Such config files may be used by any desktop environments, including those based on GTK or [Qt](https://contribute.qt-project.org/), such as KDE Plasma. The backup is kept under `$XDG_CONFIG_HOME/mendingwall/backup/$XDG_CURRENT_DESKTOP/`.
+1. Any number of [GSettings](https://docs.gtk.org/gio/class.Settings.html) paths. These are typically used for configuration by desktop environments based on [GTK](https://gtk.org), such as GNOME and Cinnamon. The backup is kept as a keyfile at `$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP.gsettings`, where groups identify the GSettings paths and keys the GSettings keys.
+2. Any number of config files under `$XDG_CONFIG_HOME/`. Such config files may be used by any desktop environments, including those based on GTK or [Qt](https://contribute.qt-project.org/), such as KDE Plasma. The backup is kept under `$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP/`.
 
 `XDG_CURRENT_DESKTOP` is an environment variable set by the desktop environment. `XDG_CONFIG_HOME` is an environment variable that may or may not be set by the desktop environment; if not set, the default value of `$HOME/.config` is used.
 

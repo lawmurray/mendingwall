@@ -1,15 +1,32 @@
 #include <config.h>
 
+#define G_SETTINGS_ENABLE_BACKEND 1
+
 #include <gio/gio.h>
+#include <gio/gsettingsbackend.h>
 #include <glib.h>
 #include <glib-object.h>
 
 void save_settings(GSettings* settings) {
-  GValue path = G_VALUE_INIT;
-  g_value_init(&path, G_TYPE_STRING);
-  g_object_get_property(G_OBJECT(settings), "path", &path);
-  g_printerr("save: %s\n", g_value_get_string(&path));
-  g_value_unset(&path);
+  GSettingsSchema* schema = NULL;
+  g_object_get(settings, "settings-schema", &schema, NULL);
+
+  const gchar* id = g_settings_schema_get_id(schema);
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+
+  g_printerr("save: %s\n", filename);
+  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
+  g_autoptr(GSettings) save = g_settings_new_with_backend(id, backend);
+
+  gchar** keys = g_settings_schema_list_keys(schema);
+  for (gchar** key = keys; *key; ++key) {
+    g_autoptr(GVariant) value = g_settings_get_value(settings, *key);
+    g_settings_set_value(save, *key, value);
+  }
+  g_strfreev(keys);
+  g_free(filename);
+  //g_free(schema);
 }
 
 void restore_settings(GSettings* settings) {
@@ -89,9 +106,9 @@ int main(int argc, char* argv[]) {
   }
 
   /* monitor */
-  GPtrArray* settings = g_ptr_array_new_with_free_func(g_object_unref);
-  GPtrArray* files = g_ptr_array_new_with_free_func(g_object_unref);
-  GPtrArray* monitors = g_ptr_array_new_with_free_func(g_object_unref);
+  g_autoptr(GPtrArray) settings = g_ptr_array_new_with_free_func(g_object_unref);
+  g_autoptr(GPtrArray) files = g_ptr_array_new_with_free_func(g_object_unref);
+  g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
   gsize len = 0;
 
   /* monitor settings schemas */
@@ -124,11 +141,6 @@ int main(int argc, char* argv[]) {
   g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
   g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
   int result = g_application_run(G_APPLICATION(app), argc, argv);
-
-  /* clean up */
-  g_ptr_array_unref(settings);
-  g_ptr_array_unref(files);
-  g_ptr_array_unref(monitors);
 
   return result;
 }
