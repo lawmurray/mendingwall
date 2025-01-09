@@ -7,42 +7,47 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void save_settings(GSettings* settings) {
+void copy_setting(GSettings* from, GSettings* to, const gchar* key) {
+  g_autoptr(GVariant) value = g_settings_get_value(from, key);
+  g_settings_set_value(to, key, value);
+}
+
+void save_settings(GSettings* from) {
   GSettingsSchema* schema = NULL;
-  g_object_get(settings, "settings-schema", &schema, NULL);
+  g_object_get(from, "settings-schema", &schema, NULL);
 
   const gchar* id = g_settings_schema_get_id(schema);
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
   gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
 
-  g_printerr("save: %s\n", filename);
   g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
-  g_autoptr(GSettings) save = g_settings_new_with_backend(id, backend);
+  g_autoptr(GSettings) to = g_settings_new_with_backend(id, backend);
 
   gchar** keys = g_settings_schema_list_keys(schema);
   for (gchar** key = keys; *key; ++key) {
-    g_autoptr(GVariant) value = g_settings_get_value(settings, *key);
-    g_settings_set_value(save, *key, value);
+    copy_setting(from, to, *key);
   }
   g_strfreev(keys);
   g_free(filename);
-  //g_free(schema);
 }
 
-void restore_settings(GSettings* settings) {
-  GValue path = G_VALUE_INIT;
-  g_value_init(&path, G_TYPE_STRING);
-  g_object_get_property(G_OBJECT(settings), "path", &path);
-  g_printerr("restore: %s\n", g_value_get_string(&path));
-  g_value_unset(&path);
-}
+void restore_settings(GSettings* to) {
+  GSettingsSchema* schema = NULL;
+  g_object_get(to, "settings-schema", &schema, NULL);
 
-void forget_settings(GSettings* settings) {
-  GValue path = G_VALUE_INIT;
-  g_value_init(&path, G_TYPE_STRING);
-  g_object_get_property(G_OBJECT(settings), "path", &path);
-  g_printerr("forget: %s\n", g_value_get_string(&path));
-  g_value_unset(&path);
+  const gchar* id = g_settings_schema_get_id(schema);
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+
+  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
+  g_autoptr(GSettings) from = g_settings_new_with_backend(id, backend);
+
+  gchar** keys = g_settings_schema_list_keys(schema);
+  for (gchar** key = keys; *key; ++key) {
+    copy_setting(from, to, *key);
+  }
+  g_strfreev(keys);
+  g_free(filename);
 }
 
 void save_file(GFile* file) {
@@ -53,22 +58,13 @@ void restore_file(GFile* file) {
   g_printerr("restore: %s\n", g_file_get_path(file));
 }
 
-void forget_file(GFile* file) {
-  g_printerr("forget: %s\n", g_file_get_path(file));
-}
-
 void changed_settings(GSettings* settings, gchar* key) {
   save_settings(settings);
 }
 
 void changed_file(GFileMonitor* self, GFile* file, GFile* other_file,
     GFileMonitorEvent event_type, gpointer user_data) {
-  if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
-      event_type == G_FILE_MONITOR_EVENT_CHANGED) {
-    save_file(file);
-  } else if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
-    forget_file(file);
-  }
+  save_file(file);
 }
 
 void activate(GApplication *app, GMainLoop* loop) {
