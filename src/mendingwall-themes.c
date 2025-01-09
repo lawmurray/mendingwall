@@ -52,15 +52,11 @@ void save_file(GFile* from) {
   g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
   g_autoptr(GFile) dir = g_file_get_parent(to);
   g_file_make_directory_with_parents(dir, NULL, NULL);
-  g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
-}
-
-void forget_file(GFile* from) {
-  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
-  g_autofree char* rel = g_file_get_relative_path(config, from);
-  g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
-  g_file_delete(to, NULL, NULL);
+  if (g_file_query_exists(from, NULL)) {
+    g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
+  } else {
+    g_file_delete(to, NULL, NULL);
+  }
 }
 
 void restore_file(GFile* to) {
@@ -68,20 +64,23 @@ void restore_file(GFile* to) {
   g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
   g_autofree char* rel = g_file_get_relative_path(config, to);
   g_autoptr(GFile) from = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
-  g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
+  if (g_file_query_exists(from, NULL)) {
+    g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
+  } else {
+    g_file_delete(to, NULL, NULL);
+  }
 }
 
-void changed_settings(GSettings* settings, gchar* key) {
+void changed_settings(GSettings* settings) {
   save_settings(settings);
 }
 
-void changed_file(GFileMonitor* self, GFile* file, GFile* other_file,
-    GFileMonitorEvent event_type, gpointer user_data) {
+void changed_file(GFileMonitor*, GFile* file, GFile*,
+    GFileMonitorEvent event_type) {
   if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
-      event_type == G_FILE_MONITOR_EVENT_CHANGED) {
+      event_type == G_FILE_MONITOR_EVENT_CHANGED ||
+      event_type == G_FILE_MONITOR_EVENT_DELETED) {
     save_file(file);
-  } else if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
-    forget_file(file);
   }
 }
 
@@ -128,7 +127,7 @@ int main(int argc, char* argv[]) {
   gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", NULL, NULL);
   for (gchar** schema = schemas; *schema; ++schema) {
     GSettings* setting = g_settings_new(*schema);
-    g_signal_connect(setting, "changed", G_CALLBACK(changed_settings), NULL);
+    g_signal_connect(setting, "change-event", G_CALLBACK(changed_settings), NULL);
     g_ptr_array_add(settings, setting);
   }
   g_strfreev(schemas);
