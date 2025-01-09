@@ -7,11 +7,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void copy_setting(GSettings* from, GSettings* to, const gchar* key) {
-  g_autoptr(GVariant) value = g_settings_get_value(from, key);
-  g_settings_set_value(to, key, value);
-}
-
 void save_settings(GSettings* from) {
   GSettingsSchema* schema = NULL;
   g_object_get(from, "settings-schema", &schema, NULL);
@@ -25,7 +20,8 @@ void save_settings(GSettings* from) {
 
   gchar** keys = g_settings_schema_list_keys(schema);
   for (gchar** key = keys; *key; ++key) {
-    copy_setting(from, to, *key);
+    g_autoptr(GVariant) value = g_settings_get_value(from, *key);
+    g_settings_set_value(to, *key, value);
   }
   g_strfreev(keys);
   g_free(filename);
@@ -44,18 +40,38 @@ void restore_settings(GSettings* to) {
 
   gchar** keys = g_settings_schema_list_keys(schema);
   for (gchar** key = keys; *key; ++key) {
-    copy_setting(from, to, *key);
+    g_autoptr(GVariant) value = g_settings_get_value(from, *key);
+    g_settings_set_value(to, *key, value);
   }
   g_strfreev(keys);
   g_free(filename);
 }
 
-void save_file(GFile* file) {
-  g_printerr("save: %s\n", g_file_get_path(file));
+void save_file(GFile* from) {
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
+  g_autoptr(GFile) save = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, NULL);
+  g_file_make_directory_with_parents(save, NULL, NULL);
+  g_autofree char* base = g_file_get_path(save);
+  g_autofree char* rel = g_file_get_relative_path(config, from);
+  g_autoptr(GFile) to = g_file_new_build_filename(base, rel, NULL);
+  g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 }
 
-void restore_file(GFile* file) {
-  g_printerr("restore: %s\n", g_file_get_path(file));
+void forget_file(GFile* from) {
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
+  g_autofree char* rel = g_file_get_relative_path(config, from);
+  g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
+  g_file_delete(to, NULL, NULL);
+}
+
+void restore_file(GFile* to) {
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
+  g_autofree char* rel = g_file_get_relative_path(config, to);
+  g_autoptr(GFile) from = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
+  g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 }
 
 void changed_settings(GSettings* settings, gchar* key) {
@@ -64,7 +80,12 @@ void changed_settings(GSettings* settings, gchar* key) {
 
 void changed_file(GFileMonitor* self, GFile* file, GFile* other_file,
     GFileMonitorEvent event_type, gpointer user_data) {
-  save_file(file);
+  if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
+      event_type == G_FILE_MONITOR_EVENT_CHANGED) {
+    save_file(file);
+  } else if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
+    forget_file(file);
+  }
 }
 
 void activate(GApplication *app, GMainLoop* loop) {
