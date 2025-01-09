@@ -48,11 +48,10 @@ void restore_settings(GSettings* to) {
 void save_file(GFile* from) {
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
   g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
-  g_autoptr(GFile) save = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, NULL);
-  g_file_make_directory_with_parents(save, NULL, NULL);
-  g_autofree char* base = g_file_get_path(save);
   g_autofree char* rel = g_file_get_relative_path(config, from);
-  g_autoptr(GFile) to = g_file_new_build_filename(base, rel, NULL);
+  g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
+  g_autoptr(GFile) dir = g_file_get_parent(to);
+  g_file_make_directory_with_parents(dir, NULL, NULL);
   g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 }
 
