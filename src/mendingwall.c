@@ -7,7 +7,7 @@
 
 static void restore_theme(AdwAlertDialog* self, gchar* response) {
   if (strcmp(response, "restore") == 0) {
-    printf("restoring default theme\n");
+    g_print("restoring default theme\n");
   }
 }
 
@@ -21,6 +21,22 @@ void restore_theme_confirm(GtkWidget* mendingwall) {
   adw_dialog_present(dialog, mendingwall);
 }
 
+void spawn_menus(GSettings* settings) {
+  if (g_settings_get_boolean(settings, "menus")) {
+    static const gchar* argv[] = { "mendingwall-menus", "--watch", NULL };
+    g_settings_sync();  // ensure current settings visible in new process
+    g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  }
+}
+
+void spawn_themes(GSettings* settings) {
+  if (g_settings_get_boolean(settings, "themes")) {
+    static const gchar* argv[] = { "mendingwall-themes", "--save", "--watch", NULL };
+    g_settings_sync();  // ensure current settings visible in new process
+    g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  }
+}
+
 void activate(GtkApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/mendingwall.ui");
   GObject* window = gtk_builder_get_object(builder, "mendingwall");
@@ -29,6 +45,10 @@ void activate(GtkApplication *app) {
   GSettings* settings = g_settings_new("org.indii.mendingwall");
   g_settings_bind(settings, "themes", gtk_builder_get_object(builder, "themes"), "active", G_SETTINGS_BIND_DEFAULT);
   g_settings_bind(settings, "menus", gtk_builder_get_object(builder, "menus"), "active", G_SETTINGS_BIND_DEFAULT);
+
+  /* connect signals */
+  g_signal_connect(settings, "changed::menus", G_CALLBACK(spawn_menus), window);
+  g_signal_connect(settings, "changed::themes", G_CALLBACK(spawn_themes), window);
 
   gtk_window_set_application(GTK_WINDOW(window), app);
   gtk_window_present(GTK_WINDOW(window));
