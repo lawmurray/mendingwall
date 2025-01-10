@@ -149,7 +149,5 @@ int main(int argc, char* argv[]) {
   GApplication* app = g_application_new("org.indii.mendingwall-themes", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
   g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
-  int result = g_application_run(G_APPLICATION(app), argc, argv);
-
-  return result;
+  return g_application_run(G_APPLICATION(app), argc, argv);
 }
