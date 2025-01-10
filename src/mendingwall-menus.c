@@ -43,8 +43,7 @@ int main(int argc, char* argv[]) {
   /* monitor data directories */
   const gchar* const* paths = g_get_system_data_dirs();
   for (const gchar* const* path = paths; *path; ++path) {
-    g_printerr("monitoring: %s\n", *path);
-    GFile* dir = g_file_new_for_path(*path);
+    GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
     GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
     g_ptr_array_add(dirs, dir);
