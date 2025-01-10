@@ -95,7 +95,7 @@ void deactivate(GSettings* settings, gchar* key, GMainLoop* loop) {
 }
 
 int main(int argc, char* argv[]) {
-  /* command-line arguments */
+  /* command-line options */
   gboolean save = FALSE, restore = FALSE, watch = FALSE;
   GOptionEntry options[] = {
     { "save", 0, 0, G_OPTION_ARG_NONE, &save, "Save current configuration.", NULL },
@@ -123,22 +123,22 @@ int main(int argc, char* argv[]) {
   /* settings */
   g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
 
-  /* exit early if feature not enabled */
+  /* exit early if not enabled */
   if (!g_settings_get_boolean(global, "themes")) {
     return 0;
+  }
+
+  /* config file */
+  g_autoptr(GKeyFile) config = g_key_file_new();
+  if (!g_key_file_load_from_data_dirs(config, "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_print("Error: configuration file mendingwall/themes.conf not found");
+    exit(1);
   }
 
   /* desktop environment */
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
   if (!desktop) {
     g_print("Error: Environment variable XDG_CURRENT_DESKTOP is not set");
-    exit(1);
-  }
-
-  /* config */
-  g_autoptr(GKeyFile) config = g_key_file_new();
-  if (!g_key_file_load_from_data_dirs(config, "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_print("Error: configuration file mendingwall/themes.conf not found");
     exit(1);
   }
   if (!g_key_file_has_group(config, desktop)) {

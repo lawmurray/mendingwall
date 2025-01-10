@@ -56,6 +56,21 @@ void deactivate(GSettings* settings, gchar* key, GMainLoop* loop) {
 }
 
 int main(int argc, char* argv[]) {
+  /* command-line options */
+  gboolean watch = FALSE;
+  GOptionEntry options[] = {
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &watch, "Continue to watch for changes", NULL },
+    G_OPTION_ENTRY_NULL
+  };
+  GError* error = NULL;
+  GOptionContext* context = g_option_context_new ("- manage application menus");
+  g_option_context_set_description(context, "For more information see https://mendingwall.org");
+  g_option_context_add_main_entries(context, options, GETTEXT_PACKAGE);
+  if (!g_option_context_parse(context, &argc, &argv, &error)) {
+    g_print("Error: %s\n", error->message);
+    exit(1);
+  }
+
   /* settings */
   g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
 
@@ -64,7 +79,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  /* read config */
+  /* config file */
   g_autoptr(GKeyFile) config = g_key_file_new();
   if (!g_key_file_load_from_data_dirs(config, "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
     g_error("mendingwall/menus.conf file not found");
@@ -77,22 +92,26 @@ int main(int argc, char* argv[]) {
   }
   g_strfreev(basenames);
 
-  /* monitor applications directories */
-  g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func(g_object_unref);
-  g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
-  const gchar* const* paths = g_get_system_data_dirs();
-  for (const gchar* const* path = paths; *path; ++path) {
-    GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
-    GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
-    g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), config);
-    g_ptr_array_add(dirs, dir);
-    g_ptr_array_add(monitors, monitor);
-  }
+  if (watch) {
+    /* watch applications */
+    g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func(g_object_unref);
+    g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
+    const gchar* const* paths = g_get_system_data_dirs();
+    for (const gchar* const* path = paths; *path; ++path) {
+      GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
+      GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
+      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), config);
+      g_ptr_array_add(dirs, dir);
+      g_ptr_array_add(monitors, monitor);
+    }
 
-  /* start main loop */
-  g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
-  GApplication* app = g_application_new("org.indii.mendingwall-menus", G_APPLICATION_DEFAULT_FLAGS);
-  g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
-  g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
-  return g_application_run(G_APPLICATION(app), argc, argv);
+    /* main loop */
+    g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
+    GApplication* app = g_application_new("org.indii.mendingwall-menus", G_APPLICATION_DEFAULT_FLAGS);
+    g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
+    g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
+    return g_application_run(G_APPLICATION(app), argc, argv);
+  } else {
+    return 0;
+  }
 }
