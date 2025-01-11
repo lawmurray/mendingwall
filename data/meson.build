@@ -7,9 +7,27 @@ desktop_file = i18n.merge_file(
   install_dir: get_option('datadir') / 'applications'
 )
 
+menus_autostart_file = i18n.merge_file(
+        input: 'org.indii.mendingwall.menus.desktop.in',
+       output: 'org.indii.mendingwall.menus.desktop',
+         type: 'desktop',
+       po_dir: '../po',
+      install: true,
+  install_dir: get_option('datadir') / 'mendingwall'
+)
+
+themes_autostart_file = i18n.merge_file(
+        input: 'org.indii.mendingwall.themes.desktop.in',
+       output: 'org.indii.mendingwall.themes.desktop',
+         type: 'desktop',
+       po_dir: '../po',
+      install: true,
+  install_dir: get_option('datadir') / 'mendingwall'
+)
+
 desktop_utils = find_program('desktop-file-validate', required: false)
 if desktop_utils.found()
-  test('Validate desktop file', desktop_utils, args: [desktop_file])
+  test('Validate desktop file', desktop_utils, args: [desktop_file, menus_autostart_file, themes_autostart_file])
 endif
 
 appstream_file = i18n.merge_file(
@@ -43,5 +61,9 @@ configure_file(
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
 
-subdir('conf')
+install_data(
+  ['themes.conf', 'menus.conf'],
+  install_dir: get_option('datadir') / 'mendingwall'
+)
+
 subdir('icons')

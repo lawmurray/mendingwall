@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Mending Wall
-Exec=mendingwall
+Name=Mending Wall Manage Menus
+Exec=mendingwall-menus --watch
 Icon=org.indii.mendingwall
-Comment=Fix issues when using both GNOME and KDE Plasma
+Comment=Manage menus across desktop environments
 Terminal=false
 Type=Application
 Categories=Settings;
-Keywords=GTK;
+Keywords=;
 StartupNotify=true
 DBusActivatable=true

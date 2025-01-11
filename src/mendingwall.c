@@ -4,6 +4,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <glib.h>
 
 static void restore_theme(AdwAlertDialog* self, gchar* response) {
   if (strcmp(response, "restore") == 0) {
@@ -22,18 +23,48 @@ void restore_theme_confirm(GtkWidget* mendingwall) {
 }
 
 void spawn_menus(GSettings* settings) {
+  g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* file_path = g_build_filename(dir_path, "org.indii.mendingwall.menus.desktop", NULL);
   if (g_settings_get_boolean(settings, "menus")) {
+    /* install autostart */
+    g_autoptr(GKeyFile) key_file = g_key_file_new();
+    if (g_key_file_load_from_data_dirs(key_file, "mendingwall/org.indii.mendingwall.menus.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
+      g_file_make_directory_with_parents(dir, NULL, NULL);
+      g_key_file_save_to_file(key_file, file_path, NULL);
+    }
+
+    /* spawn background process */
     static const gchar* argv[] = { "mendingwall-menus", "--watch", NULL };
     g_settings_sync();  // ensure current settings visible in new process
     g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  } else {
+    /* uninstall autostart */
+    g_autoptr(GFile) file = g_file_new_for_path(file_path);
+    g_file_delete(file, NULL, NULL);
   }
 }
 
 void spawn_themes(GSettings* settings) {
+  g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.desktop", NULL);
   if (g_settings_get_boolean(settings, "themes")) {
+    /* install autostart */
+    g_autoptr(GKeyFile) key_file = g_key_file_new();
+    if (g_key_file_load_from_data_dirs(key_file, "mendingwall/org.indii.mendingwall.themes.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
+      g_file_make_directory_with_parents(dir, NULL, NULL);
+      g_key_file_save_to_file(key_file, file_path, NULL);
+    }
+
+    /* spawn background process */
     static const gchar* argv[] = { "mendingwall-themes", "--save", "--watch", NULL };
     g_settings_sync();  // ensure current settings visible in new process
     g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  } else {
+    /* uninstall autostart */
+    g_autoptr(GFile) file = g_file_new_for_path(file_path);
+    g_file_delete(file, NULL, NULL);
   }
 }
 

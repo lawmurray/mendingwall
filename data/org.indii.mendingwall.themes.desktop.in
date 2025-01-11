@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Mending Wall Protect Themes
+Exec=mendingwall-themes --restore --watch
+Icon=org.indii.mendingwall
+Comment=Protect themes across desktop environments
+Terminal=false
+Type=Application
+Categories=Settings;
+Keywords=;
+StartupNotify=true
+DBusActivatable=true
