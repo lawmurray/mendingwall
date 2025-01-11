@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 
     /* main loop */
     g_autoptr(GMainLoop) loop = g_main_loop_new(NULL, FALSE);
-    GApplication* app = g_application_new("org.indii.mendingwall-menus", G_APPLICATION_DEFAULT_FLAGS);
+    GApplication* app = g_application_new("org.indii.mendingwall.menus", G_APPLICATION_DEFAULT_FLAGS);
     g_signal_connect(app, "activate", G_CALLBACK(activate), loop);
     g_signal_connect(global, "changed", G_CALLBACK(deactivate), loop);
     return g_application_run(G_APPLICATION(app), argc, argv);
