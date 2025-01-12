@@ -15,7 +15,6 @@ resources = gnome.compile_resources('mendingwall-resources',
 # mendingwall program
 mendingwall_sources = [
   'mendingwall.c',
-  'utility.c'
 ]
 mendingwall_sources += blueprints
 mendingwall_sources += resources
