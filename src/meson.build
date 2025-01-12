@@ -31,7 +31,7 @@ executable('mendingwall', mendingwall_sources,
 # mendingwall-menus program
 mendingwall_menus_sources = [
   'mendingwall-menus.c',
-  'mendingwall-menusapp.c',
+  'mendingwall-menusapplication.c',
 ]
 mendingwall_menus_deps = [
   dependency('glib-2.0'),
@@ -45,7 +45,7 @@ executable('mendingwall-menus', mendingwall_menus_sources,
 # mendingwall-themes program
 mendingwall_themes_sources = [
   'mendingwall-themes.c',
-  'mendingwall-themesapp.c',
+  'mendingwall-themesapplication.c',
 ]
 mendingwall_themes_deps = [
   dependency('glib-2.0'),
