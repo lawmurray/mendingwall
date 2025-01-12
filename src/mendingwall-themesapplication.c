@@ -71,8 +71,8 @@ static void save_file(GFile* from) {
   g_autofree char* rel = g_file_get_relative_path(config, from);
   g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
   g_autoptr(GFile) dir = g_file_get_parent(to);
-  g_file_make_directory_with_parents(dir, NULL, NULL);
   if (g_file_query_exists(from, NULL)) {
+    g_file_make_directory_with_parents(dir, NULL, NULL);
     g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
   } else {
     g_file_delete(to, NULL, NULL);
