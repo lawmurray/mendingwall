@@ -5,9 +5,9 @@ struct _MendingwallMenusApplication {
   GApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
+  GMainLoop* loop;
   GPtrArray* dirs;
   GPtrArray* monitors;
-  GMainLoop* loop;
   gboolean watch;
 };
 
@@ -92,7 +92,7 @@ static void activate(MendingwallMenusApplication* self) {
 
   if (enabled && watch) {
     /* quit once feature disabled */
-    g_signal_connect_swapped(self->global, "changed", G_CALLBACK(deactivate), self);
+    g_signal_connect_swapped(self->global, "changed::menus", G_CALLBACK(deactivate), self);
     g_main_loop_run(self->loop);
   } else {
     /* quit now */
@@ -108,12 +108,12 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
   /* state */
   self->global = g_settings_new("org.indii.mendingwall");
   self->config = g_key_file_new();
+  self->loop = g_main_loop_new(NULL, FALSE);
   self->dirs = g_ptr_array_new_with_free_func(g_object_unref);
   self->monitors = g_ptr_array_new_with_free_func(g_object_unref);
-  self->loop = g_main_loop_new(NULL, FALSE);
   self->watch = FALSE;
 
-  /* config file */
+  /* load config file */
   if (!g_key_file_load_from_data_dirs(self->config, "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
     g_error("mendingwall/menus.conf file not found");
   }
@@ -123,6 +123,7 @@ void mendingwall_menus_application_dispose(GObject* self) {
   MendingwallMenusApplication* app = MENDINGWALL_MENUS_APPLICATION(self);
   g_free(app->global);
   g_key_file_free(app->config);
+  g_free(app->loop);
   g_ptr_array_free(app->dirs, TRUE);
   g_ptr_array_free(app->monitors, TRUE);
   G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->dispose(self);
