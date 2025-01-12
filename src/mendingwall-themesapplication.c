@@ -3,13 +3,10 @@
 #include <config.h>
 #include <mendingwall-themesapplication.h>
 
-#include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
-#include <glib.h>
-#include <glib-object.h>
 
 struct _MendingwallThemesApplication {
-  GApplication parent_instance;
+  GtkApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
   GMainLoop* loop;
@@ -22,7 +19,7 @@ struct _MendingwallThemesApplication {
   gboolean watch;
 };
 
-G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, G_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, GTK_TYPE_APPLICATION)
 
 static void save_settings(GSettings* from) {
   GSettingsSchema* schema = NULL;
@@ -234,7 +231,7 @@ void mendingwall_themes_application_finalize(GObject* self) {
 }
 
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {
-  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, NULL));
+  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
   g_signal_connect(self, "handle-local-options", G_CALLBACK(handle_local_options), NULL);
 
