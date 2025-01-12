@@ -60,6 +60,18 @@ configure_file(
   configuration: service_conf,
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
+configure_file(
+  input: 'org.indii.mendingwall.menus.service.in',
+  output: 'org.indii.mendingwall.menus.service',
+  configuration: service_conf,
+  install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
+configure_file(
+  input: 'org.indii.mendingwall.themes.service.in',
+  output: 'org.indii.mendingwall.themes.service',
+  configuration: service_conf,
+  install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
 
 install_data(
   ['themes.conf', 'menus.conf'],
