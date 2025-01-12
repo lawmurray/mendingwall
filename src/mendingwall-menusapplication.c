@@ -62,6 +62,11 @@ static void deactivate(MendingwallMenusApplication* self) {
   }
 }
 
+static void query_end(MendingwallMenusApplication* self) {
+  g_main_loop_quit(self->loop);
+  g_application_quit(G_APPLICATION(self));
+}
+
 static void activate(MendingwallMenusApplication* self) {
   /* what to do */
   gboolean enabled = g_settings_get_boolean(self->global, "menus");
@@ -134,8 +139,9 @@ void mendingwall_menus_application_finalize(GObject* self) {
 }
 
 MendingwallMenusApplication* mendingwall_menus_application_new(void) {
-  MendingwallMenusApplication* self = MENDINGWALL_MENUS_APPLICATION(g_object_new(MENDINGWALL_TYPE_MENUS_APPLICATION, "application-id", "org.indii.mendingwall.menus", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  MendingwallMenusApplication* self = MENDINGWALL_MENUS_APPLICATION(g_object_new(MENDINGWALL_TYPE_MENUS_APPLICATION, "application-id", "org.indii.mendingwall.menus", "flags", G_APPLICATION_DEFAULT_FLAGS, "register-session", TRUE, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
+  g_signal_connect(self, "query-end", G_CALLBACK(query_end), NULL);
 
   /* command-line options */
   GOptionEntry options[] = {

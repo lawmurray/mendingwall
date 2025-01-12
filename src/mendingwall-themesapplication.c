@@ -124,6 +124,11 @@ static void deactivate(MendingwallThemesApplication* self) {
   }
 }
 
+static void query_end(MendingwallThemesApplication* self) {
+  g_main_loop_quit(self->loop);
+  g_application_quit(G_APPLICATION(self));
+}
+
 static void activate(MendingwallThemesApplication* self) {
   /* what to do */
   gboolean enabled = g_settings_get_boolean(self->global, "themes");
@@ -231,8 +236,9 @@ void mendingwall_themes_application_finalize(GObject* self) {
 }
 
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {
-  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes", "flags", G_APPLICATION_DEFAULT_FLAGS, "register-session", TRUE, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
+  g_signal_connect(self, "query-end", G_CALLBACK(query_end), NULL);
   g_signal_connect(self, "handle-local-options", G_CALLBACK(handle_local_options), NULL);
 
   /* command-line options */
