@@ -2,7 +2,7 @@
 #include <mendingwall-menus-application.h>
 
 struct _MendingwallMenusApplication {
-  GApplication parent_instance;
+  GtkApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
   GMainLoop* loop;
@@ -11,7 +11,7 @@ struct _MendingwallMenusApplication {
   gboolean watch;
 };
 
-G_DEFINE_TYPE(MendingwallMenusApplication, mendingwall_menus_application, G_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallMenusApplication, mendingwall_menus_application, GTK_TYPE_APPLICATION)
 
 static void process_file(const char* basename, GKeyFile* config) {
   /* config for this desktop entry */
