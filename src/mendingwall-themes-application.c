@@ -120,8 +120,25 @@ static void activate(MendingwallThemesApplication* self) {
   }
 }
 
+void mendingwall_themes_application_dispose(GObject* self) {
+  MendingwallThemesApplication* app = MENDINGWALL_THEMES_APPLICATION(self);
+  g_object_unref(app->global);
+  g_key_file_free(app->config);
+  g_main_loop_unref(app->loop);
+  g_ptr_array_free(app->settings, TRUE);
+  g_ptr_array_free(app->files, TRUE);
+  g_ptr_array_free(app->monitors, TRUE);
+  G_OBJECT_CLASS(mendingwall_themes_application_parent_class)->dispose(self);
+}
+
+void mendingwall_themes_application_finalize(GObject* self) {
+  G_OBJECT_CLASS(mendingwall_themes_application_parent_class)->finalize(self);
+}
+
 void mendingwall_themes_application_class_init(MendingwallThemesApplicationClass* klass) {
-  //
+  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  object_class->dispose = mendingwall_themes_application_dispose;
+  object_class->finalize = mendingwall_themes_application_finalize;
 }
 
 void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
@@ -150,21 +167,6 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
     g_printerr("Desktop environment %s is not supported\n", self->desktop);
     exit(1);
   }
-}
-
-void mendingwall_themes_application_dispose(GObject* self) {
-  MendingwallThemesApplication* app = MENDINGWALL_THEMES_APPLICATION(self);
-  g_free(app->global);
-  g_key_file_free(app->config);
-  g_free(app->loop);
-  g_ptr_array_free(app->settings, TRUE);
-  g_ptr_array_free(app->files, TRUE);
-  g_ptr_array_free(app->monitors, TRUE);
-  G_OBJECT_CLASS(mendingwall_themes_application_parent_class)->dispose(self);
-}
-
-void mendingwall_themes_application_finalize(GObject* self) {
-  G_OBJECT_CLASS(mendingwall_themes_application_parent_class)->finalize(self);
 }
 
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {

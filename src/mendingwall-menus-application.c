@@ -105,8 +105,24 @@ static void activate(MendingwallMenusApplication* self) {
   }
 }
 
+void mendingwall_menus_application_dispose(GObject* self) {
+  MendingwallMenusApplication* app = MENDINGWALL_MENUS_APPLICATION(self);
+  g_object_unref(app->global);
+  g_key_file_free(app->config);
+  g_main_loop_unref(app->loop);
+  g_ptr_array_free(app->dirs, TRUE);
+  g_ptr_array_free(app->monitors, TRUE);
+  G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->dispose(self);
+}
+
+void mendingwall_menus_application_finalize(GObject* self) {
+  G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->finalize(self);
+}
+
 void mendingwall_menus_application_class_init(MendingwallMenusApplicationClass* klass) {
-  //
+  GObjectClass *object_class = G_OBJECT_CLASS(klass);
+  object_class->dispose = mendingwall_menus_application_dispose;
+  object_class->finalize = mendingwall_menus_application_finalize;
 }
 
 void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
@@ -123,20 +139,6 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
     g_printerr("Cannot find config file mendingwall/menus.conf\n");
     exit(1);
   }
-}
-
-void mendingwall_menus_application_dispose(GObject* self) {
-  MendingwallMenusApplication* app = MENDINGWALL_MENUS_APPLICATION(self);
-  g_free(app->global);
-  g_key_file_free(app->config);
-  g_free(app->loop);
-  g_ptr_array_free(app->dirs, TRUE);
-  g_ptr_array_free(app->monitors, TRUE);
-  G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->dispose(self);
-}
-
-void mendingwall_menus_application_finalize(GObject* self) {
-  G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->finalize(self);
 }
 
 MendingwallMenusApplication* mendingwall_menus_application_new(void) {
