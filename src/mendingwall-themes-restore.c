@@ -82,18 +82,18 @@ int main(int argc, char* argv[]) {
   /* config file */
   g_autoptr(GKeyFile) config = g_key_file_new();
   if (!g_key_file_load_from_data_dirs(config, "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_print("Error: configuration file mendingwall/themes.conf not found");
+    g_printerr("Cannot find config file mendingwall/themes.conf\n");
     exit(1);
   }
 
   /* desktop environment */
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
   if (!desktop) {
-    g_print("Error: Environment variable XDG_CURRENT_DESKTOP is not set");
+    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
     exit(1);
   }
   if (!g_key_file_has_group(config, desktop)) {
-    g_print("Error: desktop environment %s not supported", desktop);
+    g_printerr("Desktop environment %s is not supported\n", desktop);
     exit(1);
   }
 

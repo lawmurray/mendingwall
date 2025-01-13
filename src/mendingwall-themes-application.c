@@ -135,19 +135,19 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
 
   /* check desktop */
   if (!self->desktop) {
-    g_print("Environment variable XDG_CURRENT_DESKTOP is not set");
+    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
     exit(1);
   }
 
   /* load config file */
   if (!g_key_file_load_from_data_dirs(self->config, "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_print("mendingwall/themes.conf file not found");
+    g_printerr("Cannot find config file mendingwall/themes.conf\n");
     exit(1);
   }
 
   /* check config file */
   if (!g_key_file_has_group(self->config, self->desktop)) {
-    g_print("Desktop environment %s not supported", self->desktop);
+    g_printerr("Desktop environment %s is not supported\n", self->desktop);
     exit(1);
   }
 }

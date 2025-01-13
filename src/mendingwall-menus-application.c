@@ -120,7 +120,8 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
 
   /* load config file */
   if (!g_key_file_load_from_data_dirs(self->config, "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_error("mendingwall/menus.conf file not found");
+    g_printerr("Cannot find config file mendingwall/menus.conf\n");
+    exit(1);
   }
 }
 
