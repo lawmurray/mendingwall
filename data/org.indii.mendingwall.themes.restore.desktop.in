@@ -8,4 +8,4 @@ Type=Application
 Categories=Settings;
 Keywords=;
 X-GNOME-Autostart-Phase=Initialization
-X-KDE-autostart-phase=1
+NotShowIn=KDE
