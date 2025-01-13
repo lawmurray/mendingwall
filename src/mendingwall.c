@@ -50,12 +50,24 @@ void spawn_themes(GSettings* settings) {
   g_autofree gchar* save_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.save.desktop", NULL);
   g_autofree gchar* restore_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.restore.desktop", NULL);
   if (g_settings_get_boolean(settings, "themes")) {
-    /* install restore autostart */
+    /* install restore autostart for non-KDE */
     g_autoptr(GKeyFile) restore_key_file = g_key_file_new();
     if (g_key_file_load_from_data_dirs(restore_key_file, "mendingwall/org.indii.mendingwall.themes.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
       g_file_make_directory_with_parents(dir, NULL, NULL);
       g_key_file_save_to_file(restore_key_file, restore_file_path, NULL);
+    }
+
+    /* install restore pre-start script for KDE */
+    static const char* kde_contents = "#!/bin/sh\n\nmendingwall-themes-restore\n";
+    g_autoptr(GFile) kde_script = g_file_new_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", "mendingwall-themes-restore.sh", NULL);
+    g_autoptr(GFile) kde_parent = g_file_get_parent(kde_script);
+    g_file_make_directory_with_parents(kde_parent, NULL, NULL);
+    g_file_replace_contents(kde_script, kde_contents, strlen(kde_contents), NULL, FALSE, G_FILE_CREATE_REPLACE_DESTINATION, NULL, NULL, NULL);
+    guint32 value = 0700;
+    GError* error = NULL;
+    if (!g_file_set_attribute(kde_script, G_FILE_ATTRIBUTE_UNIX_MODE, G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL, &error)) {
+      g_warning("Failed to set execute permission on %s: %s", g_file_get_path(kde_script), error->message);
     }
 
     /* install save autostart */

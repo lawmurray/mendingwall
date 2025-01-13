@@ -90,7 +90,7 @@ configure_file(
 )
 
 install_data(
-  ['themes.conf', 'menus.conf', 'mendingwall-themes-restore.sh'],
+  ['themes.conf', 'menus.conf'],
   install_dir: get_option('datadir') / 'mendingwall'
 )
 
