@@ -136,9 +136,8 @@ void mendingwall_themes_application_finalize(GObject* self) {
 }
 
 void mendingwall_themes_application_class_init(MendingwallThemesApplicationClass* klass) {
-  GObjectClass *object_class = G_OBJECT_CLASS(klass);
-  object_class->dispose = mendingwall_themes_application_dispose;
-  object_class->finalize = mendingwall_themes_application_finalize;
+  G_OBJECT_CLASS(klass)->dispose = mendingwall_themes_application_dispose;
+  G_OBJECT_CLASS(klass)->finalize = mendingwall_themes_application_finalize;
 }
 
 void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
