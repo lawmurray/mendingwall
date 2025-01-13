@@ -30,7 +30,7 @@ static void save_settings(GSettings* from) {
   g_autoptr(GSettings) to = g_settings_new_with_backend(id, backend);
 
   gchar** keys = g_settings_schema_list_keys(schema);
-  for (gchar** key = keys; *key; ++key) {
+  for (gchar** key = keys; key && *key; ++key) {
     g_autoptr(GVariant) value = g_settings_get_value(from, *key);
     g_settings_set_value(to, *key, value);
   }
@@ -66,7 +66,7 @@ static void changed_file(GFileMonitor*, GFile* file, GFile*,
 
 static void save_files(MendingwallThemesApplication* self, const gchar* dir, const gchar* key) {
   gchar** paths = g_key_file_get_string_list(self->config, self->desktop, key, NULL, NULL);
-  for (gchar** path = paths; *path; ++path) {
+  for (gchar** path = paths; path && *path; ++path) {
     g_autofree char* filename = g_build_filename(dir, *path, NULL);
     GFile* file = g_file_new_for_path(filename);
     save_file(dir, file);
@@ -100,7 +100,7 @@ static void activate(MendingwallThemesApplication* self) {
   } else {
     /* save and watch settings */
     gchar** schemas = g_key_file_get_string_list(self->config, self->desktop, "GSettings", NULL, NULL);
-    for (gchar** schema = schemas; *schema; ++schema) {
+    for (gchar** schema = schemas; schema && *schema; ++schema) {
       GSettings* setting = g_settings_new(*schema);
       save_settings(setting);
       g_signal_connect(setting, "change-event", G_CALLBACK(changed_settings), NULL);

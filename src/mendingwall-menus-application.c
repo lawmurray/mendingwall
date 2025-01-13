@@ -75,7 +75,7 @@ static void activate(MendingwallMenusApplication* self) {
   /* process applications */
   if (enabled) {
     gchar** basenames = g_key_file_get_groups(self->config, NULL);
-    for (gchar** basename = basenames; *basename; ++basename) {
+    for (gchar** basename = basenames; basename && *basename; ++basename) {
       process_file(*basename, self->config);
     }
     g_strfreev(basenames);
@@ -86,7 +86,7 @@ static void activate(MendingwallMenusApplication* self) {
     g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func(g_object_unref);
     g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
     const gchar* const* paths = g_get_system_data_dirs();
-    for (const gchar* const* path = paths; *path; ++path) {
+    for (const gchar* const* path = paths; path && *path; ++path) {
       GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
       GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
       g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), self->config);

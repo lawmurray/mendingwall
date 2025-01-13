@@ -21,7 +21,7 @@ static void restore_settings(GSettings* to) {
     /* if the save file exists, restore settings */
     g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
     g_autoptr(GSettings) from = g_settings_new_with_backend(id, backend);
-    for (gchar** key = keys; *key; ++key) {
+    for (gchar** key = keys; key && *key; ++key) {
       g_autoptr(GVariant) value = g_settings_get_value(from, *key);
       g_settings_set_value(to, *key, value);
     }
@@ -32,7 +32,7 @@ static void restore_settings(GSettings* to) {
      * environment, existing settings are reset, the user's settings look
      * pristine, and the new desktop environment performs its default initial
      * setup */
-    for (gchar** key = keys; *key; ++key) {
+    for (gchar** key = keys; key && *key; ++key) {
       g_settings_reset(to, *key);
     }
   }
@@ -62,7 +62,7 @@ static void restore_file(const gchar* dir, GFile* to) {
 static void restore_files(const gchar* dir, GKeyFile* config, const gchar* desktop, const gchar* key) {
   g_autoptr(GPtrArray) files = g_ptr_array_new_with_free_func(g_object_unref);
   gchar** paths = g_key_file_get_string_list(config, desktop, key, NULL, NULL);
-  for (gchar** path = paths; *path; ++path) {
+  for (gchar** path = paths; path && *path; ++path) {
     g_autofree char* filename = g_build_filename(dir, *path, NULL);
     g_autoptr(GFile) file = g_file_new_for_path(filename);
     restore_file(dir, file);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 
   /* restore settings */
   gchar** schemas = g_key_file_get_string_list(config, desktop, "GSettings", NULL, NULL);
-  for (gchar** schema = schemas; *schema; ++schema) {
+  for (gchar** schema = schemas; schema && *schema; ++schema) {
     g_autoptr(GSettings) setting = g_settings_new(*schema);
     restore_settings(setting);
   }
