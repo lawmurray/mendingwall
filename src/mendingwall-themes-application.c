@@ -93,9 +93,9 @@ static void activate(MendingwallThemesApplication* self) {
     }
     g_strfreev(schemas);
 
-    /* save and watch files */
-    gchar** paths = g_key_file_get_string_list(self->config, self->desktop, "ConfigFiles", NULL, NULL);
-    for (gchar** path = paths; *path; ++path) {
+    /* save and watch config files */
+    gchar** config_paths = g_key_file_get_string_list(self->config, self->desktop, "ConfigFiles", NULL, NULL);
+    for (gchar** path = config_paths; *path; ++path) {
       g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
       GFile* file = g_file_new_for_path(filename);
       save_file(file);
@@ -105,7 +105,21 @@ static void activate(MendingwallThemesApplication* self) {
       g_ptr_array_add(self->files, file);
       g_ptr_array_add(self->monitors, monitor);
     }
-    g_strfreev(paths);
+    g_strfreev(config_paths);
+
+    /* save and watch state files */
+    gchar** state_paths = g_key_file_get_string_list(self->config, self->desktop, "StateFiles", NULL, NULL);
+    for (gchar** path = state_paths; *path; ++path) {
+      g_autofree char* filename = g_build_filename(g_get_user_state_dir(), *path, NULL);
+      GFile* file = g_file_new_for_path(filename);
+      save_file(file);
+
+      GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
+      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
+      g_ptr_array_add(self->files, file);
+      g_ptr_array_add(self->monitors, monitor);
+    }
+    g_strfreev(state_paths);
 
     /* watch for feature to be disabled, and if so quit */
     g_signal_connect_swapped(self->global, "changed::themes", G_CALLBACK(deactivate), self);

@@ -94,15 +94,25 @@ int main(int argc, char* argv[]) {
   }
   g_strfreev(schemas);
 
-  /* restore files */
-  g_autoptr(GPtrArray) files = g_ptr_array_new_with_free_func(g_object_unref);
-  gchar** paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", NULL, NULL);
-  for (gchar** path = paths; *path; ++path) {
+  /* restore config files */
+  g_autoptr(GPtrArray) config_files = g_ptr_array_new_with_free_func(g_object_unref);
+  gchar** config_paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", NULL, NULL);
+  for (gchar** path = config_paths; *path; ++path) {
     g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
     g_autoptr(GFile) file = g_file_new_for_path(filename);
     restore_file(file);
   }
-  g_strfreev(paths);
+  g_strfreev(config_paths);
+
+  /* restore state files */
+  g_autoptr(GPtrArray) state_files = g_ptr_array_new_with_free_func(g_object_unref);
+  gchar** state_paths = g_key_file_get_string_list(config, desktop, "StateFiles", NULL, NULL);
+  for (gchar** path = state_paths; *path; ++path) {
+    g_autofree char* filename = g_build_filename(g_get_user_state_dir(), *path, NULL);
+    g_autoptr(GFile) file = g_file_new_for_path(filename);
+    restore_file(file);
+  }
+  g_strfreev(state_paths);
 
   return 0;
 }
