@@ -4,8 +4,6 @@
 
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
-#include <glib.h>
-#include <glib-object.h>
 
 static void restore_settings(GSettings* to) {
   GSettingsSchema* schema = NULL;
