@@ -1,5 +1,5 @@
 #include <config.h>
-#include <mendingwall-menusapplication.h>
+#include <mendingwall-menus-application.h>
 
 struct _MendingwallMenusApplication {
   GtkApplication parent_instance;

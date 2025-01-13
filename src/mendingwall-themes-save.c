@@ -1,5 +1,5 @@
 #include <config.h>
-#include <mendingwall-themesapplication.h>
+#include <mendingwall-themes-application.h>
 
 int main(int argc, char* argv[]) {
   MendingwallThemesApplication* app = mendingwall_themes_application_new();
