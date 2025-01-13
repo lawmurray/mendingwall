@@ -39,11 +39,11 @@ static void restore_settings(GSettings* to) {
   g_strfreev(keys);
 }
 
-static void restore_file(GFile* to) {
+static void restore_file(const gchar* dir, GFile* to) {
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  g_autoptr(GFile) save = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, NULL);
-  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
-  g_autofree char* rel = g_file_get_relative_path(config, to);
+  g_autoptr(GFile) save = g_file_new_build_filename(dir, "mendingwall", "save", desktop, NULL);
+  g_autoptr(GFile) rel_to = g_file_new_for_path(dir);
+  g_autofree char* rel = g_file_get_relative_path(rel_to, to);
   g_autoptr(GFile) from = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
   if (g_file_query_exists(from, NULL)) {
     /* restore the file */
@@ -57,6 +57,17 @@ static void restore_file(GFile* to) {
      * default initial setup */
     g_file_delete(to, NULL, NULL);
   }
+}
+
+static void restore_files(const gchar* dir, GKeyFile* config, const gchar* desktop, const gchar* key) {
+  g_autoptr(GPtrArray) files = g_ptr_array_new_with_free_func(g_object_unref);
+  gchar** paths = g_key_file_get_string_list(config, desktop, key, NULL, NULL);
+  for (gchar** path = paths; *path; ++path) {
+    g_autofree char* filename = g_build_filename(dir, *path, NULL);
+    g_autoptr(GFile) file = g_file_new_for_path(filename);
+    restore_file(dir, file);
+  }
+  g_strfreev(paths);
 }
 
 int main(int argc, char* argv[]) {
@@ -94,25 +105,9 @@ int main(int argc, char* argv[]) {
   }
   g_strfreev(schemas);
 
-  /* restore config files */
-  g_autoptr(GPtrArray) config_files = g_ptr_array_new_with_free_func(g_object_unref);
-  gchar** config_paths = g_key_file_get_string_list(config, desktop, "ConfigFiles", NULL, NULL);
-  for (gchar** path = config_paths; *path; ++path) {
-    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
-    g_autoptr(GFile) file = g_file_new_for_path(filename);
-    restore_file(file);
-  }
-  g_strfreev(config_paths);
-
-  /* restore state files */
-  g_autoptr(GPtrArray) state_files = g_ptr_array_new_with_free_func(g_object_unref);
-  gchar** state_paths = g_key_file_get_string_list(config, desktop, "StateFiles", NULL, NULL);
-  for (gchar** path = state_paths; *path; ++path) {
-    g_autofree char* filename = g_build_filename(g_get_user_state_dir(), *path, NULL);
-    g_autoptr(GFile) file = g_file_new_for_path(filename);
-    restore_file(file);
-  }
-  g_strfreev(state_paths);
+  /* restore files */
+  restore_files(g_get_user_config_dir(), config, desktop, "ConfigFiles");
+  restore_files(g_get_user_state_dir(), config, desktop, "StateFiles");
 
   return 0;
 }

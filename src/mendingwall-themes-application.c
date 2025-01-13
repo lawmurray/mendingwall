@@ -37,14 +37,14 @@ static void save_settings(GSettings* from) {
   g_strfreev(keys);
 }
 
-static void save_file(GFile* from) {
+static void save_file(const gchar* dir, GFile* from) {
   const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  g_autoptr(GFile) config = g_file_new_for_path(g_get_user_config_dir());
-  g_autofree char* rel = g_file_get_relative_path(config, from);
+  g_autoptr(GFile) rel_to = g_file_new_for_path(dir);
+  g_autofree char* rel = g_file_get_relative_path(rel_to, from);
   g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
-  g_autoptr(GFile) dir = g_file_get_parent(to);
+  g_autoptr(GFile) parent = g_file_get_parent(to);
   if (g_file_query_exists(from, NULL)) {
-    g_file_make_directory_with_parents(dir, NULL, NULL);
+    g_file_make_directory_with_parents(parent, NULL, NULL);
     g_file_copy(from, to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
   } else {
     g_file_delete(to, NULL, NULL);
@@ -56,12 +56,27 @@ static void changed_settings(GSettings* settings) {
 }
 
 static void changed_file(GFileMonitor*, GFile* file, GFile*,
-    GFileMonitorEvent event_type) {
+    GFileMonitorEvent event_type, const gchar* dir) {
   if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
       event_type == G_FILE_MONITOR_EVENT_CHANGED ||
       event_type == G_FILE_MONITOR_EVENT_DELETED) {
-    save_file(file);
+    save_file(dir, file);
   }
+}
+
+static void save_files(MendingwallThemesApplication* self, const gchar* dir, const gchar* key) {
+  gchar** paths = g_key_file_get_string_list(self->config, self->desktop, key, NULL, NULL);
+  for (gchar** path = paths; *path; ++path) {
+    g_autofree char* filename = g_build_filename(dir, *path, NULL);
+    GFile* file = g_file_new_for_path(filename);
+    save_file(dir, file);
+
+    GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
+    g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), (gchar*)dir);
+    g_ptr_array_add(self->files, file);
+    g_ptr_array_add(self->monitors, monitor);
+  }
+  g_strfreev(paths);
 }
 
 static void deactivate(MendingwallThemesApplication* self) {
@@ -93,33 +108,9 @@ static void activate(MendingwallThemesApplication* self) {
     }
     g_strfreev(schemas);
 
-    /* save and watch config files */
-    gchar** config_paths = g_key_file_get_string_list(self->config, self->desktop, "ConfigFiles", NULL, NULL);
-    for (gchar** path = config_paths; *path; ++path) {
-      g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
-      GFile* file = g_file_new_for_path(filename);
-      save_file(file);
-
-      GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
-      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
-      g_ptr_array_add(self->files, file);
-      g_ptr_array_add(self->monitors, monitor);
-    }
-    g_strfreev(config_paths);
-
-    /* save and watch state files */
-    gchar** state_paths = g_key_file_get_string_list(self->config, self->desktop, "StateFiles", NULL, NULL);
-    for (gchar** path = state_paths; *path; ++path) {
-      g_autofree char* filename = g_build_filename(g_get_user_state_dir(), *path, NULL);
-      GFile* file = g_file_new_for_path(filename);
-      save_file(file);
-
-      GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
-      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), NULL);
-      g_ptr_array_add(self->files, file);
-      g_ptr_array_add(self->monitors, monitor);
-    }
-    g_strfreev(state_paths);
+    /* save and watch files */
+    save_files(self, g_get_user_config_dir(), "ConfigFiles");
+    save_files(self, g_get_user_state_dir(), "StateFiles");
 
     /* watch for feature to be disabled, and if so quit */
     g_signal_connect_swapped(self->global, "changed::themes", G_CALLBACK(deactivate), self);
