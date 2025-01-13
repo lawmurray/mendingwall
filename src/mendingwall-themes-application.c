@@ -6,7 +6,7 @@
 #include <gio/gsettingsbackend.h>
 
 struct _MendingwallThemesApplication {
-  GtkApplication parent_instance;
+  GApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
   GMainLoop* loop;
@@ -16,7 +16,7 @@ struct _MendingwallThemesApplication {
   const gchar* desktop;
 };
 
-G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, GTK_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, G_TYPE_APPLICATION)
 
 static void save_settings(GSettings* from) {
   GSettingsSchema* schema = NULL;
