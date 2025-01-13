@@ -35,7 +35,7 @@ static void restore_file(GFile* to) {
     g_autofree char* rel = g_file_get_relative_path(config, to);
     g_autoptr(GFile) from = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
     if (g_file_query_exists(from, NULL)) {
-      g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
+      g_file_copy(from, to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
     } else {
       g_file_delete(to, NULL, NULL);
     }

@@ -45,7 +45,7 @@ static void save_file(GFile* from) {
   g_autoptr(GFile) dir = g_file_get_parent(to);
   if (g_file_query_exists(from, NULL)) {
     g_file_make_directory_with_parents(dir, NULL, NULL);
-    g_file_copy(from, to, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
+    g_file_copy(from, to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
   } else {
     g_file_delete(to, NULL, NULL);
   }
