@@ -9,7 +9,6 @@ struct _MendingwallThemesApplication {
   GtkApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
-  GMainLoop* loop;
   GPtrArray* settings;
   GPtrArray* files;
   GPtrArray* monitors;
@@ -82,13 +81,11 @@ static void save_files(MendingwallThemesApplication* self, const gchar* dir, con
 static void deactivate(MendingwallThemesApplication* self) {
   gboolean enabled = g_settings_get_boolean(self->global, "themes");
   if (!enabled) {
-    g_main_loop_quit(self->loop);
     g_application_quit(G_APPLICATION(self));
   }
 }
 
 static void query_end(MendingwallThemesApplication* self) {
-  g_main_loop_quit(self->loop);
   g_application_quit(G_APPLICATION(self));
 }
 
@@ -115,8 +112,8 @@ static void activate(MendingwallThemesApplication* self) {
     /* watch for feature to be disabled, and if so quit */
     g_signal_connect_swapped(self->global, "changed::themes", G_CALLBACK(deactivate), self);
 
-    /* run main loop to stay alive */
-    g_main_loop_run(self->loop);
+    /* stay running */
+    g_application_hold(G_APPLICATION(self));
   }
 }
 
@@ -124,7 +121,6 @@ void mendingwall_themes_application_dispose(GObject* self) {
   MendingwallThemesApplication* app = MENDINGWALL_THEMES_APPLICATION(self);
   g_object_unref(app->global);
   g_key_file_free(app->config);
-  g_main_loop_unref(app->loop);
   g_ptr_array_free(app->settings, TRUE);
   g_ptr_array_free(app->files, TRUE);
   g_ptr_array_free(app->monitors, TRUE);
@@ -143,7 +139,6 @@ void mendingwall_themes_application_class_init(MendingwallThemesApplicationClass
 void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
   self->global = g_settings_new("org.indii.mendingwall");
   self->config = g_key_file_new();
-  self->loop = g_main_loop_new(NULL, FALSE);
   self->settings = g_ptr_array_new_with_free_func(g_object_unref);
   self->files = g_ptr_array_new_with_free_func(g_object_unref);
   self->monitors = g_ptr_array_new_with_free_func(g_object_unref);

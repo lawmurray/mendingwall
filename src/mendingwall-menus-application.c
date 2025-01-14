@@ -5,7 +5,6 @@ struct _MendingwallMenusApplication {
   GtkApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
-  GMainLoop* loop;
   GPtrArray* dirs;
   GPtrArray* monitors;
   gboolean watch;
@@ -57,13 +56,11 @@ static void changed_file(GFileMonitor*, GFile* file, GFile*, GFileMonitorEvent e
 static void deactivate(MendingwallMenusApplication* self) {
   gboolean enabled = g_settings_get_boolean(self->global, "menus");
   if (!enabled) {
-    g_main_loop_quit(self->loop);
     g_application_quit(G_APPLICATION(self));
   }
 }
 
 static void query_end(MendingwallMenusApplication* self) {
-  g_main_loop_quit(self->loop);
   g_application_quit(G_APPLICATION(self));
 }
 
@@ -98,7 +95,7 @@ static void activate(MendingwallMenusApplication* self) {
   if (enabled && watch) {
     /* quit once feature disabled */
     g_signal_connect_swapped(self->global, "changed::menus", G_CALLBACK(deactivate), self);
-    g_main_loop_run(self->loop);
+    g_application_hold(G_APPLICATION(self));
   } else {
     /* quit now */
     g_application_quit(G_APPLICATION(self));
@@ -109,7 +106,6 @@ void mendingwall_menus_application_dispose(GObject* self) {
   MendingwallMenusApplication* app = MENDINGWALL_MENUS_APPLICATION(self);
   g_object_unref(app->global);
   g_key_file_free(app->config);
-  g_main_loop_unref(app->loop);
   g_ptr_array_free(app->dirs, TRUE);
   g_ptr_array_free(app->monitors, TRUE);
   G_OBJECT_CLASS(mendingwall_menus_application_parent_class)->dispose(self);
@@ -128,7 +124,6 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
   /* state */
   self->global = g_settings_new("org.indii.mendingwall");
   self->config = g_key_file_new();
-  self->loop = g_main_loop_new(NULL, FALSE);
   self->dirs = g_ptr_array_new_with_free_func(g_object_unref);
   self->monitors = g_ptr_array_new_with_free_func(g_object_unref);
   self->watch = FALSE;
