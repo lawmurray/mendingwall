@@ -45,42 +45,49 @@ void mendingwall_background_application_activate(MendingwallBackgroundApplicatio
 
   /* dbus connection */
   GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
+  if (dbus) {
+    /* register with org.gnome.SessionManager */
+    priv->session = g_dbus_proxy_new_sync(dbus,
+        G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+        G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
+        G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+        NULL,
+        "org.gnome.SessionManager",
+        "/org/gnome/SessionManager",
+        "org.gnome.SessionManager",
+        NULL,
+        NULL);
+    if (priv->session) {
+      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(priv->session,
+          "RegisterClient",
+          g_variant_new("(ss)", application_id, client_id),
+          G_DBUS_CALL_FLAGS_NONE,
+          G_MAXINT,
+          NULL,
+          NULL);
+      if (res) {
+        g_variant_get(res, "(o)", &client_path);
 
-  /* register with org.gnome.SessionManager */
-  priv->session = g_dbus_proxy_new_sync(dbus,
-      G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
-      G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
-      G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-      NULL,
-      "org.gnome.SessionManager",
-      "/org/gnome/SessionManager",
-      "org.gnome.SessionManager",
-      NULL,
-      NULL);
-  g_autoptr(GVariant) res = g_dbus_proxy_call_sync(priv->session,
-      "RegisterClient",
-      g_variant_new("(ss)", application_id, client_id),
-      G_DBUS_CALL_FLAGS_NONE,
-      G_MAXINT,
-      NULL,
-      NULL);
-  g_variant_get(res, "(o)", &client_path);
+        /* quit on session end */
+        priv->client_private = g_dbus_proxy_new_sync(dbus,
+            G_DBUS_PROXY_FLAGS_NONE,
+            NULL,
+            "org.gnome.SessionManager",
+            client_path,
+            "org.gnome.SessionManager.ClientPrivate",
+            NULL,
+            NULL);
+        if (priv->client_private) {
+          g_signal_connect_swapped(
+              priv->client_private,
+              "g-signal::EndSession",
+              G_CALLBACK(quit),
+              self);
+        }
+      }
+    }
+  }
 
-  /* quit on session end */
-  priv->client_private = g_dbus_proxy_new_sync(dbus,
-      G_DBUS_PROXY_FLAGS_NONE,
-      NULL,
-      "org.gnome.SessionManager",
-      client_path,
-      "org.gnome.SessionManager.ClientPrivate",
-      NULL,
-      NULL);
-  g_signal_connect_swapped(
-      priv->client_private,
-      "g-signal::EndSession",
-      G_CALLBACK(quit),
-      self);
-
-  /* keep running as background process, as application has no main window */  
+  /* keep running as background process, as application has no main window */
   g_application_hold(G_APPLICATION(self));
 }
