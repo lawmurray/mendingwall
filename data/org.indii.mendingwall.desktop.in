@@ -2,10 +2,10 @@
 Name=Mending Wall
 Exec=mendingwall
 Icon=org.indii.mendingwall
-Comment=Fix issues when using both GNOME and KDE Plasma
+Comment=Use multiple desktop environments in harmony
 Terminal=false
 Type=Application
-Categories=Settings;
+Categories=Settings;Utilities
 Keywords=GTK;
 StartupNotify=true
 DBusActivatable=true
