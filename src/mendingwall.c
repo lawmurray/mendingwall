@@ -6,22 +6,6 @@
 #include <glib/gi18n.h>
 #include <glib.h>
 
-static void restore_theme(AdwAlertDialog* self, gchar* response) {
-  if (strcmp(response, "restore") == 0) {
-    g_print("restoring default theme\n");
-  }
-}
-
-void restore_theme_confirm(GtkWidget* mendingwall) {
-  AdwDialog* dialog = adw_alert_dialog_new(_("Restore Default GNOME Theme?"), NULL);
-  adw_alert_dialog_add_responses(ADW_ALERT_DIALOG(dialog), "cancel",  _("Cancel"), "restore", _("Restore"), NULL);
-  adw_alert_dialog_set_response_appearance(ADW_ALERT_DIALOG(dialog), "restore", ADW_RESPONSE_SUGGESTED);
-  adw_alert_dialog_set_default_response(ADW_ALERT_DIALOG(dialog), "cancel");
-  adw_alert_dialog_set_close_response(ADW_ALERT_DIALOG(dialog), "cancel");
-  g_signal_connect(dialog, "response", G_CALLBACK(restore_theme), NULL);
-  adw_dialog_present(dialog, mendingwall);
-}
-
 void spawn_menus(GSettings* settings) {
   g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* file_path = g_build_filename(dir_path, "org.indii.mendingwall.menus.desktop", NULL);

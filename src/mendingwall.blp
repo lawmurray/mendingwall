@@ -14,8 +14,8 @@ Adw.ApplicationWindow mendingwall {
 
     Adw.StatusPage {
       icon-name: "org.indii.mendingwall";
-      title: _("Mending Wall");
-      description: _("Good Fences Make Good Neighbors");
+      title: _("Good Fences Make Good Neighbors");
+      description: _("Hop between desktop environments in harmony");
 
       Adw.Clamp clamp {
         maximum-size: 600;
@@ -38,18 +38,6 @@ Adw.ApplicationWindow mendingwall {
             Adw.SwitchRow themes {
               title: _("Protect Themes");
               subtitle: _("Prevent theme interference between desktop environments");
-            }
-
-            Adw.ActionRow {
-              title: _("Restore Default GNOME Theme");
-              subtitle: _("Use if the GNOME theme is already broken");
-
-              [suffix]
-              Button {
-                label: _("Restore");
-                valign: center;
-                clicked => $restore_theme_confirm(mendingwall);
-              }
             }
           }
         }
