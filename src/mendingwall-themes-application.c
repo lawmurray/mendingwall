@@ -6,7 +6,7 @@
 #include <gio/gsettingsbackend.h>
 
 struct _MendingwallThemesApplication {
-  GtkApplication parent_instance;
+  MendingwallBackgroundApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
   GPtrArray* settings;
@@ -15,7 +15,7 @@ struct _MendingwallThemesApplication {
   const gchar* desktop;
 };
 
-G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, GTK_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, MENDINGWALL_TYPE_BACKGROUND_APPLICATION)
 
 static void save_settings(GSettings* from) {
   GSettingsSchema* schema = NULL;
@@ -85,11 +85,9 @@ static void deactivate(MendingwallThemesApplication* self) {
   }
 }
 
-static void query_end(MendingwallThemesApplication* self) {
-  g_application_quit(G_APPLICATION(self));
-}
-
 static void activate(MendingwallThemesApplication* self) {
+  mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
+
   gboolean enabled = g_settings_get_boolean(self->global, "themes");
   if (!enabled) {
     /* quit now */
@@ -164,8 +162,7 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
 }
 
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {
-  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes.save", "flags", G_APPLICATION_DEFAULT_FLAGS, "register-session", TRUE, NULL));
+  MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes.save", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
-  g_signal_connect(self, "query-end", G_CALLBACK(query_end), NULL);
   return self;
 }

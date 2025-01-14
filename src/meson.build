@@ -32,9 +32,11 @@ executable('mendingwall', mendingwall_sources,
 mendingwall_menus_sources = [
   'mendingwall-menus.c',
   'mendingwall-menus-application.c',
+  'mendingwall-background-application.c',
 ]
 mendingwall_menus_deps = [
-  dependency('gtk4'),
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
 ]
 executable('mendingwall-menus', mendingwall_menus_sources,
   dependencies: mendingwall_menus_deps,
@@ -45,9 +47,11 @@ executable('mendingwall-menus', mendingwall_menus_sources,
 mendingwall_themes_save_sources = [
   'mendingwall-themes-save.c',
   'mendingwall-themes-application.c',
+  'mendingwall-background-application.c',
 ]
 mendingwall_themes_save_deps = [
-  dependency('gtk4'),
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
 ]
 executable('mendingwall-themes-save', mendingwall_themes_save_sources,
   dependencies: mendingwall_themes_save_deps,

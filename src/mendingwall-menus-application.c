@@ -2,7 +2,7 @@
 #include <mendingwall-menus-application.h>
 
 struct _MendingwallMenusApplication {
-  GtkApplication parent_instance;
+  MendingwallBackgroundApplication parent_instance;
   GSettings* global;
   GKeyFile* config;
   GPtrArray* dirs;
@@ -10,7 +10,7 @@ struct _MendingwallMenusApplication {
   gboolean watch;
 };
 
-G_DEFINE_TYPE(MendingwallMenusApplication, mendingwall_menus_application, GTK_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallMenusApplication, mendingwall_menus_application, MENDINGWALL_TYPE_BACKGROUND_APPLICATION)
 
 static void process_file(const char* basename, GKeyFile* config) {
   /* config for this desktop entry */
@@ -60,11 +60,9 @@ static void deactivate(MendingwallMenusApplication* self) {
   }
 }
 
-static void query_end(MendingwallMenusApplication* self) {
-  g_application_quit(G_APPLICATION(self));
-}
-
 static void activate(MendingwallMenusApplication* self) {
+  mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
+
   /* what to do */
   gboolean enabled = g_settings_get_boolean(self->global, "menus");
   gboolean watch = self->watch;
@@ -95,7 +93,6 @@ static void activate(MendingwallMenusApplication* self) {
   if (enabled && watch) {
     /* quit once feature disabled */
     g_signal_connect_swapped(self->global, "changed::menus", G_CALLBACK(deactivate), self);
-    g_application_hold(G_APPLICATION(self));
   } else {
     /* quit now */
     g_application_quit(G_APPLICATION(self));
@@ -136,9 +133,8 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
 }
 
 MendingwallMenusApplication* mendingwall_menus_application_new(void) {
-  MendingwallMenusApplication* self = MENDINGWALL_MENUS_APPLICATION(g_object_new(MENDINGWALL_TYPE_MENUS_APPLICATION, "application-id", "org.indii.mendingwall.menus", "flags", G_APPLICATION_DEFAULT_FLAGS, "register-session", TRUE, NULL));
+  MendingwallMenusApplication* self = MENDINGWALL_MENUS_APPLICATION(g_object_new(MENDINGWALL_TYPE_MENUS_APPLICATION, "application-id", "org.indii.mendingwall.menus", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
-  g_signal_connect(self, "query-end", G_CALLBACK(query_end), NULL);
 
   /* command-line options */
   GOptionEntry options[] = {
