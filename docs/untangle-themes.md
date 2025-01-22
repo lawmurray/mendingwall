@@ -1,13 +1,13 @@
-# Protect Themes
+# Untangle Themes
 
 Applications native to one desktop environment can look out of place when run on another. To improve the user experience, most desktop environments tweak the theme of other desktop environments in order that their applications look closer to native. Unfortunately, they do not revert these changes on logout, and when logging into that that other desktop environment again you may be met with a mess. For example, KDE Plasma changes the cursor and icon theme of GNOME so that its applications look more like native KDE applications and the overall user experience is improved. But on subsequent logins to GNOME those cursors and icons are still all set for KDE. Visual artifacts can also include cursors that change when hovering over non-native apps, cursors doubling in size with poor resolution when on HiDPI screens, and even crashes.
 
-To have Mending Wall fix all this, enable its *Protect Themes* feature. It ensures that the theme chosen for each desktop environment is maintained across sessions, even when running other desktop environments in between.
+To have Mending Wall fix all this, enable its *Untangle Themes* feature. It ensures that the theme chosen for each desktop environment is maintained across sessions, even when running other desktop environments in between.
 
 
 ## What it does
 
-*Protect Themes* backs up the theme during each desktop session, and restores it the next time you log in to the same desktop environment. For example, while you are running GNOME, it creates a backup of the theme. If you log out of GNOME and into KDE Plasma, KDE will make some changes to the GNOME theme. If you then log out of KDE and back into GNOME, Mending Wall will restore the GNOME theme to its state when you were last running GNOME.
+*Untangle Themes* backs up the theme during each desktop session, and restores it the next time you log in to the same desktop environment. For example, while you are running GNOME, it creates a backup of the theme. If you log out of GNOME and into KDE Plasma, KDE will make some changes to the GNOME theme. If you then log out of KDE and back into GNOME, Mending Wall will restore the GNOME theme to its state when you were last running GNOME.
 
 
 ## How it works
@@ -15,9 +15,9 @@ To have Mending Wall fix all this, enable its *Protect Themes* feature. It ensur
 !!! info
     This section is for users who want to know exactly what Mending Wall is doing to their system.
 
-When *Protect Themes* is enabled, Mending Wall starts a background process named `mendingwall-themes` that will also restart every time you log in. The process starts in one of two modes:
+When *Untangle Themes* is enabled, Mending Wall starts a background process named `mendingwall-themes` that will also restart every time you log in. The process starts in one of two modes:
 
-1. *Save* to perform a backup, monitor for changes, and update that backup. This mode is used when *Protect Themes* is enabled for the first time (or re-enabled after being disabled).
+1. *Save* to perform a backup, monitor for changes, and update that backup. This mode is used when *Untangle Themes* is enabled for the first time (or re-enabled after being disabled).
 2. *Restore* to restore a backup, monitor for changes, and update that backup. This is used on subsequent logins.
 
 A backup includes:

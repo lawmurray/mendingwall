@@ -1,17 +1,17 @@
-# Manage Menus
+# Tidy Menus
 
 Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications on other desktop environments. For example, GNOME has Console, Nautilus and Text Editor, while KDE Plasma has Konsole, Dolphin and Kate, respectively providing much the same functionality.
 
 Some desktop environments (e.g. Cinnamon) install their core applications to only show in their own menus. Others (e.g. KDE Plasma) install them to display in the menu of all desktop environments. Others again (e.g. GNOME) are selective about which applications to show where. You can change all this using an app like [Main Menu](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor), or by manually editing `.desktop` config files, or by having Mending Wall automate the process for you.
 
-To have Mending Wall automate the process, enable its *Manage Menus* feature.
+To have Mending Wall automate the process, enable its *Tidy Menus* feature.
 
 
 ## What it does
 
-*Manage Menus* applies rules to applications such that they only show in the menu of their native desktop environment. The rules are generally consistent with the model that you, the user, will always prefer a native app over a non-native app, all else being equal. So you will use Console, Nautilus and Text Editor on GNOME, but Konsole, Dolphin and Kate on KDE Plasma. The rules apply mostly to core applications with counterparts in other desktop environments. Exceptions are made for larger applications that are too sophisticated to be considered counterparts, despite having similar aims, such as GIMP and Krita. The rules only affect visibility in menus; all applications are still available in all desktop environments and can be launched by other means (such as from the command line).
+*Tidy Menus* applies rules to applications such that they only show in the menu of their native desktop environment. The rules are generally consistent with the model that you, the user, will always prefer a native app over a non-native app, all else being equal. So you will use Console, Nautilus and Text Editor on GNOME, but Konsole, Dolphin and Kate on KDE Plasma. The rules apply mostly to core applications with counterparts in other desktop environments. Exceptions are made for larger applications that are too sophisticated to be considered counterparts, despite having similar aims, such as GIMP and Krita. The rules only affect visibility in menus; all applications are still available in all desktop environments and can be launched by other means (such as from the command line).
 
-You may disagree with some of the rules. For example, Document Viewer on GNOME and Okular on KDE Plasma are considered counterparts, but Okular provides more PDF annotation features and you may like to see it in GNOME also. In such cases the Main Menu application is recommended for customization. Mending Wall will not override customizations made with Main Menu or otherwise. The recommended approach is to enable *Manage Menus* in Mending Wall to automate the process as much as possible, and Main Menu for further refinement where necessary.
+You may disagree with some of the rules. For example, Document Viewer on GNOME and Okular on KDE Plasma are considered counterparts, but Okular provides more PDF annotation features and you may like to see it in GNOME also. In such cases the Main Menu application is recommended for customization. Mending Wall will not override customizations made with Main Menu or otherwise. The recommended approach is to enable *Tidy Menus* in Mending Wall to automate the process as much as possible, and Main Menu for further refinement where necessary.
 
 
 ## How it works
@@ -19,7 +19,7 @@ You may disagree with some of the rules. For example, Document Viewer on GNOME a
 !!! info
     This section is for users who want to know exactly what Mending Wall is doing to their system.
 
-When *Manage Menus* is enabled, Mending Wall starts a background process named `mendingwall-menus` that will also restart every time you log in. This process applies the menu rules, and reapplies them when new applications are installed.
+When *Tidy Menus* is enabled, Mending Wall starts a background process named `mendingwall-menus` that will also restart every time you log in. This process applies the menu rules, and reapplies them when new applications are installed.
 
 Specifically, it acts as follows:
 
@@ -36,7 +36,7 @@ Specifically, it acts as follows:
 !!! info
     This section is for contributors to help improve Mending Wall. The installed rules are meant to be suitable for everyone, with adjustments made with other apps, such as Main Menu.
 
-The rules applied by *Manage Menus* are set in the config file `menus.conf`. If the environment variable `XDG_CONFIG_HOME` is set then `$XDG_CONFIG_HOME/mendingwall/` is checked for the file, otherwise the default directory `$HOME/.config/mendingwall/` is checked. If the file is not found, the directories listed in `XDG_CONFIG_DIRS` are checked in order, adding a subdirectory `mendingwall/` to each, until the file is first found.
+The rules applied by *Tidy Menus* are set in the config file `menus.conf`. If the environment variable `XDG_CONFIG_HOME` is set then `$XDG_CONFIG_HOME/mendingwall/` is checked for the file, otherwise the default directory `$HOME/.config/mendingwall/` is checked. If the file is not found, the directories listed in `XDG_CONFIG_DIRS` are checked in order, adding a subdirectory `mendingwall/` to each, until the file is first found.
 
 If `menus.conf` is in a system directory and you wish to make changes to it, first copy it into `$XDG_CONFIG_HOME/mendingwall/` or `$HOME/.config/mendingwall/`.
 
