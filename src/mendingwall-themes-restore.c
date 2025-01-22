@@ -74,6 +74,26 @@ int main(int argc, char* argv[]) {
   /* settings */
   g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
 
+  /* command-line options */
+  gboolean version = FALSE;
+  GOptionEntry options[] = {
+    { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Print version number and exit", NULL },
+    G_OPTION_ENTRY_NULL
+  };
+  g_autoptr(GOptionContext) context = g_option_context_new("- restore previously-saved theme");
+  g_option_context_set_description(context, "For more information see https://mendingwall.org");
+  g_option_context_add_main_entries(context, options, GETTEXT_PACKAGE);
+  if (!g_option_context_parse(context, &argc, &argv, NULL)) {
+    g_print("option parsing failed\n");
+    return 1;
+  }
+
+  /* version information */
+  if (version) {
+    g_print("%s %s\n", argv[0], PACKAGE_VERSION);
+    return 0;
+  }
+
   /* exit early if not enabled */
   if (!g_settings_get_boolean(global, "themes")) {
     return 0;
