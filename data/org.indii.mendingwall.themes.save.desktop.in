@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall Save Themes
-Exec=mendingwall-themes-save
+Exec=mendingwall-themes-save --watch
 Icon=org.indii.mendingwall
 Comment=Save themes while desktop environment is running
 Terminal=false

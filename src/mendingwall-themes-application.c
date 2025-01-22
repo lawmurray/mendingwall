@@ -13,6 +13,7 @@ struct _MendingwallThemesApplication {
   GPtrArray* files;
   GPtrArray* monitors;
   const gchar* desktop;
+  gboolean watch;
 };
 
 G_DEFINE_TYPE(MendingwallThemesApplication, mendingwall_themes_application, MENDINGWALL_TYPE_BACKGROUND_APPLICATION)
@@ -71,7 +72,9 @@ static void save_files(MendingwallThemesApplication* self, const gchar* dir, con
     save_file(dir, file);
 
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
-    g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), (gchar*)dir);
+    if (self->watch) {
+      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), (gchar*)dir);
+    }
     g_ptr_array_add(self->files, file);
     g_ptr_array_add(self->monitors, monitor);
   }
@@ -88,17 +91,18 @@ static void deactivate(MendingwallThemesApplication* self) {
 static void activate(MendingwallThemesApplication* self) {
   mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
 
+  /* what to do */
   gboolean enabled = g_settings_get_boolean(self->global, "themes");
-  if (!enabled) {
-    /* quit now */
-    g_application_quit(G_APPLICATION(self));
-  } else {
-    /* save and watch settings */
+
+  if (enabled) {
+    /* save and possibly watch settings */
     gchar** schemas = g_key_file_get_string_list(self->config, self->desktop, "GSettings", NULL, NULL);
     for (gchar** schema = schemas; schema && *schema; ++schema) {
       GSettings* setting = g_settings_new(*schema);
       save_settings(setting);
-      g_signal_connect(setting, "change-event", G_CALLBACK(changed_settings), NULL);
+      if (self->watch) {
+        g_signal_connect(setting, "change-event", G_CALLBACK(changed_settings), NULL);
+      }
       g_ptr_array_add(self->settings, setting);
     }
     g_strfreev(schemas);
@@ -112,6 +116,9 @@ static void activate(MendingwallThemesApplication* self) {
 
     /* stay running */
     g_application_hold(G_APPLICATION(self));
+  } else {
+    /* quit now */
+    g_application_quit(G_APPLICATION(self));
   }
 }
 
@@ -141,6 +148,7 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
   self->files = g_ptr_array_new_with_free_func(g_object_unref);
   self->monitors = g_ptr_array_new_with_free_func(g_object_unref);
   self->desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  self->watch = FALSE;
 
   /* check desktop */
   if (!self->desktop) {
@@ -164,5 +172,15 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {
   MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes.save", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
+
+  /* command-line options */
+  GOptionEntry options[] = {
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes", NULL },
+    G_OPTION_ENTRY_NULL
+  };
+  g_application_set_option_context_summary(G_APPLICATION(self), "- manage application menus");
+  g_application_set_option_context_description(G_APPLICATION(self), "For more information see https://mendingwall.org");
+  g_application_add_main_option_entries(G_APPLICATION(self), options);
+
   return self;
 }
