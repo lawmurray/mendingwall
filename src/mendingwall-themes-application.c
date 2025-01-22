@@ -92,7 +92,8 @@ static void activate(MendingwallThemesApplication* self) {
   mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
 
   /* what to do */
-  gboolean enabled = g_settings_get_boolean(self->global, "themes");
+  gboolean enabled = g_settings_get_boolean(self->global, "menus");
+  gboolean watch = self->watch;
 
   if (enabled) {
     /* save and possibly watch settings */
@@ -100,7 +101,7 @@ static void activate(MendingwallThemesApplication* self) {
     for (gchar** schema = schemas; schema && *schema; ++schema) {
       GSettings* setting = g_settings_new(*schema);
       save_settings(setting);
-      if (self->watch) {
+      if (watch) {
         g_signal_connect(setting, "change-event", G_CALLBACK(changed_settings), NULL);
       }
       g_ptr_array_add(self->settings, setting);
@@ -110,7 +111,9 @@ static void activate(MendingwallThemesApplication* self) {
     /* save and watch files */
     save_files(self, g_get_user_config_dir(), "ConfigFiles");
     save_files(self, g_get_user_state_dir(), "StateFiles");
+  }
 
+  if (enabled && watch) {
     /* watch for feature to be disabled, and if so quit */
     g_signal_connect_swapped(self->global, "changed::themes", G_CALLBACK(deactivate), self);
 
