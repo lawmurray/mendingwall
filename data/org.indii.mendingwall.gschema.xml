@@ -3,9 +3,9 @@
 	<schema id="org.indii.mendingwall" path="/org/indii/mendingwall/">
 		<key name="themes" type="b">
 			<default>false</default>
-			<summary>Protect themes</summary>
+			<summary>Untangle themes</summary>
 			<description>
-				Prevent theme interference between desktop environments
+				Isolate theme configurations to avoid interference
 			</description>
 		</key>
 		<key name="menus" type="b">
@@ -17,4 +17,3 @@
 		</key>
 	</schema>
 </schemalist>
-
