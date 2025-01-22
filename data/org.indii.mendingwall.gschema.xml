@@ -10,7 +10,7 @@
 		</key>
 		<key name="menus" type="b">
 			<default>false</default>
-			<summary>Manage menus</summary>
+			<summary>Tidy menus</summary>
 			<description>
 				Show core applications in their native desktop environment only
 			</description>

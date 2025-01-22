@@ -68,7 +68,7 @@ plugins:
 nav:
   - index.md
   - getting-started.md
-  - manage-menus.md
+  - tidy-menus.md
   - protect-themes.md
   - how-you-can-help.md
   - questions-and-answers.md

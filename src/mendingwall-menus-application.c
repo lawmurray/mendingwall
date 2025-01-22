@@ -139,10 +139,10 @@ MendingwallMenusApplication* mendingwall_menus_application_new(void) {
 
   /* command-line options */
   GOptionEntry options[] = {
-    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes", NULL },
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes and tidy menus", NULL },
     G_OPTION_ENTRY_NULL
   };
-  g_application_set_option_context_summary(G_APPLICATION(self), "- manage application menus");
+  g_application_set_option_context_summary(G_APPLICATION(self), "- tidy application menus");
   g_application_set_option_context_description(G_APPLICATION(self), "For more information see https://mendingwall.org");
   g_application_add_main_option_entries(G_APPLICATION(self), options);
 

@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Mending Wall Manage Menus
+Name=Mending Wall Tidy Menus
 Exec=mendingwall-menus --watch
 Icon=org.indii.mendingwall
-Comment=Manage menus across multiple desktop environments
+Comment=Tidy menus when hopping between desktop environments
 Terminal=false
 Type=Application
 Categories=Settings;Utilities

@@ -4,7 +4,7 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
 Areas where you can help include:
 
-- [Improve the *Manage Menus* feature](manage-menus.md) by e.g. adding a missing application or a whole new desktop environment. This only requires editing config files.
+- [Improve the *Tidy Menus* feature](tidy-menus.md) by e.g. adding a missing application or a whole new desktop environment. This only requires editing config files.
 - [Improve the *Protect Themes* feature](protect-themes.md) by e.g. investigating issues when multiple desktop environments are installed, determining which GSettings and config files should be backed up and restored to fix them, and perhaps adding support for a whole new desktop environment that you use (or would like to use, if only it would not break stuff!). This only requires editing config files.
 - [Report issues](https://github.com/lawmurray/mendingwall/issues) such as bugs in the app or in current features, which may be specific to particular Linux distributions or particular desktop environments.
 - Add whole new features. This requires programming. The Mending Wall app is written in C as a GNOME application using [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [GTK4](https://gtk.org/), and [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/). The monitoring programs are written in C using mostly just [GLib](https://docs.gtk.org/glib/).
