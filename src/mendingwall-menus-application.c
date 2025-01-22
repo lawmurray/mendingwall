@@ -134,6 +134,7 @@ void mendingwall_menus_application_init(MendingwallMenusApplication* self) {
 
 MendingwallMenusApplication* mendingwall_menus_application_new(void) {
   MendingwallMenusApplication* self = MENDINGWALL_MENUS_APPLICATION(g_object_new(MENDINGWALL_TYPE_MENUS_APPLICATION, "application-id", "org.indii.mendingwall.menus", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  g_application_set_version(G_APPLICATION(self), PACKAGE_VERSION);
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
 
   /* command-line options */

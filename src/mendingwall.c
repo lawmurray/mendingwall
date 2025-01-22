@@ -96,6 +96,7 @@ void activate(GtkApplication *app) {
 int main(int argc, char* argv[]) {
   g_resources_register(mendingwall_get_resource());
   AdwApplication* app = adw_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
+  g_application_set_version(G_APPLICATION(app), PACKAGE_VERSION);
   g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
   return g_application_run(G_APPLICATION(app), argc, argv);
 }

@@ -174,6 +174,7 @@ void mendingwall_themes_application_init(MendingwallThemesApplication* self) {
 
 MendingwallThemesApplication* mendingwall_themes_application_new(void) {
   MendingwallThemesApplication* self = MENDINGWALL_THEMES_APPLICATION(g_object_new(MENDINGWALL_TYPE_THEMES_APPLICATION, "application-id", "org.indii.mendingwall.themes.save", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  g_application_set_version(G_APPLICATION(self), PACKAGE_VERSION);
   g_signal_connect(self, "activate", G_CALLBACK(activate), NULL);
 
   /* command-line options */
