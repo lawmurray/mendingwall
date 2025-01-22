@@ -5,14 +5,21 @@ repo_url: https://github.com/lawmurray/mendingwall
 repo_name: lawmurray/mendingwall
 extra:
   social:
+    - icon: heart
+      link: https://github.com/sponsors/lawmurray
+      name: Sponsor
     - icon: material/github
       link: https://github.com/lawmurray
+      name: GitHub
     - icon: material/mastodon 
       link: https://fosstodon.org/@lawmurray
+      name: Mastodon
     - icon: material/web
       link: https://indii.org
+      name: Website (indii.org)
     - icon: material/email
       link: mailto:lawrence@indii.org
+      name: Email
 extra_css:
   - stylesheets/extra.css
 
@@ -67,9 +74,6 @@ markdown_extensions:
 plugins:
   - search
   - social
-  - redirects:
-      redirect_maps:
-        'sponsor.md': 'https://github.com/sponsors/lawmurray'
 nav:
   - index.md
   - getting-started.md
@@ -77,4 +81,3 @@ nav:
   - untangle-themes.md
   - how-you-can-help.md
   - questions-and-answers.md
-  - sponsor.md

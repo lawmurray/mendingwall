@@ -1,5 +1,0 @@
----
-icon: heart
----
-
-# Sponsor
