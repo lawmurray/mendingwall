@@ -1,7 +1,7 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
 blueprints = custom_target('blueprints',
-  input: ['mendingwall.blp'],
+  input: ['about.blp', 'mendingwall.blp'],
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )

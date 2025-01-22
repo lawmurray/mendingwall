@@ -6,7 +6,7 @@
 #include <glib/gi18n.h>
 #include <glib.h>
 
-void spawn_menus(GSettings* settings) {
+static void spawn_menus(GSettings* settings) {
   g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* file_path = g_build_filename(dir_path, "org.indii.mendingwall.menus.desktop", NULL);
   if (g_settings_get_boolean(settings, "menus")) {
@@ -29,7 +29,7 @@ void spawn_menus(GSettings* settings) {
   }
 }
 
-void spawn_themes(GSettings* settings) {
+static void spawn_themes(GSettings* settings) {
   g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* save_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.save.desktop", NULL);
   g_autofree gchar* restore_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.restore.desktop", NULL);
@@ -75,7 +75,13 @@ void spawn_themes(GSettings* settings) {
   }
 }
 
-void activate(GtkApplication *app) {
+void about(AdwApplication* app) {
+  GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/about.ui");
+  GObject* about = gtk_builder_get_object(builder, "about");
+  adw_dialog_present(ADW_DIALOG(about), GTK_WIDGET(app));
+}
+
+static void activate(AdwApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/mendingwall.ui");
   GObject* window = gtk_builder_get_object(builder, "mendingwall");
 
@@ -88,7 +94,7 @@ void activate(GtkApplication *app) {
   g_signal_connect(settings, "changed::menus", G_CALLBACK(spawn_menus), window);
   g_signal_connect(settings, "changed::themes", G_CALLBACK(spawn_themes), window);
 
-  gtk_window_set_application(GTK_WINDOW(window), app);
+  gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(app));
   gtk_window_present(GTK_WINDOW(window));
   g_clear_object(&builder);
 }

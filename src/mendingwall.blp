@@ -9,7 +9,11 @@ Adw.ApplicationWindow mendingwall {
     orientation: vertical;
 
     Adw.HeaderBar {
-      //
+      [end]
+      Button {
+        icon-name: "help-about-symbolic";
+        clicked => $about(mendingwall);
+      }
     }
 
     Adw.StatusPage {

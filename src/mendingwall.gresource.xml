@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/indii/mendingwall/">
+    <file preprocess="xml-stripblanks">about.ui</file>
     <file preprocess="xml-stripblanks">mendingwall.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
