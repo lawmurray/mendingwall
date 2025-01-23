@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Mending Wall Restore Theme
+Exec=mendingwall-themes --restore
+Icon=org.indii.mendingwall
+Comment=Restore theme configuration and exit
+Terminal=false
+Type=Application
+Categories=Settings;Utilities
+Keywords=;
+X-GNOME-Autostart-Phase=Initialization
+NotShowIn=KDE

@@ -7,13 +7,13 @@
 #include <glib.h>
 
 static void spawn_menus(GSettings* settings) {
-  g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* file_path = g_build_filename(dir_path, "org.indii.mendingwall.menus.desktop", NULL);
+  g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* file_path = g_build_filename(autostart_path, "org.indii.mendingwall.menus.desktop", NULL);
   if (g_settings_get_boolean(settings, "menus")) {
     /* install autostart */
     g_autoptr(GKeyFile) key_file = g_key_file_new();
     if (g_key_file_load_from_data_dirs(key_file, "mendingwall/org.indii.mendingwall.menus.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-      g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
+      g_autoptr(GFile) dir = g_file_new_for_path(autostart_path);
       g_file_make_directory_with_parents(dir, NULL, NULL);
       g_key_file_save_to_file(key_file, file_path, NULL);
     }
@@ -30,48 +30,53 @@ static void spawn_menus(GSettings* settings) {
 }
 
 static void spawn_themes(GSettings* settings) {
-  g_autofree gchar* dir_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* save_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.save.desktop", NULL);
-  g_autofree gchar* restore_file_path = g_build_filename(dir_path, "org.indii.mendingwall.themes.restore.desktop", NULL);
+  g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
+  g_autofree gchar* themes_path = g_build_filename(autostart_path, "org.indii.mendingwall.themes.desktop", NULL);
+  g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
+  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "mendingwall-restore.sh", NULL);
+
+  static const char* kde_contents = "#!/bin/sh\n\nmendingwall-themes --restore\n";
+
   if (g_settings_get_boolean(settings, "themes")) {
-    /* install restore autostart for non-KDE */
-    g_autoptr(GKeyFile) restore_key_file = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(restore_key_file, "mendingwall/org.indii.mendingwall.themes.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-      g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
-      g_file_make_directory_with_parents(dir, NULL, NULL);
-      g_key_file_save_to_file(restore_key_file, restore_file_path, NULL);
+    /* make autostart directories in case they do not exist */
+    g_autoptr(GFile) autostart_dir = g_file_new_for_path(autostart_path);
+    g_autoptr(GFile) kde_env_dir = g_file_new_for_path(kde_env_path);
+
+    g_file_make_directory_with_parents(autostart_dir, NULL, NULL);
+    g_file_make_directory_with_parents(kde_env_dir, NULL, NULL);
+
+    /* install themes autostart */
+    g_autoptr(GKeyFile) themes_autostart = g_key_file_new();
+    if (g_key_file_load_from_data_dirs(themes_autostart, "mendingwall/org.indii.mendingwall.themes.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      g_key_file_save_to_file(themes_autostart, themes_path, NULL);
     }
 
-    /* install restore pre-start script for KDE */
-    static const char* kde_contents = "#!/bin/sh\n\nmendingwall-themes-restore\n";
-    g_autoptr(GFile) kde_script = g_file_new_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", "mendingwall-themes-restore.sh", NULL);
-    g_autoptr(GFile) kde_parent = g_file_get_parent(kde_script);
-    g_file_make_directory_with_parents(kde_parent, NULL, NULL);
-    g_file_replace_contents(kde_script, kde_contents, strlen(kde_contents), NULL, FALSE, G_FILE_CREATE_REPLACE_DESTINATION, NULL, NULL, NULL);
+    /* install restore autostart (used for everything but KDE) */
+    g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
+    if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      g_key_file_save_to_file(restore_autostart, restore_path, NULL);
+    }
+
+    /* install restore script (used for KDE only) */
+    g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
+    g_file_replace_contents(kde_file, kde_contents, strlen(kde_contents), NULL, FALSE, G_FILE_CREATE_REPLACE_DESTINATION, NULL, NULL, NULL);
     guint32 value = 0700;
-    GError* error = NULL;
-    if (!g_file_set_attribute(kde_script, G_FILE_ATTRIBUTE_UNIX_MODE, G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL, &error)) {
-      g_warning("Failed to set execute permission on %s: %s", g_file_get_path(kde_script), error->message);
-    }
-
-    /* install save autostart */
-    g_autoptr(GKeyFile) save_key_file = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(save_key_file, "mendingwall/org.indii.mendingwall.themes.save.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-      g_autoptr(GFile) dir = g_file_new_for_path(dir_path);
-      g_file_make_directory_with_parents(dir, NULL, NULL);
-      g_key_file_save_to_file(save_key_file, save_file_path, NULL);
-    }
+    g_file_set_attribute(kde_file, G_FILE_ATTRIBUTE_UNIX_MODE, G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL, NULL);
 
     /* spawn background process */
-    static const gchar* argv[] = { "mendingwall-themes-save", "--watch" };
+    static const gchar* argv[] = { "mendingwall-themes", "--save", "--watch" };
     g_settings_sync();  // ensure current settings visible in new process
     g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   } else {
-    /* uninstall autostart */
-    g_autoptr(GFile) save_file = g_file_new_for_path(save_file_path);
-    g_autoptr(GFile) restore_file = g_file_new_for_path(restore_file_path);
-    g_file_delete(save_file, NULL, NULL);
+    /* uninstall autostart files */
+    g_autoptr(GFile) themes_file = g_file_new_for_path(themes_path);
+    g_autoptr(GFile) restore_file = g_file_new_for_path(restore_path);
+    g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
+
+    g_file_delete(themes_file, NULL, NULL);
     g_file_delete(restore_file, NULL, NULL);
+    g_file_delete(kde_file, NULL, NULL);
   }
 }
 

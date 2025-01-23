@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.indii.mendingwall.themes.save
-Exec=@bindir@/mendingwall-themes-save --gapplication-service --watch

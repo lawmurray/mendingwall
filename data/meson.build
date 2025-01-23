@@ -16,18 +16,18 @@ menus_autostart_file = i18n.merge_file(
   install_dir: get_option('datadir') / 'mendingwall'
 )
 
-themes_save_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.themes.save.desktop.in',
-       output: 'org.indii.mendingwall.themes.save.desktop',
+themes_autostart_file = i18n.merge_file(
+        input: 'org.indii.mendingwall.themes.desktop.in',
+       output: 'org.indii.mendingwall.themes.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
   install_dir: get_option('datadir') / 'mendingwall'
 )
 
-themes_restore_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.themes.restore.desktop.in',
-       output: 'org.indii.mendingwall.themes.restore.desktop',
+restore_autostart_file = i18n.merge_file(
+        input: 'org.indii.mendingwall.restore.desktop.in',
+       output: 'org.indii.mendingwall.restore.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -40,8 +40,8 @@ if desktop_utils.found()
     args: [
       desktop_file,
       menus_autostart_file,
-      themes_save_autostart_file,
-      themes_restore_autostart_file
+      themes_autostart_file,
+      restore_autostart_file
     ]
   )
 endif
@@ -83,14 +83,14 @@ configure_file(
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
 configure_file(
-  input: 'org.indii.mendingwall.themes.save.service.in',
-  output: 'org.indii.mendingwall.themes.save.service',
+  input: 'org.indii.mendingwall.themes.service.in',
+  output: 'org.indii.mendingwall.themes.service',
   configuration: service_conf,
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
 
 install_data(
-  ['themes.conf', 'menus.conf'],
+  ['menus.conf', 'themes.conf'],
   install_dir: get_option('datadir') / 'mendingwall'
 )
 

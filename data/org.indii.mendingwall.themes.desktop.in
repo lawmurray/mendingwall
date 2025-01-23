@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Mending Wall Save Theme
+Exec=mendingwall-themes --save --watch
+Icon=org.indii.mendingwall
+Comment=Save theme configuration and keep saving changes
+Terminal=false
+Type=Application
+Categories=Settings;Utilities;
+Keywords=;
+StartupNotify=true
+DBusActivatable=true

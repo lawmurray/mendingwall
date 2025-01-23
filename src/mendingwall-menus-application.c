@@ -63,34 +63,31 @@ static void deactivate(MendingwallMenusApplication* self) {
 static void activate(MendingwallMenusApplication* self) {
   mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
 
-  /* what to do */
   gboolean enabled = g_settings_get_boolean(self->global, "menus");
-  gboolean watch = self->watch;
-
-  /* process applications */
   if (enabled) {
+    /* process applications */
     gchar** basenames = g_key_file_get_groups(self->config, NULL);
     for (gchar** basename = basenames; basename && *basename; ++basename) {
       process_file(*basename, self->config);
     }
     g_strfreev(basenames);
-  }
 
-  /* watch applications */
-  if (enabled && watch) {
-    g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func(g_object_unref);
-    g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
-    const gchar* const* paths = g_get_system_data_dirs();
-    for (const gchar* const* path = paths; path && *path; ++path) {
-      GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
-      GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
-      g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), self->config);
-      g_ptr_array_add(self->dirs, dir);
-      g_ptr_array_add(self->monitors, monitor);
+    if (self->watch) {
+      /* watch application directories */
+      g_autoptr(GPtrArray) dirs = g_ptr_array_new_with_free_func(g_object_unref);
+      g_autoptr(GPtrArray) monitors = g_ptr_array_new_with_free_func(g_object_unref);
+      const gchar* const* paths = g_get_system_data_dirs();
+      for (const gchar* const* path = paths; path && *path; ++path) {
+        GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
+        GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
+        g_signal_connect(monitor, "changed", G_CALLBACK(changed_file), self->config);
+        g_ptr_array_add(self->dirs, dir);
+        g_ptr_array_add(self->monitors, monitor);
+      }
     }
   }
 
-  if (enabled && watch) {
+  if (enabled && self->watch) {
     /* quit once feature disabled */
     g_signal_connect_swapped(self->global, "changed::menus", G_CALLBACK(deactivate), self);
   } else {
@@ -139,7 +136,7 @@ MendingwallMenusApplication* mendingwall_menus_application_new(void) {
 
   /* command-line options */
   GOptionEntry options[] = {
-    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes and tidy menus", NULL },
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes and tidy application menus", NULL },
     G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self), "- tidy application menus");

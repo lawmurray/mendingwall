@@ -2,7 +2,7 @@
 Name=Mending Wall Tidy Menus
 Exec=mendingwall-menus --watch
 Icon=org.indii.mendingwall
-Comment=Tidy menus when hopping between desktop environments
+Comment=Tidy application menus and keep tidying changes
 Terminal=false
 Type=Application
 Categories=Settings;Utilities
