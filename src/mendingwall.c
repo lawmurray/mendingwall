@@ -85,7 +85,7 @@ void on_about(AdwApplication* app) {
   adw_dialog_present(ADW_DIALOG(about), GTK_WIDGET(app));
 }
 
-static void on_activate(AdwApplication *app) {
+static void on_activate(AdwApplication* app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/mendingwall.ui");
   GObject* window = gtk_builder_get_object(builder, "mendingwall");
 
@@ -109,4 +109,3 @@ int main(int argc, char* argv[]) {
   g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
   return g_application_run(G_APPLICATION(app), argc, argv);
 }
-
