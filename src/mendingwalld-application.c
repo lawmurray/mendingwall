@@ -339,7 +339,7 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
 }
 
 MendingwallDApplication* mendingwalld_application_new(void) {
-  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(g_object_new(MENDINGWALL_TYPE_D_APPLICATION, "application-id", "org.indii.mendingwall.themes", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(g_object_new(MENDINGWALL_TYPE_D_APPLICATION, "application-id", "org.indii.mendingwalld", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
   g_application_set_version(G_APPLICATION(self), PACKAGE_VERSION);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
