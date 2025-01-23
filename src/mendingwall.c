@@ -3,10 +3,11 @@
 
 #include <adwaita.h>
 #include <gtk/gtk.h>
+#include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <glib.h>
 
-static void spawn(GSettings* settings) {
+static void on_changed(GSettings* settings, const gchar* key, GApplication* app) {
   g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
   g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwalld.desktop", NULL);
@@ -46,9 +47,26 @@ static void spawn(GSettings* settings) {
 
     /* spawn background process; fine if already running, new instance will
      * quit */
-    static const gchar* argv[] = { "mendingwalld", "--watch" };
     g_settings_sync();  // ensure current settings visible in new process
-    g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    g_dbus_connection_call(
+      g_application_get_dbus_connection(app),
+      "org.indii.mendingwalld",
+      "/org/indii/mendingwalld",
+      "org.freedesktop.Application",
+      "Activate",
+      g_variant_new_parsed("({'test': <1>}, )"),
+      NULL,
+      G_DBUS_CALL_FLAGS_NONE,
+      -1,
+      NULL,
+      NULL,
+      NULL
+    );
+
+    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
+     * a consistent environment */
+    //static const gchar* argv[] = { "mendingwalld", "--watch" };
+    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   } else {
     /* uninstall autostart files */
     g_autoptr(GFile) daemon_file = g_file_new_for_path(daemon_path);
@@ -61,13 +79,13 @@ static void spawn(GSettings* settings) {
   }
 }
 
-void about(AdwApplication* app) {
+void on_about(AdwApplication* app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/about.ui");
   GObject* about = gtk_builder_get_object(builder, "about");
   adw_dialog_present(ADW_DIALOG(about), GTK_WIDGET(app));
 }
 
-static void activate(AdwApplication *app) {
+static void on_activate(AdwApplication *app) {
   GtkBuilder* builder = gtk_builder_new_from_resource("/org/indii/mendingwall/mendingwall.ui");
   GObject* window = gtk_builder_get_object(builder, "mendingwall");
 
@@ -77,7 +95,7 @@ static void activate(AdwApplication *app) {
   g_settings_bind(settings, "menus", gtk_builder_get_object(builder, "menus"), "active", G_SETTINGS_BIND_DEFAULT);
 
   /* connect signals */
-  g_signal_connect(settings, "changed", G_CALLBACK(spawn), window);
+  g_signal_connect(settings, "changed", G_CALLBACK(on_changed), app);
 
   gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(app));
   gtk_window_present(GTK_WINDOW(window));
@@ -88,7 +106,7 @@ int main(int argc, char* argv[]) {
   g_resources_register(mendingwall_get_resource());
   AdwApplication* app = adw_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
   g_application_set_version(G_APPLICATION(app), PACKAGE_VERSION);
-  g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+  g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
   return g_application_run(G_APPLICATION(app), argc, argv);
 }
 
