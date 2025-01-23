@@ -63,7 +63,7 @@ static void spawn_themes(GSettings* settings) {
     }
 
     /* spawn background process */
-    static const gchar* argv[] = { "mendingwall-themes-save", NULL };
+    static const gchar* argv[] = { "mendingwall-themes-save", "--watch" };
     g_settings_sync();  // ensure current settings visible in new process
     g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   } else {

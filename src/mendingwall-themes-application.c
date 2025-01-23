@@ -114,11 +114,8 @@ static void activate(MendingwallThemesApplication* self) {
   }
 
   if (enabled && watch) {
-    /* watch for feature to be disabled, and if so quit */
+    /* quit once feature disabled */
     g_signal_connect_swapped(self->global, "changed::themes", G_CALLBACK(deactivate), self);
-
-    /* stay running */
-    g_application_hold(G_APPLICATION(self));
   } else {
     /* quit now */
     g_application_quit(G_APPLICATION(self));
