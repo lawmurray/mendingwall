@@ -1,0 +1,357 @@
+#include <config.h>
+#include <mendingwalld-application.h>
+
+#define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gio.h>
+#include <gio/gsettingsbackend.h>
+
+struct _MendingwallDApplication {
+  MendingwallBackgroundApplication parent_instance;
+  
+  GSettings* global;
+  const gchar* desktop;
+
+  GKeyFile* theme_config;
+  GPtrArray* theme_settings;
+  GPtrArray* theme_files;
+  GPtrArray* theme_monitors;
+
+  GKeyFile* menu_config;
+  GPtrArray* menu_dirs;
+  GPtrArray* menu_monitors;
+
+  gboolean restore, watch;
+};
+
+G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_BACKGROUND_APPLICATION)
+
+static void save_settings(GSettings* settings) {
+  GSettingsSchema* schema = NULL;
+  g_object_get(settings, "settings-schema", &schema, NULL);
+
+  const gchar* id = g_settings_schema_get_id(schema);
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autofree gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+
+  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
+  g_autoptr(GSettings) save = g_settings_new_with_backend(id, backend);
+
+  gchar** keys = g_settings_schema_list_keys(schema);
+  for (gchar** key = keys; key && *key; ++key) {
+    g_autoptr(GVariant) value = g_settings_get_value(settings, *key);
+    g_settings_set_value(save, *key, value);
+  }
+  g_strfreev(keys);
+}
+
+static void restore_settings(GSettings* settings) {
+  /* schema */
+  GSettingsSchema* schema = NULL;
+  g_object_get(settings, "settings-schema", &schema, NULL);
+
+  /* saved file */
+  const gchar* id = g_settings_schema_get_id(schema);
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autofree gchar* filename = g_strconcat(g_get_user_data_dir(), "/mendingwall/save/", desktop, ".gsettings", NULL);
+  g_autoptr(GFile) file = g_file_new_for_path(filename);
+
+  gchar** keys = g_settings_schema_list_keys(schema);
+  if (g_file_query_exists(file, NULL)) {
+    /* saved file exists, restore settings */
+    g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
+    g_autoptr(GSettings) saved = g_settings_new_with_backend(id, backend);
+    for (gchar** key = keys; key && *key; ++key) {
+      g_autoptr(GVariant) value = g_settings_get_value(saved, *key);
+      g_settings_set_value(settings, *key, value);
+    }
+  } else {
+    /* if the saved file does not exist, restore settings to their defaults;
+     * this is deliberate, it means that when starting a new desktop
+     * environment for the first time after running some other desktop
+     * environment, existing settings are reset, the user's settings look
+     * pristine, and the new desktop environment performs its default initial
+     * setup */
+    for (gchar** key = keys; key && *key; ++key) {
+      g_settings_reset(settings, *key);
+    }
+  }
+  g_strfreev(keys);
+}
+
+static void save_file(GFile* file) {
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autoptr(GFile) rel_to = g_file_new_for_path(g_get_user_config_dir());
+  g_autofree char* rel = g_file_get_relative_path(rel_to, file);
+  g_autoptr(GFile) saved = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
+  g_autoptr(GFile) parent = g_file_get_parent(saved);
+  if (g_file_query_exists(file, NULL)) {
+    /* save file */
+    g_file_make_directory_with_parents(parent, NULL, NULL);
+    g_file_copy(file, saved, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
+  } else {
+    /* delete any existing saved file; it does not exist in the current
+     * configuration */
+    g_file_delete(saved, NULL, NULL);
+  }
+}
+
+static void restore_file(GFile* to) {
+  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  g_autoptr(GFile) rel_to = g_file_new_for_path(g_get_user_config_dir());
+  g_autofree char* rel = g_file_get_relative_path(rel_to, to);
+  g_autoptr(GFile) from = g_file_new_build_filename(g_get_user_data_dir(), "mendingwall", "save", desktop, rel, NULL);
+  if (g_file_query_exists(from, NULL)) {
+    /* restore file */
+    g_file_copy(from, to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
+  } else {
+    /* delete file; it does not exist in the desired configuraiton; this
+     * happens either because the file is not part of the save, or there is no
+     * save; the latter occurs when starting a new desktop environment for the
+     * first time after running some other desktop environment, and by
+     * deleting all config files, the user's home directory looks pristine,
+     * and the new desktop environment performs its default initial setup */
+    g_file_delete(to, NULL, NULL);
+  }
+}
+
+static void tidy_app(const char* basename, GKeyFile* config) {
+  /* config for this desktop entry */
+  gchar** only_show_in = g_key_file_get_string_list(config, basename, "OnlyShowIn", NULL, NULL);
+  gchar** not_show_in = g_key_file_get_string_list(config, basename, "NotShowIn", NULL, NULL);
+
+  if (only_show_in || not_show_in) {
+    /* copy the desktop entry into user's home directory, with changes, if it
+     * does not already exist there */
+    g_autoptr(GKeyFile) entry = g_key_file_new();
+    g_autofree char* rel = g_build_filename("applications", basename, NULL);
+    if (g_key_file_load_from_data_dirs(entry, rel, NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      if (only_show_in) {
+        g_key_file_set_string_list(entry, "Desktop Entry", "OnlyShowIn", (const gchar* const*)only_show_in, g_strv_length(only_show_in));
+      }
+      if (not_show_in) {
+        g_key_file_set_string_list(entry, "Desktop Entry", "NotShowIn", (const gchar* const*)not_show_in, g_strv_length(not_show_in));
+      }
+      g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "applications", basename, NULL);
+      if (!g_file_query_exists(to, NULL)) {
+        g_autofree gchar* to_path = g_file_get_path(to);
+        g_key_file_save_to_file(entry, to_path, NULL);
+      }
+    }
+  }
+
+  /* clean up */
+  if (only_show_in) {
+    g_strfreev(only_show_in);
+  }
+  if (not_show_in) {
+    g_strfreev(not_show_in);
+  }
+}
+
+static void on_changed_settings(GSettings* settings) {
+  save_settings(settings);
+}
+
+static void on_changed_file(GFile* file) {
+  save_file(file);
+}
+
+static void on_changed_app(GFileMonitor*, GFile* file, GFile*, GFileMonitorEvent event_type, GKeyFile* config) {
+  g_autofree char* basename = g_file_get_basename(file);
+  tidy_app(basename, config);
+}
+
+static void start_themes(MendingwallDApplication* self) {
+  /* save or restore settings and possibly watch */
+  gchar** schemas = g_key_file_get_string_list(self->theme_config, self->desktop, "GSettings", NULL, NULL);
+  for (gchar** schema = schemas; schema && *schema; ++schema) {
+    GSettings* settings = g_settings_new(*schema);
+    if (self->restore) {
+      restore_settings(settings);
+    } else {
+      save_settings(settings);
+    }
+    if (self->watch) {
+      g_signal_connect(settings, "change-event", G_CALLBACK(on_changed_settings), NULL);
+    }
+    g_ptr_array_add(self->theme_settings, settings);
+  }
+  g_strfreev(schemas);
+
+  /* save or restore config files and possibly watch */
+  gchar** paths = g_key_file_get_string_list(self->theme_config, self->desktop, "ConfigFiles", NULL, NULL);
+  for (gchar** path = paths; path && *path; ++path) {
+    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
+    GFile* file = g_file_new_for_path(filename);
+    if (self->restore) {
+      restore_file(file);
+    } else {
+      save_file(file);
+    }
+    if (self->watch) {
+      GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE, NULL, NULL);
+      g_signal_connect_swapped(monitor, "changed", G_CALLBACK(on_changed_file), file);
+      g_ptr_array_add(self->theme_monitors, monitor);
+    }
+    g_ptr_array_add(self->theme_files, file);
+  }
+  g_strfreev(paths);
+}
+
+static void stop_themes(MendingwallDApplication* self) {
+  g_ptr_array_set_size(self->theme_monitors, 0);
+  g_ptr_array_set_size(self->theme_files, 0);
+  g_ptr_array_set_size(self->theme_settings, 0);
+}
+
+static void start_menus(MendingwallDApplication* self) {
+  gchar** basenames = g_key_file_get_groups(self->menu_config, NULL);
+  for (gchar** basename = basenames; basename && *basename; ++basename) {
+    tidy_app(*basename, self->menu_config);
+  }
+  g_strfreev(basenames);
+
+  if (self->watch) {
+    /* watch application directories */
+    const gchar* const* paths = g_get_system_data_dirs();
+    for (const gchar* const* path = paths; path && *path; ++path) {
+      GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
+      GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
+      g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_app), self->menu_config);
+      g_ptr_array_add(self->menu_dirs, dir);
+      g_ptr_array_add(self->menu_monitors, monitor);
+    }
+  }
+}
+
+static void stop_menus(MendingwallDApplication* self) {
+  g_ptr_array_set_size(self->menu_monitors, 0);
+  g_ptr_array_set_size(self->menu_dirs, 0);
+}
+
+static void on_changed(MendingwallDApplication* self) {
+  gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
+  gboolean menus_enabled = g_settings_get_boolean(self->global, "menus");
+
+  if (themes_enabled) {
+    start_themes(self);
+  } else {
+    stop_themes(self);
+  }
+  if (menus_enabled) {
+    start_menus(self);
+  } else {
+    stop_menus(self);
+  }
+
+  if (!themes_enabled && !menus_enabled) {
+    g_application_quit(G_APPLICATION(self));
+  }
+}
+
+static void on_activate(MendingwallDApplication* self) {
+  mendingwall_background_application_activate(MENDINGWALL_BACKGROUND_APPLICATION(self));
+
+  gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
+  gboolean menus_enabled = g_settings_get_boolean(self->global, "menus");
+
+  if (themes_enabled) {
+    start_themes(self);
+  }
+  if (menus_enabled) {
+    start_menus(self);
+  }
+
+  /* restore is only intended at initialization, so disable subsequently in
+   * case themes feature is turned off and on again */
+  self->restore = FALSE;
+
+  if (self->watch && (themes_enabled || menus_enabled)) {
+    /* quit later */
+    g_signal_connect_swapped(self->global, "changed", G_CALLBACK(on_changed), self);
+  } else {
+    /* quit now */
+    g_application_quit(G_APPLICATION(self));
+  }
+}
+
+void mendingwalld_application_dispose(GObject* o) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
+
+  g_object_unref(self->global);
+  g_key_file_free(self->theme_config);
+  g_ptr_array_free(self->theme_settings, TRUE);
+  g_ptr_array_free(self->theme_files, TRUE);
+  g_ptr_array_free(self->theme_monitors, TRUE);
+  g_key_file_free(self->menu_config);
+  g_ptr_array_free(self->menu_dirs, TRUE);
+  g_ptr_array_free(self->menu_monitors, TRUE);
+
+  G_OBJECT_CLASS(mendingwalld_application_parent_class)->dispose(o);
+}
+
+void mendingwalld_application_finalize(GObject* o) {
+  G_OBJECT_CLASS(mendingwalld_application_parent_class)->finalize(o);
+}
+
+void mendingwalld_application_class_init(MendingwallDApplicationClass* klass) {
+  G_OBJECT_CLASS(klass)->dispose = mendingwalld_application_dispose;
+  G_OBJECT_CLASS(klass)->finalize = mendingwalld_application_finalize;
+}
+
+void mendingwalld_application_init(MendingwallDApplication* self) {
+  self->global = g_settings_new("org.indii.mendingwall");
+  self->desktop = g_getenv("XDG_CURRENT_DESKTOP");
+
+  self->theme_config = g_key_file_new();
+  self->theme_settings = g_ptr_array_new_with_free_func(g_object_unref);
+  self->theme_files = g_ptr_array_new_with_free_func(g_object_unref);
+  self->theme_monitors = g_ptr_array_new_with_free_func(g_object_unref);
+
+  self->menu_config = g_key_file_new();
+  self->menu_dirs = g_ptr_array_new_with_free_func(g_object_unref);
+  self->menu_monitors = g_ptr_array_new_with_free_func(g_object_unref);
+
+  self->restore = FALSE;
+  self->watch = FALSE;
+
+  /* check desktop */
+  if (!self->desktop) {
+    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
+    exit(1);
+  }
+
+  /* load themes config file */
+  if (!g_key_file_load_from_data_dirs(self->theme_config, "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file mendingwall/themes.conf\n");
+    exit(1);
+  }
+  if (!g_key_file_has_group(self->theme_config, self->desktop)) {
+    g_printerr("Desktop environment %s is not supported\n", self->desktop);
+    exit(1);
+  }
+
+  /* load menues config file */
+  if (!g_key_file_load_from_data_dirs(self->menu_config, "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file mendingwall/menus.conf\n");
+    exit(1);
+  }
+}
+
+MendingwallDApplication* mendingwalld_application_new(void) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(g_object_new(MENDINGWALL_TYPE_D_APPLICATION, "application-id", "org.indii.mendingwall.themes", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
+  g_application_set_version(G_APPLICATION(self), PACKAGE_VERSION);
+  g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
+
+  /* command-line options */
+  GOptionEntry options[] = {
+    { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore, "Restore theme configuration at initialization", NULL },
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes and save", NULL },
+    G_OPTION_ENTRY_NULL
+  };
+  g_application_set_option_context_summary(G_APPLICATION(self), "- untangle themes");
+  g_application_set_option_context_description(G_APPLICATION(self), "For more information see https://mendingwall.org");
+  g_application_add_main_option_entries(G_APPLICATION(self), options);
+
+  return self;
+}

@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Mending Wall Save Theme
-Exec=mendingwall-themes --save --watch
+Name=Mending Wall Watch
+Exec=mendingwalld --watch
 Icon=org.indii.mendingwall
-Comment=Save theme configuration and keep saving changes
+Comment=Watch themes and menus
 Terminal=false
 Type=Application
 Categories=Settings;Utilities;

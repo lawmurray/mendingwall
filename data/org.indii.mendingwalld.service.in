@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.indii.mendingwalld
+Exec=@bindir@/mendingwalld --gapplication-service --watch

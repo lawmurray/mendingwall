@@ -2,7 +2,7 @@
 Name=Mending Wall
 Exec=mendingwall
 Icon=org.indii.mendingwall
-Comment=Use multiple desktop environments in harmony
+Comment=Hop between desktop environments without headaches
 Terminal=false
 Type=Application
 Categories=Settings;Utilities

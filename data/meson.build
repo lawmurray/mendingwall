@@ -7,18 +7,9 @@ desktop_file = i18n.merge_file(
   install_dir: get_option('datadir') / 'applications'
 )
 
-menus_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.menus.desktop.in',
-       output: 'org.indii.mendingwall.menus.desktop',
-         type: 'desktop',
-       po_dir: '../po',
-      install: true,
-  install_dir: get_option('datadir') / 'mendingwall'
-)
-
-themes_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.themes.desktop.in',
-       output: 'org.indii.mendingwall.themes.desktop',
+daemon_autostart_file = i18n.merge_file(
+        input: 'org.indii.mendingwalld.desktop.in',
+       output: 'org.indii.mendingwalld.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -26,8 +17,8 @@ themes_autostart_file = i18n.merge_file(
 )
 
 restore_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.restore.desktop.in',
-       output: 'org.indii.mendingwall.restore.desktop',
+        input: 'org.indii.mendingwalld.restore.desktop.in',
+       output: 'org.indii.mendingwalld.restore.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -39,8 +30,7 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils,
     args: [
       desktop_file,
-      menus_autostart_file,
-      themes_autostart_file,
+      daemon_autostart_file,
       restore_autostart_file
     ]
   )
@@ -77,14 +67,8 @@ configure_file(
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
 configure_file(
-  input: 'org.indii.mendingwall.menus.service.in',
-  output: 'org.indii.mendingwall.menus.service',
-  configuration: service_conf,
-  install_dir: get_option('datadir') / 'dbus-1' / 'services'
-)
-configure_file(
-  input: 'org.indii.mendingwall.themes.service.in',
-  output: 'org.indii.mendingwall.themes.service',
+  input: 'org.indii.mendingwalld.service.in',
+  output: 'org.indii.mendingwalld.service',
   configuration: service_conf,
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )

@@ -28,32 +28,17 @@ executable('mendingwall', mendingwall_sources,
        install: true,
 )
 
-# mendingwall-menus program
-mendingwall_menus_sources = [
+# mendingwalld program
+mendingwalld_sources = [
   'mendingwall-background-application.c',
-  'mendingwall-menus-application.c',
-  'mendingwall-menus.c',
+  'mendingwalld-application.c',
+  'mendingwalld.c',
 ]
-mendingwall_menus_deps = [
+mendingwalld_deps = [
   dependency('glib-2.0'),
   dependency('gio-2.0'),
 ]
-executable('mendingwall-menus', mendingwall_menus_sources,
-  dependencies: mendingwall_menus_deps,
-       install: true,
-)
-
-# mendingwall-themes-program
-mendingwall_themes_sources = [
-  'mendingwall-background-application.c',
-  'mendingwall-themes-application.c',
-  'mendingwall-themes.c',
-]
-mendingwall_themes_deps = [
-  dependency('glib-2.0'),
-  dependency('gio-2.0'),
-]
-executable('mendingwall-themes', mendingwall_themes_sources,
-  dependencies: mendingwall_themes_deps,
+executable('mendingwalld', mendingwalld_sources,
+  dependencies: mendingwalld_deps,
        install: true,
 )
