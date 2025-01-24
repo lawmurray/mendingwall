@@ -36,9 +36,9 @@ static void save_settings(GSettings* settings) {
   g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
   g_autoptr(GSettings) save = g_settings_new_with_backend(id, backend);
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
-  for (gchar** key = keys; key && *key; ++key) {
-    g_autoptr(GVariant) value = g_settings_get_value(settings, *key);
-    g_settings_set_value(save, *key, value);
+  for (int i = 0; keys && keys[i]; ++i) {
+    g_autoptr(GVariant) value = g_settings_get_value(settings, keys[i]);
+    g_settings_set_value(save, keys[i], value);
   }
 }
 
@@ -57,9 +57,9 @@ static void restore_settings(GSettings* settings) {
     /* saved file exists, restore settings */
     g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(filename, "/", NULL);
     g_autoptr(GSettings) saved = g_settings_new_with_backend(id, backend);
-    for (gchar** key = keys; key && *key; ++key) {
-      g_autoptr(GVariant) value = g_settings_get_value(saved, *key);
-      g_settings_set_value(settings, *key, value);
+    for (int i = 0; keys && keys[i]; ++i) {
+      g_autoptr(GVariant) value = g_settings_get_value(saved, keys[i]);
+      g_settings_set_value(settings, keys[i], value);
     }
   } else {
     /* if the saved file does not exist, restore settings to their defaults;
@@ -68,8 +68,8 @@ static void restore_settings(GSettings* settings) {
      * environment, existing settings are reset, the user's settings look
      * pristine, and the new desktop environment performs its default initial
      * setup */
-    for (gchar** key = keys; key && *key; ++key) {
-      g_settings_reset(settings, *key);
+    for (int i = 0; keys && keys[i]; ++i) {
+      g_settings_reset(settings, keys[i]);
     }
   }
 }
@@ -152,8 +152,8 @@ static void on_changed_app(GFileMonitor*, GFile* file, GFile*, GFileMonitorEvent
 static void start_themes(MendingwallDApplication* self) {
   /* save or restore settings and possibly watch */
   g_auto(GStrv) schemas = g_key_file_get_string_list(self->theme_config, self->desktop, "GSettings", NULL, NULL);
-  for (gchar** schema = schemas; schema && *schema; ++schema) {
-    GSettings* settings = g_settings_new(*schema);
+  for (int i = 0; schemas && schemas[i]; ++i) {
+    GSettings* settings = g_settings_new(schemas[i]);
     if (self->restore) {
       restore_settings(settings);
     } else {
@@ -167,8 +167,8 @@ static void start_themes(MendingwallDApplication* self) {
 
   /* save or restore config files and possibly watch */
   g_auto(GStrv) paths = g_key_file_get_string_list(self->theme_config, self->desktop, "ConfigFiles", NULL, NULL);
-  for (gchar** path = paths; path && *path; ++path) {
-    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), *path, NULL);
+  for (int i = 0; paths && paths[i]; ++i) {
+    g_autofree char* filename = g_build_filename(g_get_user_config_dir(), paths[i], NULL);
     GFile* file = g_file_new_for_path(filename);
     if (self->restore) {
       restore_file(file);
@@ -192,15 +192,15 @@ static void stop_themes(MendingwallDApplication* self) {
 
 static void start_menus(MendingwallDApplication* self) {
   g_auto(GStrv) basenames = g_key_file_get_groups(self->menu_config, NULL);
-  for (gchar** basename = basenames; basename && *basename; ++basename) {
-    tidy_app(*basename, self->menu_config);
+  for (int i = 0; basenames && basenames[i]; ++i) {
+    tidy_app(basenames[i], self->menu_config);
   }
 
   if (self->watch) {
     /* watch application directories */
     const gchar* const* paths = g_get_system_data_dirs();
-    for (const gchar* const* path = paths; path && *path; ++path) {
-      GFile* dir = g_file_new_build_filename(*path, "applications", NULL);
+    for (int i = 0; paths && paths[i]; ++i) {
+      GFile* dir = g_file_new_build_filename(paths[i], "applications", NULL);
       GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE, NULL, NULL);
       g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_app), self->menu_config);
       g_ptr_array_add(self->menu_dirs, dir);
