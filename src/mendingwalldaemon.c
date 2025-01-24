@@ -1,13 +1,22 @@
 #include <config.h>
 #include <mendingwalldaemon.h>
 
-G_DEFINE_TYPE(MendingwallDaemon, mendingwall_daemon, G_TYPE_APPLICATION)
+typedef struct {
+  GDBusProxy* session;
+  GDBusProxy* client_private;
+} MendingwallDaemonPrivate;
+
+G_DEFINE_TYPE_WITH_PRIVATE(MendingwallDaemon, mendingwall_daemon, G_TYPE_APPLICATION)
 
 static void on_quit(MendingwallDaemon* self) {
   g_application_quit(G_APPLICATION(self));
 }
 
 void mendingwall_daemon_dispose(GObject* self) {
+  MendingwallDaemon* app = MENDINGWALL_DAEMON(self);
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(app);
+  g_clear_object(&priv->session);
+  g_clear_object(&priv->client_private);
   G_OBJECT_CLASS(mendingwall_daemon_parent_class)->dispose(self);
 }
 
@@ -21,11 +30,17 @@ void mendingwall_daemon_class_init(MendingwallDaemonClass* klass) {
 }
 
 void mendingwall_daemon_init(MendingwallDaemon* self) {
-  /* keep running as background process, as application has no main window */
-  g_application_hold(G_APPLICATION(self));
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
+  priv->session = NULL;
+  priv->client_private = NULL;
 }
 
 void mendingwall_daemon_activate(MendingwallDaemon* self) {
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
+
+  /* keep running as background process, as application has no main window */
+  g_application_hold(G_APPLICATION(self));
+
   /* register with org.gnome.SessionManager via dbus to terminate at end of
    * session; this is necessary for Linux distributions that do not have
    * systemd (or otherwise) configured to kill all user processes at end of
@@ -37,7 +52,7 @@ void mendingwall_daemon_activate(MendingwallDaemon* self) {
 
   GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
   if (dbus) {
-    g_autoptr(GDBusProxy) session = g_dbus_proxy_new_sync(dbus,
+    priv->session = g_dbus_proxy_new_sync(dbus,
         G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
         G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
         G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
@@ -47,8 +62,8 @@ void mendingwall_daemon_activate(MendingwallDaemon* self) {
         "org.gnome.SessionManager",
         NULL,
         NULL);
-    if (session) {
-      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(session,
+    if (priv->session) {
+      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(priv->session,
           "RegisterClient",
           g_variant_new("(ss)", application_id, client_id),
           G_DBUS_CALL_FLAGS_NONE,
@@ -59,7 +74,7 @@ void mendingwall_daemon_activate(MendingwallDaemon* self) {
         g_variant_get(res, "(o)", &client_path);
 
         /* quit on session end */
-        g_autoptr(GDBusProxy) client_private = g_dbus_proxy_new_sync(dbus,
+        priv->client_private = g_dbus_proxy_new_sync(dbus,
             G_DBUS_PROXY_FLAGS_NONE,
             NULL,
             "org.gnome.SessionManager",
@@ -67,9 +82,9 @@ void mendingwall_daemon_activate(MendingwallDaemon* self) {
             "org.gnome.SessionManager.ClientPrivate",
             NULL,
             NULL);
-        if (client_private) {
+        if (priv->client_private) {
           g_signal_connect_swapped(
-              client_private,
+              priv->client_private,
               "g-signal::EndSession",
               G_CALLBACK(on_quit),
               self);
