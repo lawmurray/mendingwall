@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-Adw.ApplicationWindow mendingwall {
+Adw.ApplicationWindow main {
   title: _("Mending Wall");
   width-request: 400;
 
@@ -10,9 +10,8 @@ Adw.ApplicationWindow mendingwall {
 
     Adw.HeaderBar {
       [end]
-      Button {
+      Button about_button {
         icon-name: "help-about-symbolic";
-        clicked => $on_about(mendingwall);
       }
     }
 

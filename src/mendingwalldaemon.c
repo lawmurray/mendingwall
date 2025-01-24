@@ -8,7 +8,7 @@ typedef struct {
 
 G_DEFINE_TYPE_WITH_PRIVATE(MendingwallDaemon, mendingwall_daemon, G_TYPE_APPLICATION)
 
-static void quit(MendingwallDaemon* self) {
+static void on_quit(MendingwallDaemon* self) {
   g_application_quit(G_APPLICATION(self));
 }
 
@@ -77,7 +77,7 @@ void mendingwall_daemon_init(MendingwallDaemon* self) {
           g_signal_connect_swapped(
               priv->client_private,
               "g-signal::EndSession",
-              G_CALLBACK(quit),
+              G_CALLBACK(on_quit),
               self);
         }
       }

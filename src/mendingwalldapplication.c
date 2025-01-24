@@ -322,11 +322,14 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
 }
 
 MendingwallDApplication* mendingwalld_application_new(void) {
-  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(g_object_new(MENDINGWALL_TYPE_D_APPLICATION, "application-id", "org.indii.mendingwalld", "flags", G_APPLICATION_DEFAULT_FLAGS, NULL));
-  g_application_set_version(G_APPLICATION(self), PACKAGE_VERSION);
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(
+      g_object_new(MENDINGWALL_TYPE_D_APPLICATION,
+      "application-id", "org.indii.mendingwalld",
+      "version", PACKAGE_VERSION,
+      "flags", G_APPLICATION_DEFAULT_FLAGS,
+      NULL));
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
-  /* command-line options */
   GOptionEntry options[] = {
     { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore, "Restore theme configuration at initialization", NULL },
     { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch, "Continue to watch for changes and save", NULL },
