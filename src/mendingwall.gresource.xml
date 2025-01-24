@@ -3,5 +3,6 @@
   <gresource prefix="/org/indii/mendingwall/">
     <file preprocess="xml-stripblanks">about.ui</file>
     <file preprocess="xml-stripblanks">main.ui</file>
+    <file alias="icons/scalable/apps/mendingwall.svg">../data/icons/hicolor/scalable/apps/org.indii.mendingwall.svg</file>
   </gresource>
 </gresources>
