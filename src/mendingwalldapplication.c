@@ -115,22 +115,55 @@ static void tidy_app(const char* basename, GKeyFile* config) {
   g_auto(GStrv) only_show_in = g_key_file_get_string_list(config, basename, "OnlyShowIn", NULL, NULL);
   g_auto(GStrv) not_show_in = g_key_file_get_string_list(config, basename, "NotShowIn", NULL, NULL);
 
-  if (only_show_in || not_show_in) {
-    /* copy the desktop entry into user's home directory, with changes, if it
-     * does not already exist there */
-    g_autoptr(GKeyFile) entry = g_key_file_new();
-    g_autofree char* rel = g_build_filename("applications", basename, NULL);
-    if (g_key_file_load_from_data_dirs(entry, rel, NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-      if (only_show_in) {
-        g_key_file_set_string_list(entry, "Desktop Entry", "OnlyShowIn", (const gchar* const*)only_show_in, g_strv_length(only_show_in));
-      }
-      if (not_show_in) {
-        g_key_file_set_string_list(entry, "Desktop Entry", "NotShowIn", (const gchar* const*)not_show_in, g_strv_length(not_show_in));
-      }
-      g_autoptr(GFile) to = g_file_new_build_filename(g_get_user_data_dir(), "applications", basename, NULL);
-      if (!g_file_query_exists(to, NULL)) {
-        g_autofree gchar* to_path = g_file_get_path(to);
-        g_key_file_save_to_file(entry, to_path, NULL);
+  /* load desktop entry file, if it exists */
+  g_autofree char* app_path = g_build_filename("applications", basename, NULL);
+  g_autoptr(GKeyFile) app_file = g_key_file_new();
+  if (g_key_file_load_from_data_dirs(app_file, app_path, NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    /* update OnlyShowIn and NotShowIn values */
+    if (only_show_in) {
+      g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn", (const gchar* const*)only_show_in, g_strv_length(only_show_in));
+    }
+    if (not_show_in) {
+      g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn", (const gchar* const*)not_show_in, g_strv_length(not_show_in));
+    }
+
+    /* save to user's data directory, if it does not already exist there */
+    g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(), "applications", basename, NULL);
+    g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
+    if (!g_file_query_exists(to_file, NULL)) {
+      g_key_file_save_to_file(app_file, to_path, NULL);
+    }
+  }
+}
+
+static void untidy_app(const char* basename, GKeyFile* config) {
+  /* config for this desktop entry */
+  g_auto(GStrv) only_show_in = g_key_file_get_string_list(config, basename, "OnlyShowIn", NULL, NULL);
+  g_auto(GStrv) not_show_in = g_key_file_get_string_list(config, basename, "NotShowIn", NULL, NULL);
+
+  /* load desktop entry file, if it exists */
+  g_autofree char* app_path = g_build_filename("applications", basename, NULL);
+  g_autoptr(GKeyFile) app_file = g_key_file_new();
+  if (g_key_file_load_from_data_dirs(app_file, app_path, NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    /* update OnlyShowIn and NotShowIn values */
+    if (only_show_in) {
+      g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn", (const gchar* const*)only_show_in, g_strv_length(only_show_in));
+    }
+    if (not_show_in) {
+      g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn", (const gchar* const*)not_show_in, g_strv_length(not_show_in));
+    }
+
+    /* check if a matching desktop entry file exists in the user's data
+     * directory; if so and its contents match what would be written, delete
+     * it, otherwise custom changes have been made so leave it */
+    g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(), app_path, NULL);
+    g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
+    if (g_file_query_exists(to_file, NULL)) {
+      g_autofree gchar* app_data = g_key_file_to_data(app_file, NULL, NULL);
+      g_autofree gchar* to_data;
+      g_file_load_contents(to_file, NULL, &to_data, NULL, NULL, NULL);
+      if (g_str_equal(app_data, to_data)) {
+        g_file_delete(to_file, NULL, NULL);
       }
     }
   }
@@ -212,6 +245,11 @@ static void start_menus(MendingwallDApplication* self) {
 static void stop_menus(MendingwallDApplication* self) {
   g_ptr_array_set_size(self->menu_monitors, 0);
   g_ptr_array_set_size(self->menu_dirs, 0);
+
+  g_auto(GStrv) basenames = g_key_file_get_groups(self->menu_config, NULL);
+  for (int i = 0; basenames && basenames[i]; ++i) {
+    untidy_app(basenames[i], self->menu_config);
+  }
 }
 
 static void on_changed(MendingwallDApplication* self) {
