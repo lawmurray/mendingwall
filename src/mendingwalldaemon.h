@@ -12,4 +12,6 @@ struct _MendingwallDaemonClass {
   gpointer padding[12];
 };
 
+void mendingwall_daemon_activate(MendingwallDaemon* self);
+
 G_END_DECLS

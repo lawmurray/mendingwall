@@ -273,6 +273,8 @@ static void on_changed(MendingwallDApplication* self) {
 }
 
 static void on_activate(MendingwallDApplication* self) {
+  mendingwall_daemon_activate(MENDINGWALL_DAEMON(self));
+
   gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
   gboolean menus_enabled = g_settings_get_boolean(self->global, "menus");
 
@@ -362,10 +364,11 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
 MendingwallDApplication* mendingwalld_application_new(void) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(
       g_object_new(MENDINGWALL_TYPE_D_APPLICATION,
-      "application-id", "org.indii.mendingwalld",
-      "version", PACKAGE_VERSION,
-      "flags", G_APPLICATION_DEFAULT_FLAGS,
-      NULL));
+          "application-id", "org.indii.mendingwalld",
+          "version", PACKAGE_VERSION,
+          "flags", G_APPLICATION_DEFAULT_FLAGS,
+          NULL));
+  g_application_register(G_APPLICATION(self), NULL, NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
   GOptionEntry options[] = {

@@ -33,16 +33,25 @@ void mendingwall_daemon_init(MendingwallDaemon* self) {
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
   priv->session = NULL;
   priv->client_private = NULL;
+}
 
+void mendingwall_daemon_activate(MendingwallDaemon* self) {
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
+
+  /* keep running as background process, as application has no main window */
+  g_application_hold(G_APPLICATION(self));
+
+  /* register with org.gnome.SessionManager via dbus to terminate at end of
+   * session; this is necessary for Linux distributions that do not have
+   * systemd (or otherwise) configured to kill all user processes at end of
+   * session */
   const gchar* application_id = g_application_get_application_id(G_APPLICATION(self));
   const gchar* desktop_autostart_id = g_getenv("DESKTOP_AUTOSTART_ID");
   g_autofree const gchar* client_id = g_strdup(desktop_autostart_id ? desktop_autostart_id : "");
   g_autofree const gchar* client_path = NULL;
 
-  /* dbus connection */
   GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
   if (dbus) {
-    /* register with org.gnome.SessionManager */
     priv->session = g_dbus_proxy_new_sync(dbus,
         G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
         G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
@@ -83,7 +92,4 @@ void mendingwall_daemon_init(MendingwallDaemon* self) {
       }
     }
   }
-
-  /* keep running as background process, as application has no main window */
-  g_application_hold(G_APPLICATION(self));
 }
