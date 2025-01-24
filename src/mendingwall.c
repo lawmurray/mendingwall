@@ -107,5 +107,7 @@ int main(int argc, char* argv[]) {
   AdwApplication* app = adw_application_new("org.indii.mendingwall", G_APPLICATION_DEFAULT_FLAGS);
   g_application_set_version(G_APPLICATION(app), PACKAGE_VERSION);
   g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
-  return g_application_run(G_APPLICATION(app), argc, argv);
+  int status = g_application_run(G_APPLICATION(app), argc, argv);
+  g_object_unref(app);
+  return status;
 }

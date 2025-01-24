@@ -33,10 +33,6 @@ void mendingwall_background_application_init(MendingwallBackgroundApplication* s
   MendingwallBackgroundApplicationPrivate* priv = mendingwall_background_application_get_instance_private(self);
   priv->session = NULL;
   priv->client_private = NULL;
-}
-
-void mendingwall_background_application_activate(MendingwallBackgroundApplication* self) {
-  MendingwallBackgroundApplicationPrivate* priv = mendingwall_background_application_get_instance_private(self);
 
   const gchar* application_id = g_application_get_application_id(G_APPLICATION(self));
   const gchar* desktop_autostart_id = g_getenv("DESKTOP_AUTOSTART_ID");

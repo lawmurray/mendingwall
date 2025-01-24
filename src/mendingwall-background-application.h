@@ -12,6 +12,4 @@ struct _MendingwallBackgroundApplicationClass {
   gpointer padding[12];
 };
 
-void mendingwall_background_application_activate(MendingwallBackgroundApplication* self);
-
 G_END_DECLS
