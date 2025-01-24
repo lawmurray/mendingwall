@@ -26,7 +26,7 @@ struct _MendingwallDApplication {
 G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_DAEMON)
 
 static void save_settings(GSettings* settings) {
-  GSettingsSchema* schema = NULL;
+  g_autoptr(GSettingsSchema) schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
 
   const gchar* id = g_settings_schema_get_id(schema);
@@ -44,7 +44,7 @@ static void save_settings(GSettings* settings) {
 
 static void restore_settings(GSettings* settings) {
   /* schema */
-  GSettingsSchema* schema = NULL;
+  g_autoptr(GSettingsSchema) schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
 
   /* saved file */
@@ -368,7 +368,6 @@ MendingwallDApplication* mendingwalld_application_new(void) {
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
           NULL));
-  g_application_register(G_APPLICATION(self), NULL, NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
   GOptionEntry options[] = {
