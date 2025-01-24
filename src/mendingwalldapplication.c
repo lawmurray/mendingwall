@@ -1,12 +1,12 @@
 #include <config.h>
-#include <mendingwalld-application.h>
+#include <mendingwalldapplication.h>
 
 #define G_SETTINGS_ENABLE_BACKEND 1
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
 struct _MendingwallDApplication {
-  MendingwallBackgroundApplication parent_instance;
+  MendingwallDaemon parent_instance;
   
   GSettings* global;
   const gchar* desktop;
@@ -23,7 +23,7 @@ struct _MendingwallDApplication {
   gboolean restore, watch;
 };
 
-G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_BACKGROUND_APPLICATION)
+G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_DAEMON)
 
 static void save_settings(GSettings* settings) {
   GSettingsSchema* schema = NULL;

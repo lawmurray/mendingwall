@@ -1,36 +1,36 @@
 #include <config.h>
-#include <mendingwall-background-application.h>
+#include <mendingwalldaemon.h>
 
 typedef struct {
   GDBusProxy* session;
   GDBusProxy* client_private;
-} MendingwallBackgroundApplicationPrivate;
+} MendingwallDaemonPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE(MendingwallBackgroundApplication, mendingwall_background_application, G_TYPE_APPLICATION)
+G_DEFINE_TYPE_WITH_PRIVATE(MendingwallDaemon, mendingwall_daemon, G_TYPE_APPLICATION)
 
-static void quit(MendingwallBackgroundApplication* self) {
+static void quit(MendingwallDaemon* self) {
   g_application_quit(G_APPLICATION(self));
 }
 
-void mendingwall_background_application_dispose(GObject* self) {
-  MendingwallBackgroundApplication* app = MENDINGWALL_BACKGROUND_APPLICATION(self);
-  MendingwallBackgroundApplicationPrivate* priv = mendingwall_background_application_get_instance_private(app);
+void mendingwall_daemon_dispose(GObject* self) {
+  MendingwallDaemon* app = MENDINGWALL_DAEMON(self);
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(app);
   g_clear_object(&priv->session);
   g_clear_object(&priv->client_private);
-  G_OBJECT_CLASS(mendingwall_background_application_parent_class)->dispose(self);
+  G_OBJECT_CLASS(mendingwall_daemon_parent_class)->dispose(self);
 }
 
-void mendingwall_background_application_finalize(GObject* self) {
-  G_OBJECT_CLASS(mendingwall_background_application_parent_class)->finalize(self);
+void mendingwall_daemon_finalize(GObject* self) {
+  G_OBJECT_CLASS(mendingwall_daemon_parent_class)->finalize(self);
 }
 
-void mendingwall_background_application_class_init(MendingwallBackgroundApplicationClass* klass) {
-  G_OBJECT_CLASS(klass)->dispose = mendingwall_background_application_dispose;
-  G_OBJECT_CLASS(klass)->finalize = mendingwall_background_application_finalize;
+void mendingwall_daemon_class_init(MendingwallDaemonClass* klass) {
+  G_OBJECT_CLASS(klass)->dispose = mendingwall_daemon_dispose;
+  G_OBJECT_CLASS(klass)->finalize = mendingwall_daemon_finalize;
 }
 
-void mendingwall_background_application_init(MendingwallBackgroundApplication* self) {
-  MendingwallBackgroundApplicationPrivate* priv = mendingwall_background_application_get_instance_private(self);
+void mendingwall_daemon_init(MendingwallDaemon* self) {
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
   priv->session = NULL;
   priv->client_private = NULL;
 

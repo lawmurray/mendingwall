@@ -1,5 +1,5 @@
 #include <config.h>
-#include <mendingwall-resources.h>
+#include <resources.h>
 
 #include <adwaita.h>
 #include <gtk/gtk.h>

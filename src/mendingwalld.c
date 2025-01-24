@@ -1,5 +1,5 @@
 #include <config.h>
-#include <mendingwalld-application.h>
+#include <mendingwalldapplication.h>
 
 int main(int argc, char* argv[]) {
   MendingwallDApplication* app = mendingwalld_application_new();

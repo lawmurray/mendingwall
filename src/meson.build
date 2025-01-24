@@ -1,12 +1,12 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
 blueprints = custom_target('blueprints',
-  input: ['about.blp', 'mendingwall.blp'],
+  input: ['about.blp', 'main.blp'],
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
-resources = gnome.compile_resources('mendingwall-resources',
+resources = gnome.compile_resources('resources',
   'mendingwall.gresource.xml',
   c_name: 'mendingwall',
   dependencies: blueprints
@@ -15,6 +15,7 @@ resources = gnome.compile_resources('mendingwall-resources',
 # mendingwall program
 mendingwall_sources = [
   'mendingwall.c',
+  'mendingwallapplication.c',
 ]
 mendingwall_sources += blueprints
 mendingwall_sources += resources
@@ -30,8 +31,8 @@ executable('mendingwall', mendingwall_sources,
 
 # mendingwalld program
 mendingwalld_sources = [
-  'mendingwall-background-application.c',
-  'mendingwalld-application.c',
+  'mendingwalldaemon.c',
+  'mendingwalldapplication.c',
   'mendingwalld.c',
 ]
 mendingwalld_deps = [
