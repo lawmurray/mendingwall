@@ -11,6 +11,29 @@ struct _MendingwallApplication {
 
 G_DEFINE_TYPE(MendingwallApplication, mendingwall_application, ADW_TYPE_APPLICATION)
 
+static void launch_daemon(MendingwallApplication* self) {
+  g_settings_sync();  // ensure current settings visible in new process
+  g_dbus_connection_call(
+    g_application_get_dbus_connection(G_APPLICATION(self)),
+    "org.indii.mendingwalld",
+    "/org/indii/mendingwalld",
+    "org.freedesktop.Application",
+    "Activate",
+    g_variant_new_parsed("({'test': <1>}, )"),
+    NULL,
+    G_DBUS_CALL_FLAGS_NONE,
+    -1,
+    NULL,
+    NULL,
+    NULL
+  );
+
+  /* alternatively, can launch with g_spawn_async(), but dbus preferred for
+    * a consistent environment */
+  //static const gchar* argv[] = { "mendingwall", "--watch" };
+  //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+}
+
 static void on_changed(MendingwallApplication* self) {
   gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
   gboolean menus_enabled = g_settings_get_boolean(self->global, "menus");
@@ -49,28 +72,8 @@ static void on_changed(MendingwallApplication* self) {
     guint32 value = 0700;
     g_file_set_attribute(kde_file, G_FILE_ATTRIBUTE_UNIX_MODE, G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL, NULL);
 
-    /* launch background process; fine if already running, new instance will
-     * quit */
-    g_settings_sync();  // ensure current settings visible in new process
-    g_dbus_connection_call(
-      g_application_get_dbus_connection(G_APPLICATION(self)),
-      "org.indii.mendingwalld",
-      "/org/indii/mendingwalld",
-      "org.freedesktop.Application",
-      "Activate",
-      g_variant_new_parsed("({'test': <1>}, )"),
-      NULL,
-      G_DBUS_CALL_FLAGS_NONE,
-      -1,
-      NULL,
-      NULL,
-      NULL
-    );
-
-    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
-     * a consistent environment */
-    //static const gchar* argv[] = { "mendingwall", "--watch" };
-    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    /* launch daemon; fine if already running, new instance will quit */
+    launch_daemon(self);
   } else {
     /* uninstall autostart files */
     g_autoptr(GFile) daemon_file = g_file_new_for_path(daemon_path);
@@ -107,6 +110,7 @@ static void on_startup(MendingwallApplication* self) {
 }
 
 static void on_activate(MendingwallApplication* self) {
+  launch_daemon(self);
   gtk_window_present(GTK_WINDOW(self->window));
 }
 
