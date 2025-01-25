@@ -115,23 +115,19 @@ static void restore_file(MendingwallDApplication* self, GFile* file) {
 static void update_app(MendingwallDApplication* self, const char* basename,
     GKeyFile* app_file) {
   /* update OnlyShowIn */
-  {
-    g_auto(GStrv) only_show_in = g_key_file_get_string_list(
-        self->menus_config, basename, "OnlyShowIn", NULL, NULL);
-    if (only_show_in) {
-      g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn",
-          (const gchar* const*)only_show_in, g_strv_length(only_show_in));
-    }
+  g_auto(GStrv) only_show_in = g_key_file_get_string_list(
+      self->menus_config, basename, "OnlyShowIn", NULL, NULL);
+  if (only_show_in) {
+    g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn",
+        (const gchar* const*)only_show_in, g_strv_length(only_show_in));
   }
 
   /* update NotShowIn */
-  {
-    g_auto(GStrv) not_show_in = g_key_file_get_string_list(
-        self->menus_config, basename, "NotShowIn", NULL, NULL);
-    if (not_show_in) {
-      g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn",
-          (const gchar* const*)not_show_in, g_strv_length(not_show_in));
-    }
+  g_auto(GStrv) not_show_in = g_key_file_get_string_list(
+      self->menus_config, basename, "NotShowIn", NULL, NULL);
+  if (not_show_in) {
+    g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn",
+        (const gchar* const*)not_show_in, g_strv_length(not_show_in));
   }
 
   /* add custom marker */
@@ -415,39 +411,33 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
   self->restore = FALSE;
   self->watch = FALSE;
 
-  {
-    /* load themes config file */
-    g_autoptr(GKeyFile) themes_config = g_key_file_new();
-    if (!g_key_file_load_from_data_dirs(themes_config,
-        "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-      g_printerr("Cannot find config file mendingwall/themes.conf\n");
-      exit(1);
-    }
-    if (!g_key_file_has_group(themes_config, desktop)) {
-      g_printerr("Desktop environment %s is not supported\n", desktop);
-      exit(1);
-    }
+  /* load themes config file */
+  g_autoptr(GKeyFile) themes_config = g_key_file_new();
+  if (!g_key_file_load_from_data_dirs(themes_config,
+      "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file mendingwall/themes.conf\n");
+    exit(1);
+  }
+  if (!g_key_file_has_group(themes_config, desktop)) {
+    g_printerr("Desktop environment %s is not supported\n", desktop);
+    exit(1);
+  }
 
-    {
-      /* populate settings to save */
-      g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
-          desktop, "GSettings", NULL, NULL);
-      foreach(schema_id, schema_ids) {
-        GSettings* settings = g_settings_new(schema_id);
-        g_ptr_array_add(self->theme_settings, settings);
-      }
-    }
+  /* populate settings to save */
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
+      desktop, "GSettings", NULL, NULL);
+  foreach(schema_id, schema_ids) {
+    GSettings* settings = g_settings_new(schema_id);
+    g_ptr_array_add(self->theme_settings, settings);
+  }
 
-    {
-      /* populate config files to save */
-      g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
-          "ConfigFiles", NULL, NULL);
-      foreach(path, paths) {
-        GFile* file = g_file_new_build_filename(g_get_user_config_dir(), path,
-            NULL);
-        g_ptr_array_add(self->theme_files, file);
-      }
-    }
+  /* populate config files to save */
+  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
+      "ConfigFiles", NULL, NULL);
+  foreach(path, paths) {
+    GFile* file = g_file_new_build_filename(g_get_user_config_dir(), path,
+        NULL);
+    g_ptr_array_add(self->theme_files, file);
   }
 
   /* load menus config file */
