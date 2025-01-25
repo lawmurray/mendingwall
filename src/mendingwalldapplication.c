@@ -304,10 +304,8 @@ static void on_changed_menus(MendingwallDApplication* self) {
   }
 }
 
-static void on_activate(MendingwallDApplication* self) {
-  g_printerr("on_activate\n");
-
-  mendingwall_daemon_activate(MENDINGWALL_DAEMON(self));
+static void on_startup(MendingwallDApplication* self) {
+  mendingwall_daemon_on_startup(MENDINGWALL_DAEMON(self));
 
   gboolean restore = self->restore;
   gboolean watch = self->watch;
@@ -340,6 +338,10 @@ static void on_activate(MendingwallDApplication* self) {
     /* quit now */
     g_application_quit(G_APPLICATION(self));
   }
+}
+
+static void on_activate(MendingwallDApplication* self) {
+  //
 }
 
 void mendingwalld_application_dispose(GObject* o) {
@@ -481,6 +483,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
       "For more information see https://mendingwall.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
+  g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
   return self;
