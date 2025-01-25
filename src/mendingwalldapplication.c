@@ -22,7 +22,7 @@ struct _MendingwallDApplication {
   GSettings* global;
   GFile* config_dir;
 
-  char* theme_settings_save_path;
+  GSettingsBackend* theme_settings_save_backend;
   char* theme_files_save_path;
   GPtrArray* theme_settings;
   GPtrArray* theme_files;
@@ -42,12 +42,11 @@ G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYP
 static void save_settings(MendingwallDApplication* self, GSettings* settings) {
   g_autoptr(GSettingsSchema) schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
+  const gchar* schema_id = g_settings_schema_get_id(schema);
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
 
-  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(
-      self->theme_settings_save_path, "/", NULL);
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(
-      g_settings_schema_get_id(schema), backend);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
+      self->theme_settings_save_backend);
   g_settings_delay(saved);
   foreach(key, keys) {
     g_autoptr(GVariant) value = g_settings_get_value(settings, key);
@@ -59,6 +58,7 @@ static void save_settings(MendingwallDApplication* self, GSettings* settings) {
 static void restore_settings(MendingwallDApplication* self, GSettings* settings) {
   g_autoptr(GSettingsSchema) schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
+  const gchar* schema_id = g_settings_schema_get_id(schema);
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
 
   /* if the saved file does not exist, this will restore settings to their
@@ -67,10 +67,8 @@ static void restore_settings(MendingwallDApplication* self, GSettings* settings)
    * environment, existing settings are reset, the user's settings look
    * pristine, and the new desktop environment performs its default initial
    * setup */
-  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(
-      self->theme_settings_save_path, "/", NULL);
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(
-      g_settings_schema_get_id(schema), backend);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
+      self->theme_settings_save_backend);
   g_settings_delay(settings);
   foreach(key, keys) {
     g_autoptr(GVariant) value = g_settings_get_value(saved, key);
@@ -325,13 +323,12 @@ void mendingwalld_application_dispose(GObject* o) {
   g_clear_object(&self->global);
   g_clear_object(&self->config_dir);
 
-  g_free(self->theme_settings_save_path);
+  g_clear_object(&self->theme_settings_save_backend);
   g_free(self->theme_files_save_path);
   g_ptr_array_free(self->theme_settings, TRUE);
   g_ptr_array_free(self->theme_files, TRUE);
   g_ptr_array_free(self->theme_monitors, TRUE);
 
-  self->theme_settings_save_path = NULL;
   self->theme_files_save_path = NULL;
   self->theme_settings = NULL;
   self->theme_files = NULL;
@@ -365,11 +362,17 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
     exit(1);
   }
 
+  /* path to save settings */
+  g_autofree char* theme_settings_save_path = g_strconcat(
+      g_get_user_data_dir(), "/", "mendingwall", "/", desktop, ".gsettings",
+      NULL);
+
   /* basic initialization */
   self->global = g_settings_new("org.indii.mendingwall");
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
-  self->theme_settings_save_path = g_strconcat(g_get_user_data_dir(), "/",
-      "mendingwall", "/", desktop, ".gsettings", NULL);
+  self->theme_settings_save_backend = g_keyfile_settings_backend_new(
+      theme_settings_save_path, "/", NULL);
+
   self->theme_files_save_path = g_strconcat(g_get_user_data_dir(), "/",
       "mendingwall", "/", "save", "/", desktop, NULL);
   self->theme_settings = g_ptr_array_new_with_free_func(g_object_unref);
