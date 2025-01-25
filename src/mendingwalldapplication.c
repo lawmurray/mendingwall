@@ -133,6 +133,10 @@ static void update_app(MendingwallDApplication* self, const char* basename,
           (const gchar* const*)not_show_in, g_strv_length(not_show_in));
     }
   }
+
+  /* add custom marker */
+  g_key_file_set_boolean(app_file, "Desktop Entry", "X-MendingWall-Tidy",
+      TRUE);
 }
 
 static void tidy_app(MendingwallDApplication* self, const char* basename) {
