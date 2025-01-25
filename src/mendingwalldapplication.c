@@ -8,7 +8,7 @@
 /* a tidier way to loop; use as foreach(value, values) { ... } */
 #define foreach_with_iterator(value, values, iterator) \
     typeof(values) iterator = values; \
-    for (typeof(*values) value; (value = *iterator); ++iterator)
+    for (typeof(*values) value = *iterator; value; value = *++iterator)
 #define foreach_iterator(line) \
     iter_ ## line ## _
 #define foreach_with_line(value, values, line) \
@@ -399,15 +399,16 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(
       settings_backend_path, "/", NULL);
-
   self->save_path = g_strconcat(g_get_user_data_dir(), "/", "mendingwall",
       "/", "save", "/", desktop, NULL);
-  self->theme_settings = g_ptr_array_new_with_free_func(g_object_unref);
-  self->theme_files = g_ptr_array_new_with_free_func(g_object_unref);
-  self->theme_monitors = g_ptr_array_new_with_free_func(g_object_unref);
+
+  const guint reserved = 8;
+  self->theme_settings = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->theme_files = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->theme_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
   self->menus_config = g_key_file_new();
-  self->menu_dirs = g_ptr_array_new_with_free_func(g_object_unref);
-  self->menu_monitors = g_ptr_array_new_with_free_func(g_object_unref);
+  self->menu_dirs = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->menu_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
 
   {
     /* load themes config file */
