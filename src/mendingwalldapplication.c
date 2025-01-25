@@ -8,7 +8,7 @@
 /* a tidier way to loop; use as foreach(value, values) { ... } */
 #define foreach_with_iterator(value, values, iterator) \
     typeof(values) iterator = values; \
-    for (typeof(*values) value = *iterator; value; value = *++iterator)
+    for (typeof(*iterator) value = *iterator; value; value = *++iterator)
 #define foreach_iterator(line) \
     iter_ ## line ## _
 #define foreach_with_line(value, values, line) \
@@ -31,11 +31,9 @@ struct _MendingwallDApplication {
   GKeyFile* menus_config;
   GPtrArray* menu_dirs;
   GPtrArray* menu_monitors;
-};
 
-typedef struct {
   gboolean restore, watch;
-} MendingwallDOptions;
+};
 
 G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_DAEMON)
 
@@ -306,14 +304,11 @@ static void on_changed_menus(MendingwallDApplication* self) {
   }
 }
 
-static void on_activate(MendingwallDApplication* self, MendingwallDOptions* options) {
+static void on_activate(MendingwallDApplication* self) {
   mendingwall_daemon_activate(MENDINGWALL_DAEMON(self));
 
-  gboolean restore = options->restore;
-  gboolean watch = options->watch;
-  g_free(options);
-  options = NULL;
-
+  gboolean restore = self->restore;
+  gboolean watch = self->watch;
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
 
@@ -469,13 +464,10 @@ MendingwallDApplication* mendingwalld_application_new(void) {
           NULL));
 
   /* command-line options */
-  MendingwallDOptions* options = g_malloc(sizeof(MendingwallDOptions));
-  options->restore = FALSE;
-  options->watch = FALSE;
   GOptionEntry option_entries[] = {
-    { "restore", 0, 0, G_OPTION_ARG_NONE, &options->restore,
+    { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore,
         "Restore theme on launch (otherwise save)", NULL },
-    { "watch", 0, 0, G_OPTION_ARG_NONE, &options->watch,
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch,
         "Continue to watch for changes and save", NULL },
     G_OPTION_ENTRY_NULL
   };
@@ -485,7 +477,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
       "For more information see https://mendingwall.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
-  g_signal_connect(self, "activate", G_CALLBACK(on_activate), options);
+  g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
   return self;
 }
