@@ -305,6 +305,8 @@ static void on_changed_menus(MendingwallDApplication* self) {
 }
 
 static void on_activate(MendingwallDApplication* self) {
+  g_printerr("on_activate\n");
+
   mendingwall_daemon_activate(MENDINGWALL_DAEMON(self));
 
   gboolean restore = self->restore;
@@ -404,6 +406,8 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
   self->menus_config = g_key_file_new();
   self->menu_dirs = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
   self->menu_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->restore = FALSE;
+  self->watch = FALSE;
 
   {
     /* load themes config file */
