@@ -89,13 +89,11 @@ static void on_about(MendingwallApplication* self) {
   adw_dialog_present(ADW_DIALOG(about), GTK_WIDGET(self->window));
 }
 
-static void on_activate(MendingwallApplication* self) {
+static void on_startup(MendingwallApplication* self) {
   g_autoptr(GtkBuilder) builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
 
-  /* objects of interest */
-  GObject* window = gtk_builder_get_object(builder, "main");
-  GObject* about_button = gtk_builder_get_object(builder, "about_button");
-  self->window = window;
+  /* main window */
+  self->window = gtk_builder_get_object(builder, "main");
 
   /* bind gsettings */
   g_settings_bind(self->global, "themes", gtk_builder_get_object(builder, "themes"), "active", G_SETTINGS_BIND_DEFAULT);
@@ -103,10 +101,13 @@ static void on_activate(MendingwallApplication* self) {
 
   /* connect signals */
   g_signal_connect_swapped(self->global, "changed", G_CALLBACK(on_changed), self);
-  g_signal_connect_swapped(about_button, "clicked", G_CALLBACK(on_about), self);
+  g_signal_connect_swapped(gtk_builder_get_object(builder, "about_button"), "clicked", G_CALLBACK(on_about), self);
 
-  gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(self));
-  gtk_window_present(GTK_WINDOW(window));
+  gtk_window_set_application(GTK_WINDOW(self->window), GTK_APPLICATION(self));
+}
+
+static void on_activate(MendingwallApplication* self) {
+  gtk_window_present(GTK_WINDOW(self->window));
 }
 
 void mendingwall_application_dispose(GObject* o) {
@@ -135,6 +136,9 @@ MendingwallApplication* mendingwall_application_new(void) {
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
           NULL));
+
+  g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
+
   return self;
 }
