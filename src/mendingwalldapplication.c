@@ -308,26 +308,32 @@ static void on_changed_menus(MendingwallDApplication* self) {
 
 static void on_activate(MendingwallDApplication* self, MendingwallDOptions* options) {
   mendingwall_daemon_activate(MENDINGWALL_DAEMON(self));
+
+  gboolean restore = options->restore;
+  gboolean watch = options->watch;
+  g_free(options);
+  options = NULL;
+
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
 
-  if (themes && options->restore) {
+  if (themes && restore) {
     restore_themes(self);
   }
-  if (themes && options->watch) {
+  if (themes && watch) {
     watch_themes(self);
   }
-  if (themes && (options->watch || !options->restore)) {
+  if (themes && (watch || !restore)) {
     save_themes(self);
   }
-  if (menus && options->watch) {
+  if (menus && watch) {
     watch_menus(self);
   }
   if (menus) {
     tidy_menus(self);
   }
 
-  if ((themes || menus) && options->watch) {
+  if ((themes || menus) && watch) {
     /* watch settings and quit later if disabled */
     g_signal_connect_swapped(self->global, "changed::themes",
         G_CALLBACK(on_changed_themes), self);
@@ -462,13 +468,13 @@ MendingwallDApplication* mendingwalld_application_new(void) {
           NULL));
 
   /* command-line options */
-  MendingwallDOptions options;
-  options.restore = FALSE;
-  options.watch = FALSE;
+  MendingwallDOptions* options = g_malloc(sizeof(MendingwallDOptions));
+  options->restore = FALSE;
+  options->watch = FALSE;
   GOptionEntry option_entries[] = {
-    { "restore", 0, 0, G_OPTION_ARG_NONE, &options.restore,
-        "Restore theme configuration at initialization", NULL },
-    { "watch", 0, 0, G_OPTION_ARG_NONE, &options.watch,
+    { "restore", 0, 0, G_OPTION_ARG_NONE, &options->restore,
+        "Restore theme on launch (otherwise save)", NULL },
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &options->watch,
         "Continue to watch for changes and save", NULL },
     G_OPTION_ENTRY_NULL
   };
@@ -478,7 +484,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
       "For more information see https://mendingwall.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
-  g_signal_connect(self, "activate", G_CALLBACK(on_activate), &options);
+  g_signal_connect(self, "activate", G_CALLBACK(on_activate), options);
 
   return self;
 }
