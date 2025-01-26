@@ -381,14 +381,14 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
   }
 
   /* path to save settings */
-  g_autofree char* settings_backend_path = g_strconcat(g_get_user_data_dir(),
-      "/", "mendingwall", "/", desktop, ".gsettings", NULL);
+  g_autofree char* settings_save_path = g_strconcat(g_get_user_data_dir(),
+      "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* basic initialization */
   self->global = g_settings_new("org.indii.mendingwall");
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
-  self->settings_backend = g_keyfile_settings_backend_new(
-      settings_backend_path, "/", NULL);
+  self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
+      "/", NULL);
   self->save_path = g_strconcat(g_get_user_data_dir(), "/", "mendingwall",
       "/", "save", "/", desktop, NULL);
 
