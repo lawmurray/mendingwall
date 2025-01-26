@@ -96,9 +96,9 @@ static void on_changed(MendingwallApplication* self) {
     g_autoptr(GFile) restore_file = g_file_new_for_path(restore_path);
     g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
 
-    g_file_delete(daemon_file, NULL, NULL);
-    g_file_delete(restore_file, NULL, NULL);
-    g_file_delete(kde_file, NULL, NULL);
+    g_file_delete_async(daemon_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    g_file_delete_async(restore_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    g_file_delete_async(kde_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
   }
 }
 
