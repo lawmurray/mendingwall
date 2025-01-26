@@ -27,6 +27,18 @@ struct _MendingwallDApplication {
 
 G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_DAEMON)
 
+static void save_setting(MendingwallDApplication* self, GSettings* settings,
+    gchar* key) {
+  /* get settings schema */
+  g_autoptr(GSettingsSchema) schema = NULL;
+  g_object_get(settings, "settings-schema", &schema, NULL);
+  const gchar* schema_id = g_settings_schema_get_id(schema);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
+      self->settings_backend);
+  g_autoptr(GVariant) value = g_settings_get_value(settings, key);
+  g_settings_set_value(saved, key, value);
+}
+
 static void save_settings(MendingwallDApplication* self, GSettings* settings) {
   /* get settings schema */
   g_autoptr(GSettingsSchema) schema = NULL;
@@ -170,16 +182,19 @@ static void untidy_app(MendingwallDApplication* self, const char* basename) {
   }
 }
 
-static void on_changed_settings(MendingwallDApplication* self,
+static void on_changed_setting(gpointer user_data, gchar* key,
     GSettings* settings) {
-  save_settings(self, settings);
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
+  save_setting(self, settings, key);
 }
 
-static void on_changed_file(MendingwallDApplication* self, GFile* file) {
+static void on_changed_file(gpointer user_data, GFile* file) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
   save_file(self, file);
 }
 
-static void on_changed_app(MendingwallDApplication* self, GFile* app_file) {
+static void on_changed_app(gpointer user_data, GFile* app_file) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
   g_autofree char* basename = g_file_get_basename(app_file);
   tidy_app(self, basename);
 }
@@ -225,8 +240,8 @@ static void untidy_menus(MendingwallDApplication* self) {
 static void watch_themes(MendingwallDApplication* self) {
   /* watch settings */
   foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    g_signal_connect_swapped(settings, "change-event",
-        G_CALLBACK(on_changed_settings), self);
+    g_signal_connect_swapped(settings, "changed",
+        G_CALLBACK(on_changed_setting), self);
   }
 
   /* watch config files */
@@ -265,7 +280,8 @@ static void unwatch_menus(MendingwallDApplication* self) {
   g_ptr_array_set_size(self->menu_monitors, 0);
 }
 
-static void on_changed_themes(MendingwallDApplication* self) {
+static void on_changed_themes(gpointer user_data) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
   if (themes) {
@@ -279,7 +295,8 @@ static void on_changed_themes(MendingwallDApplication* self) {
   }
 }
 
-static void on_changed_menus(MendingwallDApplication* self) {
+static void on_changed_menus(gpointer user_data) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
   if (menus) {
