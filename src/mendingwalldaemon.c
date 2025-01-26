@@ -35,7 +35,7 @@ void mendingwall_daemon_init(MendingwallDaemon* self) {
   priv->client_private = NULL;
 }
 
-void mendingwall_daemon_on_startup(MendingwallDaemon* self) {
+void mendingwall_daemon_hold(MendingwallDaemon* self) {
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
 
   /* keep running as background process, as application has no main window */

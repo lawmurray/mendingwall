@@ -295,8 +295,6 @@ static void on_changed_menus(MendingwallDApplication* self) {
 }
 
 static void on_startup(MendingwallDApplication* self) {
-  mendingwall_daemon_on_startup(MENDINGWALL_DAEMON(self));
-
   gboolean restore = self->restore;
   gboolean watch = self->watch;
   gboolean themes = g_settings_get_boolean(self->global, "themes");
@@ -319,7 +317,10 @@ static void on_startup(MendingwallDApplication* self) {
   }
 
   if ((themes || menus) && watch) {
-    /* watch settings and quit later if disabled */
+    /* keep running */
+    mendingwall_daemon_hold(MENDINGWALL_DAEMON(self));
+
+    /* watch settings to quit later if disabled */
     g_signal_connect_swapped(self->global, "changed::themes",
         G_CALLBACK(on_changed_themes), self);
     g_signal_connect_swapped(self->global, "changed::menus",
