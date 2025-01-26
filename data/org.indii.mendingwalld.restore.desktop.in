@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall Restore
-Exec=mendingwalld --restore
+Exec=@bindir@/mendingwalld --restore
 Icon=org.indii.mendingwall
 Comment=Restore themes and menus at initialization, then exit
 Terminal=false

@@ -1,6 +1,6 @@
-#include <config.h>
-#include <resources.h>
 #include <mendingwallapplication.h>
+#include <foreach.h>
+#include <resources.h>
 
 struct _MendingwallApplication {
   AdwApplication parent_instance;
@@ -42,9 +42,7 @@ static void on_changed(MendingwallApplication* self) {
   g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
   g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwalld.desktop", NULL);
   g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwalld.restore.desktop", NULL);
-  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "mendingwalld-restore.sh", NULL);
-
-  static const char* kde_contents = "#!/bin/sh\n\nmendingwalld --restore\n";
+  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "mendingwalld.sh", NULL);
 
   if (themes_enabled || menus_enabled) {
     /* make autostart directories in case they do not exist */
@@ -66,11 +64,29 @@ static void on_changed(MendingwallApplication* self) {
       g_key_file_save_to_file(restore_autostart, restore_path, NULL);
     }
 
-    /* install restore pre-start script (used for KDE only) */
-    g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
-    g_file_replace_contents(kde_file, kde_contents, strlen(kde_contents), NULL, FALSE, G_FILE_CREATE_REPLACE_DESTINATION, NULL, NULL, NULL);
-    guint32 value = 0700;
-    g_file_set_attribute(kde_file, G_FILE_ATTRIBUTE_UNIX_MODE, G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+    /* install restore pre-start script (used for KDE only); there is no nice
+     * load_from_data_dirs() type function except for keyfiles, so enumerate
+     * search */
+    g_autoptr(GFile) kde_from = g_file_new_build_filename(
+        g_get_user_data_dir(), "mending", "mendingwalld.sh", NULL);
+    if (!g_file_query_exists(kde_from, NULL)) {
+      foreach (dir, (const gchar**)g_get_system_data_dirs()) {
+        kde_from = g_file_new_build_filename(dir, "mending",
+            "mendingwalld.sh", NULL);
+        if (g_file_query_exists(kde_from, NULL)) {
+          break;
+        }
+      }
+    }
+    if (g_file_query_exists(kde_from, NULL)) {
+      g_autoptr(GFile) kde_to = g_file_new_for_path(kde_path);
+      g_file_copy(kde_from, kde_to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
+          NULL, NULL, NULL, NULL);
+      guint32 value = 0700;
+      g_file_set_attribute(kde_to, G_FILE_ATTRIBUTE_UNIX_MODE,
+          G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL,
+          NULL);
+    }
 
     /* launch daemon; fine if already running, new instance will quit */
     launch_daemon(self);

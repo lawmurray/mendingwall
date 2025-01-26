@@ -1,20 +1,10 @@
 #include <config.h>
+#include <foreach.h>
 #include <mendingwalldapplication.h>
 
 #define G_SETTINGS_ENABLE_BACKEND 1
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
-
-/* a tidier way to loop; use as foreach(value, values) { ... } */
-#define foreach_with_iterator(value, values, iterator) \
-    typeof(values) iterator = values; \
-    for (typeof(*iterator) value = *iterator; value; value = *++iterator)
-#define foreach_iterator(line) \
-    iter_ ## line ## _
-#define foreach_with_line(value, values, line) \
-    foreach_with_iterator(value, values, foreach_iterator(line))
-#define foreach(value, values) \
-    foreach_with_line(value, values, __LINE__)
 
 struct _MendingwallDApplication {
   MendingwallDaemon parent_instance;

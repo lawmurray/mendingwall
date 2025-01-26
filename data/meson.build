@@ -1,40 +1,47 @@
+conf = configuration_data()
+conf.set('bindir', get_option('prefix') / get_option('bindir'))
+
 desktop_file = i18n.merge_file(
-        input: 'org.indii.mendingwall.desktop.in',
+        input: configure_file(
+                          input: 'org.indii.mendingwall.desktop.in',
+                         output: 'org.indii.mendingwall.desktop.configure',
+                  configuration: conf,
+                        install: false,
+               ),
        output: 'org.indii.mendingwall.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
-  install_dir: get_option('datadir') / 'applications'
+  install_dir: get_option('datadir') / 'applications',
 )
 
-daemon_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwalld.desktop.in',
+restore_autostart_file = i18n.merge_file(
+        input: configure_file(
+                         input: 'org.indii.mendingwalld.desktop.in',
+                        output: 'org.indii.mendingwalld.desktop.configure',
+                 configuration: conf,
+                       install: false,
+               ),
        output: 'org.indii.mendingwalld.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
-  install_dir: get_option('datadir') / 'mendingwall'
+  install_dir: get_option('datadir') / 'mendingwall',
 )
 
-restore_autostart_file = i18n.merge_file(
-        input: 'org.indii.mendingwalld.restore.desktop.in',
+daemon_autostart_file = i18n.merge_file(
+        input: configure_file(
+                         input: 'org.indii.mendingwalld.restore.desktop.in',
+                        output: 'org.indii.mendingwalld.restore.desktop.configure',
+                 configuration: conf,
+                       install: false,
+               ),
        output: 'org.indii.mendingwalld.restore.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
-  install_dir: get_option('datadir') / 'mendingwall'
+  install_dir: get_option('datadir') / 'mendingwall',
 )
-
-desktop_utils = find_program('desktop-file-validate', required: false)
-if desktop_utils.found()
-  test('Validate desktop file', desktop_utils,
-    args: [
-      desktop_file,
-      daemon_autostart_file,
-      restore_autostart_file
-    ]
-  )
-endif
 
 appstream_file = i18n.merge_file(
         input: 'org.indii.mendingwall.metainfo.xml.in',
@@ -42,6 +49,39 @@ appstream_file = i18n.merge_file(
        po_dir: '../po',
       install: true,
   install_dir: get_option('datadir') / 'metainfo'
+)
+
+configure_file(
+          input: 'org.indii.mendingwall.service.in',
+         output: 'org.indii.mendingwall.service',
+  configuration: conf,
+    install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
+
+configure_file(
+          input: 'org.indii.mendingwalld.service.in',
+         output: 'org.indii.mendingwalld.service',
+  configuration: conf,
+    install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
+
+configure_file(
+          input: 'mendingwalld.sh.in',
+         output: 'mendingwalld.sh',
+  configuration: conf,
+    install_dir: get_option('datadir') / 'mendingwall'
+)
+
+configure_file(
+          input: 'mendingwalld.sh.in',
+         output: 'mendingwalld.sh',
+  configuration: conf,
+     install_dir: get_option('datadir') / 'mendingwall'
+)
+
+install_data(
+  ['menus.conf', 'themes.conf'],
+  install_dir: get_option('datadir') / 'mendingwall'
 )
 
 appstreamcli = find_program('appstreamcli', required: false, disabler: true)
@@ -57,25 +97,15 @@ test('Validate schema file',
      compile_schemas,
      args: ['--strict', '--dry-run', meson.current_source_dir()])
 
-
-service_conf = configuration_data()
-service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
-configure_file(
-  input: 'org.indii.mendingwall.service.in',
-  output: 'org.indii.mendingwall.service',
-  configuration: service_conf,
-  install_dir: get_option('datadir') / 'dbus-1' / 'services'
-)
-configure_file(
-  input: 'org.indii.mendingwalld.service.in',
-  output: 'org.indii.mendingwalld.service',
-  configuration: service_conf,
-  install_dir: get_option('datadir') / 'dbus-1' / 'services'
-)
-
-install_data(
-  ['menus.conf', 'themes.conf'],
-  install_dir: get_option('datadir') / 'mendingwall'
-)
+desktop_utils = find_program('desktop-file-validate', required: false)
+if desktop_utils.found()
+  test('Validate desktop file', desktop_utils,
+    args: [
+      desktop_file,
+      daemon_autostart_file,
+      restore_autostart_file
+    ]
+  )
+endif
 
 subdir('icons')

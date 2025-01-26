@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall Watch
-Exec=mendingwalld --watch
+Exec=@bindir@/mendingwalld --watch
 Icon=org.indii.mendingwall
 Comment=Watch themes and menus
 Terminal=false

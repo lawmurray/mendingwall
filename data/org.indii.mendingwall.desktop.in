@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall
-Exec=mendingwall
+Exec=@bindir@/mendingwall
 Icon=org.indii.mendingwall
 Comment=Hop between desktop environments without headaches
 Terminal=false

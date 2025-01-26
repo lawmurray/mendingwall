@@ -1,5 +1,7 @@
 #pragma once
 
+#include <config.h>
+
 #include <adwaita.h>
 #include <glib/gi18n.h>
 
