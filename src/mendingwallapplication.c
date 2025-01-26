@@ -68,10 +68,10 @@ static void on_changed(MendingwallApplication* self) {
      * load_from_data_dirs() type function except for keyfiles, so enumerate
      * search */
     g_autoptr(GFile) kde_from = g_file_new_build_filename(
-        g_get_user_data_dir(), "mending", "mendingwalld.sh", NULL);
+        g_get_user_data_dir(), "mendingwall", "mendingwalld.sh", NULL);
     if (!g_file_query_exists(kde_from, NULL)) {
       foreach (dir, (const gchar**)g_get_system_data_dirs()) {
-        kde_from = g_file_new_build_filename(dir, "mending",
+        kde_from = g_file_new_build_filename(dir, "mendingwall",
             "mendingwalld.sh", NULL);
         if (g_file_query_exists(kde_from, NULL)) {
           break;
