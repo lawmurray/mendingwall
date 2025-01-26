@@ -2,7 +2,7 @@
 #include <mendingwalldaemon.h>
 
 typedef struct {
-  GDBusProxy* session;
+  GDBusProxy* session_manager;
   GDBusProxy* client_private;
 } MendingwallDaemonPrivate;
 
@@ -15,7 +15,7 @@ static void on_quit(MendingwallDaemon* self) {
 void mendingwall_daemon_dispose(GObject* self) {
   MendingwallDaemon* app = MENDINGWALL_DAEMON(self);
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(app);
-  g_clear_object(&priv->session);
+  g_clear_object(&priv->session_manager);
   g_clear_object(&priv->client_private);
   G_OBJECT_CLASS(mendingwall_daemon_parent_class)->dispose(self);
 }
@@ -31,7 +31,7 @@ void mendingwall_daemon_class_init(MendingwallDaemonClass* klass) {
 
 void mendingwall_daemon_init(MendingwallDaemon* self) {
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
-  priv->session = NULL;
+  priv->session_manager = NULL;
   priv->client_private = NULL;
 }
 
@@ -45,14 +45,13 @@ void mendingwall_daemon_on_startup(MendingwallDaemon* self) {
    * session; this is necessary for Linux distributions that do not have
    * systemd (or otherwise) configured to kill all user processes at end of
    * session */
-  const gchar* application_id = g_application_get_application_id(G_APPLICATION(self));
+  const gchar* app_id = g_application_get_application_id(G_APPLICATION(self));
   const gchar* desktop_autostart_id = g_getenv("DESKTOP_AUTOSTART_ID");
   g_autofree const gchar* client_id = g_strdup(desktop_autostart_id ? desktop_autostart_id : "");
-  g_autofree const gchar* client_path = NULL;
 
   GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
   if (dbus) {
-    priv->session = g_dbus_proxy_new_sync(dbus,
+    priv->session_manager = g_dbus_proxy_new_sync(dbus,
         G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
         G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
         G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
@@ -62,32 +61,36 @@ void mendingwall_daemon_on_startup(MendingwallDaemon* self) {
         "org.gnome.SessionManager",
         NULL,
         NULL);
-    if (priv->session) {
-      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(priv->session,
+    if (priv->session_manager) {
+      g_autoptr(GVariant) params = g_variant_new("(ss)", app_id, client_id);
+      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(
+          priv->session_manager,
           "RegisterClient",
-          g_variant_new("(ss)", application_id, client_id),
+          params,
           G_DBUS_CALL_FLAGS_NONE,
           G_MAXINT,
           NULL,
           NULL);
       if (res) {
+        g_autofree const gchar* client_path = NULL;
         g_variant_get(res, "(o)", &client_path);
-
-        /* quit on session end */
-        priv->client_private = g_dbus_proxy_new_sync(dbus,
-            G_DBUS_PROXY_FLAGS_NONE,
-            NULL,
-            "org.gnome.SessionManager",
-            client_path,
-            "org.gnome.SessionManager.ClientPrivate",
-            NULL,
-            NULL);
-        if (priv->client_private) {
-          g_signal_connect_swapped(
-              priv->client_private,
-              "g-signal::EndSession",
-              G_CALLBACK(on_quit),
-              self);
+        if (client_path) {
+          /* quit on session end */
+          priv->client_private = g_dbus_proxy_new_sync(dbus,
+              G_DBUS_PROXY_FLAGS_NONE,
+              NULL,
+              "org.gnome.SessionManager",
+              client_path,
+              "org.gnome.SessionManager.ClientPrivate",
+              NULL,
+              NULL);
+          if (priv->client_private) {
+            g_signal_connect_swapped(
+                priv->client_private,
+                "g-signal::EndSession",
+                G_CALLBACK(on_quit),
+                self);
+          }
         }
       }
     }
