@@ -62,11 +62,10 @@ void mendingwall_daemon_hold(MendingwallDaemon* self) {
         NULL,
         NULL);
     if (priv->session_manager) {
-      g_autoptr(GVariant) params = g_variant_new("(ss)", app_id, client_id);
       g_autoptr(GVariant) res = g_dbus_proxy_call_sync(
           priv->session_manager,
           "RegisterClient",
-          params,
+          g_variant_new("(ss)", app_id, client_id),
           G_DBUS_CALL_FLAGS_NONE,
           G_MAXINT,
           NULL,
