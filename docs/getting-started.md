@@ -1,6 +1,6 @@
 # Getting Started
 
-Mending Wall is free and open source software distributed under the GPL version 3.
+Mending Wall is free and open source software distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 <div class="grid cards" markdown>
 
@@ -25,17 +25,17 @@ Mending Wall is free and open source software distributed under the GPL version 
 After installation, start the Mending Wall app and switch on the *Tidy Menus* and/or *Mend Themes* toggles. Both are recommended. The best time to do this is before you log in to a second desktop environment.
 
 !!! help "Theme already broken?"
-    This may happen if you have used multiple desktop environments **before** starting Mending Wall. It is currently a **work in progress** to provide a feature to recover from this situation. You might consider [contributing your time](how-to-help.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help with this.
+    This may happen if you have used multiple desktop environments **before** starting Mending Wall. It is currently a **work in progress** to provide a feature to recover from this situation. You might consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help with this.
     
-Mending Wall is currently being tested, and could do with [your help](how-you-can-help.md). Desktop environments are all configured differently, but Linux distributions may also configure the same desktop environment differently, and so it is important to test widely across the two dimensions. As a guide, the following represents the current status.
+Mending Wall is currently being tested, and could do with [your help](contributing.md). Desktop environments are all configured differently, but Linux distributions may also configure the same desktop environment differently, and so it is important to test widely across the two dimensions. As a guide, the following represents the current status.
 
-|              | :simple-gnome: GNOME | :simple-kde: KDE | :simple-xfce: Xfce | :simple-cinnamon: Cinnamon | [Others](how-you-can-help.md) |
+|              | :simple-gnome: GNOME | :simple-kde: KDE | :simple-xfce: Xfce | :simple-cinnamon: Cinnamon | [Others](contributing.md) |
 | ------------ | :---: | :-: | :--: | :------: | :----: |
 | :simple-ubuntu:&nbsp;**Ubuntu**<br/>:simple-debian:&nbsp;*Debian*<br/>:simple-linuxmint:&nbsp;*Linux Mint* | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
 | :simple-endeavouros:&nbsp;**EndeavourOS**<br/>:simple-archlinux:&nbsp;*Arch&nbsp;Linux*<br/>:simple-manjaro:&nbsp;*Manjaro*| :material-check: | :material-check: |  :material-check: |  :material-check:| :material-checkbox-blank-circle-outline: |
 | :simple-opensuse:&nbsp;**openSUSE** | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
 | :simple-fedora:&nbsp;**Fedora** | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
-| [:simple-linux: Others](how-you-can-help.md) | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
+| [:simple-linux: Others](contributing.md) | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
 /// caption
 **:simple-linux: Distribution** that has been tested. *:simple-linux: Distribution* that has not been tested, but is similar to one that has. :material-check: Tested :material-checkbox-blank-circle-outline: Not tested.
 ///

@@ -14,7 +14,6 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
 
 </div>
 
-
 <div style="margin-top:2em;" class="grid cards" markdown>
 
 -   :material-kangaroo: __Hop between desktop environments__
@@ -62,7 +61,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
     In future, Mending Wall may allow recovery from a state that is already broken, such as after using multiple desktop environments without Mending Wall enabled.
 
     !!! help "Work in progress"
-        This is work in progress. Consider [contributing your time](how-to-help.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
+        This is work in progress. Consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
 
 </div>
 

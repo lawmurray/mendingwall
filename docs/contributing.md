@@ -2,16 +2,46 @@
 
 Mending Wall is designed to make contributions as easy as possible, either with or without programming experience. Contributions from users are essential to expand coverage of desktop environments and Linux distributions.
 
-Areas where you can help include:
+<div class="grid cards" markdown>
 
-- [Improve the *Tidy Menus* feature](tidy-menus.md) by e.g. adding a missing application or a whole new desktop environment. This only requires editing config files.
-- [Improve the *Mend Themes* feature](mend-themes.md) by e.g. investigating issues when multiple desktop environments are installed, determining which GSettings and config files should be backed up and restored to fix them, and perhaps adding support for a whole new desktop environment that you use (or would like to use, if only it would not break stuff!). This only requires editing config files.
-- [Report issues](https://github.com/lawmurray/mendingwall/issues) such as bugs in the app or in current features, which may be specific to particular Linux distributions or particular desktop environments.
-- Add whole new features. This requires programming. The Mending Wall app is written in C as a GNOME application using [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [GTK4](https://gtk.org/), and [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/). The monitoring programs are written in C using mostly just [GLib](https://docs.gtk.org/glib/).
+-   :material-hand-heart: __Provide feedback__
 
-All contributions can be made via the [GitHub repository](https://github.com/lawmurray/mendingwall), either via an [issue](https://github.com/lawmurray/mendingwall/issues) or a [pull request](https://github.com/lawmurray/mendingwall/pull_requests). If GitHub is unfamiliar to you, just start by opening an issue to describe the problem that you have found, the results of your investigation so far, and a proposed fix if you have one. Others can help from there.
+     ---
 
-Mending Wall is free software licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+     Tell us whether or not Mending Wall worked for you. It is helpful to know which Linux distribution you are using, and which desktop environments you are trying to use.
+
+     [:octicons-arrow-right-24: Start a discussion](https://github.com/lawmurray/mendingwall/discussions)
+
+-   :material-bug: __Report an issue__
+
+    ---
+
+    If you find a bug in the app, or can be more specific about what is not working for you, open an issue.
+
+    [:octicons-arrow-right-24: Open an issue](https://github.com/lawmurray/mendingwall/issues)
+
+-   :fontawesome-solid-gear: __Improve configuration__
+
+    ---
+
+    The *Mend Menus* and *Tidy Menus* features use simple config files. No programming experience is necessary to finetune their behavior, such as adding new applications, new theme-related settings and config files to save, or even whole new desktop environments.
+
+    [:octicons-arrow-right-24: Learn about configuring Mend Themes](mend-themes.md#configuration)
+
+    [:octicons-arrow-right-24: Learn about configuring Tidy Menus](tidy-menus.md#configuration)
+
+    [:octicons-arrow-right-24: Start a discussion to propose changes](https://github.com/lawmurray/mendingwall/discussions)
+
+-   :fontawesome-solid-hammer: __Contribute code__
+
+    ---
+
+    Mending Wall is free software licensed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html). It is written in C as a GNOME application using [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [GTK4](https://gtk.org/), and [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/). The background program is written in C using just [GLib](https://docs.gtk.org/glib/).
+
+    [:octicons-arrow-right-24: Submit a pull request](https://github.com/lawmurray/mendingwall/pull_requests)
+
+</div>
+
 
 ## Suggested workflow
 
