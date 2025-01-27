@@ -1,4 +1,7 @@
-![Mending Wall icon](docs/assets/logo.svg)# Mending Wall
+![Mending Wall icon](docs/assets/logo.svg)
+
+# Mending Wall
+
 Mending Wall is a Linux application to fix issues when hopping between multiple desktop environments, such as tiny/huge cursors, tiny/huge fonts, light/dark mode switches and scaling issues. It also tidies application menus, showing core applications in their native environment only.
 
 Mending Wall is free software, copyright (C) 2025 Lawrence Murray, licensed under the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
