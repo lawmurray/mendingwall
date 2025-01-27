@@ -1,4 +1,4 @@
-![Mending Wall icon](docs/assets/logo.svg){width=256}
+![Mending Wall icon](docs/assets/logo.svg)
 
 # Mending Wall
 
