@@ -35,7 +35,7 @@ Adw.ApplicationWindow main {
     Adw.StatusPage {
       icon-name: "mendingwall";
       title: _("Mending Wall");
-      description: _("Hop between desktop environments without headaches");
+      description: _("Hop between desktop environments, happily");
 
       Adw.Clamp clamp {
         maximum-size: 600;
@@ -50,14 +50,14 @@ Adw.ApplicationWindow main {
               "boxed-list"
             ]
 
+            Adw.SwitchRow themes {
+              title: _("Mend Themes");
+              subtitle: _("Fix cursors, fonts, scale and other issues when changing desktop environment");
+            }
+
             Adw.SwitchRow menus {
               title: _("Tidy Menus");
               subtitle: _("Show core applications in their native desktop environment only");
-            }
-
-            Adw.SwitchRow themes {
-              title: _("Untangle Themes");
-              subtitle: _("Isolate theme configurations to avoid interference");
             }
           }
         }

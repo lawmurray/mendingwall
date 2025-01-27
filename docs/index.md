@@ -2,61 +2,67 @@
 description: A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.
 ---
 
-<div style="text-align:center;">
-  <p><img src="assets/logo.svg" width="200" height="200" alt="Mending Wall logo"></p>
-  <h1 style="margin-top:1em;"><strong>Mending Wall</strong></h1>
-  <h3 style="margin-top:-1.5em;"><strong>Hop between desktop environments without nuisance</strong></h3>
-  <p style="margin-top:2em;margin-bottom:4em;">
-    <a href="/getting-started" class="md-button md-button--primary">Install</a>
-  </p>
+<div style="text-align:center;" markdown>
+
+![Mending Wall icon](assets/logo.svg){width=200 height=200}
+
+# **Mending Wall**
+
+**Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.**
+
+[Install](getting-started.md){.md-button .md-button--primary style="margin:1em"}
+
 </div>
 
-Mending Wall is an application for the Linux desktop to help maintain multiple desktop environments. It allows you to install GNOME, KDE Plasma, Xfce and Cinnamon alongside each other on the same system, use them with the same user account, without the nuisance of breaking themes and cluttered menus.
 
-## Untangle Themes
+<div style="margin-top:2em;" class="grid cards" markdown>
 
-Mending Wall saves the configuration for each desktop environment separately and restores it each time you log in, keeping your themes consistent.
+-   :material-kangaroo: __Hop between desktop environments__
 
-For example, **(first image)** when returning to GNOME after using KDE Plasma, the icon and cursor theme is stuck on Plasma preferences, and there may be visual artifacts such as an oversize cursor. With Mending Wall **(second image)**, you get your most recent GNOME configuration back when you log into GNOME.
+    ---
+  
+    Use GNOME, KDE Plasma, Xfce, and Cinnamon on the same user account without broken themes and cluttered menus. Enjoy a change of scenery.
 
-![GNOME after using KDE: the cursor is large and poorly rendered, icon and cursor themes are Breeze, the default on KDE, rather than Adwaita, as on GNOME](assets/gnome_broken_light.png#only-light){width=400}![GNOME after using KDE: the cursor is large and poorly rendered, icon and cursor themes are Breeze, the default on KDE, rather than Adwaita, as on GNOME](assets/gnome_broken_dark.png#only-dark){width=400}
-/// caption
-GNOME after using KDE: the cursor is large and poorly rendered, icon and cursor themes are Breeze, the default on KDE, rather than Adwaita, as on GNOME.
-///
+-   :eyes: __Just starting with Linux?__
 
-![Fixed! Mending Wall saves and restores the theme configuration as you had under GNOME. KDE Plasma can still modify the theme as needed while running too.](assets/gnome_fixed_light.png#only-light){width=400}![Fixed! Mending Wall saves and restores the theme configuration as you had under GNOME. KDE Plasma can still modify the theme as needed while running too.](assets/gnome_fixed_dark.png#only-dark){width=400}
-/// caption
-Fixed! Mending Wall saves and restores the theme configuration as you had under GNOME. KDE Plasma can still modify the theme as needed while running too.
-///
-
-## Tidy Menus
-
-Core applications tend to clutter up menus and are often redudant with counterpart applications of other desktop environments. Mending Wall tidies them up, organizing your menus to only display the core applications of your current desktop environment.
-
-For example, with GNOME, KDE and Xfce installed, there are six file manager **(first image, KDE shown)** and six terminal **(second image, GNOME shown)** applications available. 
+    ---
+  
+    You've chosen a Linux distribution, but which desktop environment? Mending Wall lets you try a few before you settle down, without breaking anything. It also lets you never settle down.
     
-![The KDE menu (light mode) showing six file manager applications](assets/kde_many_file_manager_apps_light.png#only-light){width=400}![The KDE menu (dark mode) showing six file manager applications](assets/kde_many_file_manager_apps_dark.png#only-dark){width=400}
-/// caption
-The KDE menu showing six file manager applications
-///
+-   :material-monitor-shimmer: __Mend Themes__
 
-![The GNOME menu showing six terminal applications](assets/gnome_many_terminal_apps.png){width=400}
-/// caption
-The GNOME menu showing six terminal applications
-///
+    ---
+  
+    Mending Wall fixes common issues when hopping between desktop environments, such as  tiny cursors :material-cursor-default:{style="font-size:10px;"}, huge cursors :material-cursor-default:{style="font-size:24px;"}, tiny fonts :material-format-font:{style="font-size:10px;"}, huge fonts :material-format-font:{style="font-size:24px;"}, unintended dark mode changes, irksome icon changes, and scaling issues on HiDPI displays.
 
-## What works?
+    [:octicons-arrow-right-24: Learn more](mend-themes.md)
+ 
+-   :material-comment: __Tidy Menus__
 
-Mending Wall is currently being tested, and could do with [your help](how-you-can-help.md). Desktop environments are all configured differently, but Linux distributions may also configure the same desktop environment differently, and so it is important to test widely across the two dimensions. As a guide, the following represents the current status.
+    ---
+  
+    Desktop environments each have their own core applications. Mending Wall tidies menus to show these only in their native desktop environment. No more six terminals, five file managers, three text editors.
 
-|              | GNOME | KDE | Xfce | Cinnamon | [Others](how-you-can-help.md) |
-| ------------ | :---: | :-: | :--: | :------: | :----: |
-| :simple-ubuntu:&nbsp;**Ubuntu**<br/>:simple-debian:&nbsp;*Debian*<br/>:simple-linuxmint:&nbsp;*Linux Mint* | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
-| :simple-endeavouros:&nbsp;**EndeavourOS**<br/>:simple-archlinux:&nbsp;*Arch&nbsp;Linux*<br/>:simple-manjaro:&nbsp;*Manjaro*| :material-check: | :material-check: |  :material-check: |  :material-check:| :material-checkbox-blank-circle-outline: |
-| :simple-opensuse:&nbsp;**openSUSE** | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
-| :simple-fedora:&nbsp;**Fedora** | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
-| [:simple-linux: Others](how-you-can-help.md) | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
-/// caption
-**:simple-linux: Distribution** that has been tested. *:simple-linux: Distribution* that has not been tested, but is similar to one that has. :material-check: Tested :material-checkbox-blank-circle-outline: Not tested ([try it](getting-started.md)!)
-///
+    [:octicons-arrow-right-24: Learn More](tidy-menus.md)
+
+-   :material-slope-downhill: __Easy to use__
+
+    ---
+  
+    Start it up and switch it on. The best time is before you log in to a second desktop environment.
+
+    ![Screenshot of the main application window, light mode](assets/screenshot_light.png#only-light){width=400}![Screenshot of the main application window, dark mode](assets/screenshot_dark.png#only-dark){width=400}
+    /// caption
+    ///
+
+-   :fontawesome-solid-hammer: __Theme already broken?__
+
+    ---
+    
+    In future, Mending Wall may allow recovery from a state that is already broken, such as after using multiple desktop environments without Mending Wall enabled.
+
+    !!! help "Work in progress"
+        This is work in progress. Consider [contributing your time](how-to-help.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
+
+</div>
 

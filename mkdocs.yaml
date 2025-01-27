@@ -55,11 +55,10 @@ theme:
 markdown_extensions:
   - def_list
   - attr_list
+  - md_in_html
   - admonition
   - pymdownx.details
   - pymdownx.blocks.caption
-  - toc:
-      permalink: true
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.emoji:
@@ -75,10 +74,11 @@ markdown_extensions:
 plugins:
   - search
   - social
+  - glightbox
 nav:
   - index.md
   - getting-started.md
+  - mend-themes.md
   - tidy-menus.md
-  - untangle-themes.md
   - how-you-can-help.md
   - questions-and-answers.md

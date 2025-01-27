@@ -1,10 +1,23 @@
 # Tidy Menus
 
-Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications on other desktop environments. For example, GNOME has Console, Nautilus and Text Editor, while KDE Plasma has Konsole, Dolphin and Kate, respectively providing much the same functionality.
+Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications on other desktop environments, but can clutter up menus with seemingly redundant applications.
 
-Some desktop environments (e.g. Cinnamon) install their core applications to only show in their own menus. Others (e.g. KDE Plasma) install them to display in the menu of all desktop environments. Others again (e.g. GNOME) are selective about which applications to show where. You can change all this using an app like [Main Menu](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor), or by manually editing `.desktop` config files, or by having Mending Wall automate the process for you.
+For example, with GNOME, KDE and Xfce installed, there are six file manager **(first image, KDE shown)** and six terminal **(second image, GNOME shown)** applications available. Mending Wall will tidy these to only show each in its native desktop environment. The idea is that you will use Console or Terminal on GNOME and Cinnamon, Konsole on KDE, and Xfce Terminal on Xfce.
 
-To have Mending Wall automate the process, enable its *Tidy Menus* feature.
+![The KDE menu (light mode) showing six file manager applications](assets/kde_many_file_manager_apps_light.png#only-light){width=400}![The KDE menu (dark mode) showing six file manager applications](assets/kde_many_file_manager_apps_dark.png#only-dark){width=400}
+/// caption
+The KDE menu showing six file manager applications
+///
+
+![The GNOME menu showing six terminal applications](assets/gnome_many_terminal_apps.png){width=400}
+/// caption
+The GNOME menu showing six terminal applications
+///
+
+Mending Wall tidies them up, organizing your menus to only display the core applications of your current desktop environment. To have Mending Wall automate the process, enable its *Tidy Menus* feature.
+
+!!! tip
+    You can also use an app like [Libre Menu Editor](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor) to make manual changes (or refine Mending Wall's changes), or edit `.desktop` files directory.
 
 
 ## What it does

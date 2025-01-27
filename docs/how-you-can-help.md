@@ -5,7 +5,7 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 Areas where you can help include:
 
 - [Improve the *Tidy Menus* feature](tidy-menus.md) by e.g. adding a missing application or a whole new desktop environment. This only requires editing config files.
-- [Improve the *Untangle Themes* feature](untangle-themes.md) by e.g. investigating issues when multiple desktop environments are installed, determining which GSettings and config files should be backed up and restored to fix them, and perhaps adding support for a whole new desktop environment that you use (or would like to use, if only it would not break stuff!). This only requires editing config files.
+- [Improve the *Mend Themes* feature](mend-themes.md) by e.g. investigating issues when multiple desktop environments are installed, determining which GSettings and config files should be backed up and restored to fix them, and perhaps adding support for a whole new desktop environment that you use (or would like to use, if only it would not break stuff!). This only requires editing config files.
 - [Report issues](https://github.com/lawmurray/mendingwall/issues) such as bugs in the app or in current features, which may be specific to particular Linux distributions or particular desktop environments.
 - Add whole new features. This requires programming. The Mending Wall app is written in C as a GNOME application using [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [GTK4](https://gtk.org/), and [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/). The monitoring programs are written in C using mostly just [GLib](https://docs.gtk.org/glib/).
 
@@ -81,7 +81,7 @@ This information is useful for users whose theme is already broken, and could al
 
 ### Creating a fix
 
-Once you understand what is going on, you can make changes to the `themes.conf` configuration file as described in [Untangle Themes](untangle-themes.md) to fix the issue. This will involve adding the GSettings and config files to be saved and restored. You may not want to add everything that you found, and indeed should not add things blindly, in case that actually creates more problems. It is worth understanding what each of the changed GSettings and config files does, at least to the extent that saving and restoring them can be justified.
+Once you understand what is going on, you can make changes to the `themes.conf` configuration file as described in [Mend Themes](mend-themes.md) to fix the issue. This will involve adding the GSettings and config files to be saved and restored. You may not want to add everything that you found, and indeed should not add things blindly, in case that actually creates more problems. It is worth understanding what each of the changed GSettings and config files does, at least to the extent that saving and restoring them can be justified.
 
 
 ### Testing the fix
@@ -90,7 +90,7 @@ You will want to do some testing now to ensure that the fix actually works. If y
 
 From a first desktop environment that is working as desired, a typical test sequence is:
 
-1. Start Mending Wall and ensure that *Untangle Themes* is running.
+1. Start Mending Wall and ensure that *Mend Themes* is running.
 2. Log out of the first desktop environment.
 3. Log into the second desktop environment, then log out again.
 4. Log into the first desktop environment again.

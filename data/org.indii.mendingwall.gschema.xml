@@ -3,7 +3,7 @@
 	<schema id="org.indii.mendingwall" path="/org/indii/mendingwall/">
 		<key name="themes" type="b">
 			<default>false</default>
-			<summary>Untangle themes</summary>
+			<summary>Mend themes</summary>
 			<description>
 				Isolate theme configurations to avoid interference
 			</description>
