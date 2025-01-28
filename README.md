@@ -34,13 +34,15 @@ sudo pacman -S meson glib2 gtk4 libadwaita
 ```
 Other Linux distributions will almost certainly provide these packages too, although names may differ.
 
-To build Mending Wall, run from within the base directory:
+To build and install Mending Wall, run from within the base directory:
 ```bash
 meson setup build --prefix=$HOME/.local
 cd build
 meson compile
 meson install
+gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 ```
+The last line just ensures that newly-installed `.service` files in `$HOME/.local/share/dbus-1/services/` are found by D-Bus, in case that directory did not exist already. If you try to launch Mending Wall from an application menu and nothing happens, running that line should fix it, and it does not hurt to run it anyway.
 
 ## Quick start
 
