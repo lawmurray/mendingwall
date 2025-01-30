@@ -16,8 +16,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt update --assume-yes
-            sudo apt install --assume-yes --no-install-recommends \
+            apt update --assume-yes
+            apt install --assume-yes --no-install-recommends \
               g++ \
               meson \
               libgtk-4-dev \
