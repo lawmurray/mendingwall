@@ -20,7 +20,8 @@ jobs:
           command: |
             apt update --assume-yes
             apt install --assume-yes --no-install-recommends \
-              g++ \
+              gcc \
+              gettext \
               meson \
               libgtk-4-dev \
               libglib2.0-dev \
