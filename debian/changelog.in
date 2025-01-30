@@ -1,0 +1,5 @@
+doxide (@PROJECT_VERSION@-1) main; urgency=medium
+
+  * Packaged.
+
+ -- Lawrence Murray <lawrence@indii.org>  @PACKAGE_TIMESTAMP@

@@ -511,7 +511,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
   g_application_set_option_context_summary(G_APPLICATION(self),
       "- mend themes");
   g_application_set_option_context_description(G_APPLICATION(self),
-      "For more information see https://mendingwall.org");
+      "For more information see https://mendingwall.indii.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
   g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);

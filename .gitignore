@@ -1,4 +1,6 @@
 /subprojects/blueprint-compiler
 /venv
 /.cache
-
+/debian/changelog
+/debian/copyright
+/mendingwall.spec

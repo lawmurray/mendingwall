@@ -1,6 +1,6 @@
 site_name: Mending Wall
 site_description: A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.
-site_url: https://mendingwall.org
+site_url: https://mendingwall.indii.org
 repo_url: https://github.com/lawmurray/mendingwall
 repo_name: lawmurray/mendingwall
 extra:
