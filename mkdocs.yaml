@@ -25,8 +25,8 @@ extra_css:
 
 theme:
   name: material
-  logo: assets/favicon.svg
-  favicon: assets/favicon.svg
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   custom_dir: docs/overrides
   features:
     - navigation.indexes
@@ -89,4 +89,4 @@ nav:
   - mend-themes.md
   - tidy-menus.md
   - contributing.md
-  - questions-and-answers.md
+  - faq.md
