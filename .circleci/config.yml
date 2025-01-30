@@ -6,6 +6,8 @@ executors:
     docker:
       - image: ubuntu:latest
     resource_class: small
+    environment:
+      DEBIAN_FRONTEND: noninteractive
 
 jobs:
 
