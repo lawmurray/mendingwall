@@ -1,0 +1,44 @@
+version: 2.1
+
+executors:
+
+  linux:
+    docker:
+      - image: ubuntu:latest
+    resource_class: small
+
+jobs:
+
+  linux:
+    executor: linux
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update --assume-yes
+            sudo apt install --assume-yes --no-install-recommends \
+              g++ \
+              meson \
+              libgtk-4-dev \
+              libglib2.0-dev \
+              libadwaita-1-dev
+      - run:
+          name: Build
+          command: |
+            meson setup build
+            cd build
+            meson compile
+            meson install
+      - run:
+          name: Test
+          command: |
+            mendingwall -h
+            mendingwalld -h
+
+workflows:
+
+  version: 2
+  all:
+    jobs:
+      - linux
