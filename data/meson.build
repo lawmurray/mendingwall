@@ -72,13 +72,6 @@ configure_file(
     install_dir: get_option('datadir') / 'mendingwall'
 )
 
-configure_file(
-          input: 'mendingwalld.sh.in',
-         output: 'mendingwalld.sh',
-  configuration: conf,
-     install_dir: get_option('datadir') / 'mendingwall'
-)
-
 install_data(
   ['menus.conf', 'themes.conf'],
   install_dir: get_option('datadir') / 'mendingwall'
