@@ -329,6 +329,77 @@ static void on_changed_menus(gpointer user_data) {
 }
 
 static void on_startup(MendingwallDApplication* self) {
+  /* current desktop */
+  const char* desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  if (!desktop) {
+    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
+    exit(1);
+  }
+
+  /* path to save settings */
+  g_autofree char* settings_save_path = g_strconcat(g_get_user_data_dir(),
+      "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
+
+  /* basic initialization */
+  self->global = g_settings_new("org.indii.mendingwall");
+  self->config_dir = g_file_new_for_path(g_get_user_config_dir());
+  self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
+      "/", NULL);
+  self->save_path = g_strconcat(g_get_user_data_dir(), "/", "mendingwall",
+      "/", "save", "/", desktop, NULL);
+
+  const guint reserved = 8;
+  self->theme_settings = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->theme_files = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->theme_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->menus_config = g_key_file_new();
+  self->menu_dirs = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->menu_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+
+  /* load themes config file */
+  g_autoptr(GKeyFile) themes_config = g_key_file_new();
+  if (!g_key_file_load_from_data_dirs(themes_config,
+      "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file mendingwall/themes.conf\n");
+    exit(1);
+  }
+  if (!g_key_file_has_group(themes_config, desktop)) {
+    g_printerr("Desktop environment %s is not supported\n", desktop);
+    exit(1);
+  }
+
+  /* populate settings to save */
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
+      desktop, "GSettings", NULL, NULL);
+  foreach(schema_id, schema_ids) {
+    GSettings* settings = g_settings_new(schema_id);
+    g_ptr_array_add(self->theme_settings, settings);
+  }
+
+  /* populate config files to save */
+  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
+      "ConfigFiles", NULL, NULL);
+  foreach(path, paths) {
+    GFile* file = g_file_new_build_filename(g_get_user_config_dir(), path,
+        NULL);
+    g_ptr_array_add(self->theme_files, file);
+  }
+
+  /* load menus config file */
+  if (!g_key_file_load_from_data_dirs(self->menus_config,
+      "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file mendingwall/menus.conf\n");
+    exit(1);
+  }
+
+  /* populate directories with application desktop entries */
+  foreach(path, (const gchar**)g_get_system_data_dirs()) {
+    GFile* dir = g_file_new_build_filename(path, "applications",
+        NULL);
+    g_ptr_array_add(self->menu_dirs, dir);
+  }
+
+  /* start */
   gboolean restore = self->restore;
   gboolean watch = self->watch;
   gboolean themes = g_settings_get_boolean(self->global, "themes");
@@ -407,77 +478,18 @@ void mendingwalld_application_class_init(MendingwallDApplicationClass* klass) {
 }
 
 void mendingwalld_application_init(MendingwallDApplication* self) {
-  /* current desktop */
-  const gchar* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  if (!desktop) {
-    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
-    exit(1);
-  }
-
-  /* path to save settings */
-  g_autofree char* settings_save_path = g_strconcat(g_get_user_data_dir(),
-      "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
-
-  /* basic initialization */
-  self->global = g_settings_new("org.indii.mendingwall");
-  self->config_dir = g_file_new_for_path(g_get_user_config_dir());
-  self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
-      "/", NULL);
-  self->save_path = g_strconcat(g_get_user_data_dir(), "/", "mendingwall",
-      "/", "save", "/", desktop, NULL);
-
-  const guint reserved = 8;
-  self->theme_settings = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
-  self->theme_files = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
-  self->theme_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
-  self->menus_config = g_key_file_new();
-  self->menu_dirs = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
-  self->menu_monitors = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
+  self->global = NULL;
+  self->config_dir = NULL;
+  self->settings_backend = NULL;
+  self->save_path = NULL;
+  self->theme_settings = NULL;
+  self->theme_files = NULL;
+  self->theme_monitors = NULL;
+  self->menus_config = NULL;
+  self->menu_dirs = NULL;
+  self->menu_monitors = NULL;
   self->restore = FALSE;
   self->watch = FALSE;
-
-  /* load themes config file */
-  g_autoptr(GKeyFile) themes_config = g_key_file_new();
-  if (!g_key_file_load_from_data_dirs(themes_config,
-      "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_printerr("Cannot find config file mendingwall/themes.conf\n");
-    exit(1);
-  }
-  if (!g_key_file_has_group(themes_config, desktop)) {
-    g_printerr("Desktop environment %s is not supported\n", desktop);
-    exit(1);
-  }
-
-  /* populate settings to save */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
-      desktop, "GSettings", NULL, NULL);
-  foreach(schema_id, schema_ids) {
-    GSettings* settings = g_settings_new(schema_id);
-    g_ptr_array_add(self->theme_settings, settings);
-  }
-
-  /* populate config files to save */
-  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
-      "ConfigFiles", NULL, NULL);
-  foreach(path, paths) {
-    GFile* file = g_file_new_build_filename(g_get_user_config_dir(), path,
-        NULL);
-    g_ptr_array_add(self->theme_files, file);
-  }
-
-  /* load menus config file */
-  if (!g_key_file_load_from_data_dirs(self->menus_config,
-      "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
-    g_printerr("Cannot find config file mendingwall/menus.conf\n");
-    exit(1);
-  }
-
-  /* populate directories with application desktop entries */
-  foreach(path, (const gchar**)g_get_system_data_dirs()) {
-    GFile* dir = g_file_new_build_filename(path, "applications",
-        NULL);
-    g_ptr_array_add(self->menu_dirs, dir);
-  }
 }
 
 MendingwallDApplication* mendingwalld_application_new(void) {
