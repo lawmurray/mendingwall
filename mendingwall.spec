@@ -32,5 +32,7 @@ more than one can break themes and clutter menus. Mending Wall fixes this.
 %{_datadir}/%{name}/*.sh
 %{_datadir}/applications/org.indii.%{name}*.desktop
 %{_datadir}/dbus-1/services/org.indii.%{name}*.service
+%{_datadir}/glib-2.0/schemas/org.indii.mendingwall.gschema.xml
+%{_datadir}/metainfo/org.indii.mendingwall.metainfo.xml
 %{_iconsdir}/hicolor/symbolic/apps/org.indii.%{name}*.svg
 %{_iconsdir}/hicolor/scalable/apps/org.indii.%{name}*.svg
