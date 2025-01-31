@@ -15,15 +15,6 @@ config_h.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
 configure_file(output: 'config.h', configuration: config_h)
 add_project_arguments(['-I' + meson.project_build_root()], language: 'c')
 
-config_package = configuration_data()
-config_package.set('PROJECT_VERSION', meson.project_version())
-
-configure_file(
-          input: 'mendingwall.spec.in',
-         output: 'mendingwall.spec',
-  configuration: config_package
-)
-
 project_c_args = []
 test_c_args = [
   '-Wcast-align',
@@ -89,7 +80,6 @@ endforeach
 add_project_arguments(project_c_args, language: 'c')
 
 subdir('data')
-subdir('debian')
 subdir('src')
 subdir('po')
 

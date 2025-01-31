@@ -1,5 +1,5 @@
 Name: mendingwall
-Version: @PROJECT_VERSION@
+Version: 0.0.0
 Release: 1
 Summary: Hop between multiple desktop environments
 Vendor: Lawrence Murray <lawrence@indii.org>
