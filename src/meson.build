@@ -21,7 +21,7 @@ mendingwall_sources += blueprints
 mendingwall_sources += resources
 mendingwall_deps = [
   dependency('gtk4'),
-  dependency('libadwaita-1', version: '>= 1.4'),
+  dependency('libadwaita-1', version: '>= 1.5'),
   dependency('gmodule-export-2.0'),
 ]
 executable('mendingwall', mendingwall_sources,
