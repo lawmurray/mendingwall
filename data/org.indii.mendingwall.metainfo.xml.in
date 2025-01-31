@@ -7,7 +7,7 @@
   <name>Mending Wall</name>
   <summary>Hop between desktop environments</summary>
   <description>
-    Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.
+    <p>Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.</p>
   </description>
 
   <developer id="tld.vendor">
@@ -63,8 +63,8 @@
       <description translate="no">
         <p>Initial release.</p>
         <ul>
-          <li>Includes <i>Mend Themes</i> feature.</li>
-          <li>Includes <i>Tidy Menus</i> feature.</li>
+          <li>Includes <em>Mend Themes</em> feature.</li>
+          <li>Includes <em>Tidy Menus</em> feature.</li>
           <li>Supports GNOME, KDE, Cinnamon and Xfce.</li>
         </ul>
       </description>
