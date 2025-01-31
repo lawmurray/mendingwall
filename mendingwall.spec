@@ -6,7 +6,7 @@ Vendor: Lawrence Murray <lawrence@indii.org>
 License: GPL-3.0-or-later
 URL: https://mendingwall.indii.org
 Source0: %{name}-%{version}.tar.gz
-BuildRequires: gcc meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel
+BuildRequires: gcc meson blueprint-compiler gettext appstream desktop-file-utils glib2-devel gtk4-devel libadwaita-devel
 
 %description
 

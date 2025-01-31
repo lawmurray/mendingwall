@@ -18,19 +18,19 @@ Building requires Meson, Blueprint, GTK 4, GLib 2, and libadwaita.
 
 On Debian-based systems, install these with:
 ```
-sudo apt install meson blueprint-compiler libgtk-4-dev libglib2.0-dev libadwaita-1-dev
+sudo apt install meson blueprint-compiler libgtk-4-dev libglib2.0-dev libadwaita-1-dev gettext appstream desktop-file-utils
 ```
 On Fedora:
 ```
-sudo dnf install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel
+sudo dnf install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel gettext appstream desktop-file-utils
 ```
 On openSUSE:
 ```
-sudo zypper install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel
+sudo zypper install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel gettext appstream desktop-file-utils
 ```
 On Arch-based:
 ```
-sudo pacman -S meson blueprint-compiler glib2 gtk4 libadwaita
+sudo pacman -S meson blueprint-compiler glib2 gtk4 libadwaita gettext appstream desktop-file-utils
 ```
 Other Linux distributions will almost certainly provide these packages too, although names may differ.
 
