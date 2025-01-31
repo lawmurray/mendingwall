@@ -7,7 +7,7 @@
   <name>Mending Wall</name>
   <summary>Hop between desktop environments</summary>
   <description>
-    <p>Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.</p>
+    Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.
   </description>
 
   <developer id="tld.vendor">
