@@ -2,7 +2,7 @@ Source: mendingwall
 Section: devel
 Priority: optional
 Maintainer: Lawrence Murray <lawrence@indii.org>
-Build-Depends: debhelper, debhelper-compat (= 11), meson, libgtk-4-dev, libglib2.0-dev, libadwaita-1-dev
+Build-Depends: debhelper, debhelper-compat (= 11), meson, blueprint-compiler, libgtk-4-dev, libglib2.0-dev, libadwaita-1-dev
 Standards-Version: 4.6.1.1
 Homepage: https://mendingwall.indii.org
 
