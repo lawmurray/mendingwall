@@ -1,6 +1,6 @@
 Name: mendingwall
 Version: 0.0.0
-Release: 1
+Release: %autorelease
 Summary: Hop between multiple desktop environments
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: GPL-3.0-or-later
@@ -36,3 +36,6 @@ more than one can break themes and clutter menus. Mending Wall fixes this.
 %{_datadir}/metainfo/org.indii.mendingwall.metainfo.xml
 %{_iconsdir}/hicolor/symbolic/apps/org.indii.%{name}*.svg
 %{_iconsdir}/hicolor/scalable/apps/org.indii.%{name}*.svg
+
+%changelog
+%autochangelog
