@@ -14,23 +14,23 @@ Mending Wall is free software, copyright (C) 2025 Lawrence Murray, licensed unde
 
 Mending Wall is currently installed from source. A local installation to your home directory is sufficient; root permissions are not required to install or run.
 
-Building requires Meson, GTK 4, GLib 2, and libadwaita.
+Building requires Meson, Blueprint, GTK 4, GLib 2, and libadwaita.
 
 On Debian-based systems, install these with:
 ```
-sudo apt install meson libgtk-4-dev libglib2.0-dev libadwaita-1-dev
+sudo apt install meson blueprint-compiler libgtk-4-dev libglib2.0-dev libadwaita-1-dev
 ```
 On Fedora:
 ```
-sudo dnf install meson glib2-devel gtk4-devel libadwaita-devel
+sudo dnf install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel
 ```
 On openSUSE:
 ```
-sudo zypper install meson glib2-devel gtk4-devel libadwaita-devel
+sudo zypper install meson blueprint-compiler glib2-devel gtk4-devel libadwaita-devel
 ```
 On Arch-based:
 ```
-sudo pacman -S meson glib2 gtk4 libadwaita
+sudo pacman -S meson blueprint-compiler glib2 gtk4 libadwaita
 ```
 Other Linux distributions will almost certainly provide these packages too, although names may differ.
 
