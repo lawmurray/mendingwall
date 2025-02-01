@@ -1,6 +1,6 @@
 # Tidy Menus
 
-Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications on other desktop environments, but can clutter up menus with seemingly redundant applications.
+Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications in other desktop environments, but can clutter up menus with seemingly redundant applications.
 
 ![The KDE menu in light mode showing six file manager applications.](assets/kde_many_file_manager_apps_light.png#only-light){width=400}![The KDE menu in dark mode showing six file manager applications.](assets/kde_many_file_manager_apps_dark.png#only-dark){width=400}
 /// caption
@@ -16,12 +16,12 @@ To have Mending Wall tidy up menus automatically, enable its *Tidy Menus* featur
 
 ## What it does
 
-*Tidy Menus* applies rules to show some applications only in their respective desktop environment. It does not apply to all applications. The rules are generally consistent with the model that you, the user, will always prefer a native app over a non-native app. So you will use Console, Nautilus and Text Editor on GNOME, but Konsole, Dolphin and Kate on KDE Plasma.
+*Tidy Menus* applies a set of rules to show certain applications in their native desktop environment only. It does not apply to all applications. The rules are generally consistent with the notion that you, the user, will always prefer a native app over a non-native app. So you will use Console, Nautilus and Text Editor on GNOME, but Konsole, Dolphin and Kate on KDE Plasma.
 
-The rules apply mostly to core applications with counterparts in other desktop environments. They also apply to games, simply because there can be so many installed by default they clutter menus by number alone. Exceptions are made for larger applications that are too sophisticated to be considered counterparts, despite having similar aims, such as GIMP and Krita. The rules only affect visibility in menus; all applications are still available in all desktop environments and can be launched by other means (such as from the command line).
+The rules apply mostly to core applications with counterparts in other desktop environments, as well as many games. They do not apply to larger applications that are too featureful to be considered counterparts, despite having similar aims, such as GIMP and Krita. The rules only affect visibility in menus; all applications are still available in all desktop environments and can be launched by other means (such as from the command line).
 
 !!! tip
-    You can also use an app like [Libre Menu Editor](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor) or edit `.desktop` files directly to make manual changes. Mending Wall will not override changes made with other apps. The recommended approach is to enable *Tidy Menus* in Mending Wall to automate the process as much as possible, then another app for further refinement if necessary.
+    You can also use an app like [Libre Menu Editor](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor) to change menus, or edit `.desktop` files directly. Mending Wall will not override changes made with other apps. The recommended approach is to enable *Tidy Menus* in Mending Wall to automate the process as much as possible, then use another app for refinement if necessary.
 
 
 ## How it works
@@ -33,11 +33,11 @@ When *Tidy Menus* is enabled, Mending Wall starts a background process named `me
 
 The process acts as follows:
 
-1. It considers all `.desktop` files installed in the `applications` subdirectory of any directories listed in the `XDG_DATA_DIRS` environment variable.
+1. It considers all `.desktop` files installed in the `applications` subdirectory of any directories listed in the `XDG_DATA_DIRS` environment variable (e.g. `/usr/share/applications`, `/usr/local/share/applications`).
 
 2. For each `.desktop` file it determines, according to its rules, whether the `OnlyShowIn` or `NotShowIn` keys should be updated.
 
-3. If so, it copies the `.desktop` file into `$XDG_DATA_HOME/applications/` and updates those keys. It also adds an entry `X-MendingWall-Tidied=true` for record keeping, in case *Tidy Menus* is disabled in future and changes must be undone. If a `.desktop` file for the application already exists in `$XDG_DATA_HOME/applications/`, it is not changed (in this way, customizations made with other apps are not overwritten). If `XDG_DATA_HOME` does not exist then the default value `$HOME/.local/share` is assumed.
+3. If so, it copies the `.desktop` file into `$XDG_DATA_HOME/applications/` and updates those keys. It also adds an entry `X-MendingWall-Tidied=true` for record keeping, in case *Tidy Menus* is disabled in future and changes must be undone. If a `.desktop` file for the application already exists in `$XDG_DATA_HOME/applications/`, it is not changed (in this way, customizations made with other apps are not overwritten). If the environment variable `XDG_DATA_HOME` does not exist then the default value `$HOME/.local/share` is used.
 
 4. It continues to monitor for changes to any of the directories listed in `XDG_DATA_DIRS`. When changes occur it reapplies the rules. For example, if a new application is installed, one or more new `.desktop` files will appear in these directories and be subject to the rules.
 
@@ -50,7 +50,7 @@ The rules applied by *Tidy Menus* are set in the config file `menus.conf`. If th
 
 If `menus.conf` is in a system directory and you wish to make changes to it, first copy it to `$XDG_CONFIG_HOME/mendingwall/menus.conf` or `$HOME/.config/mendingwall/menus.conf`.
 
-The config file is in the [KeyFile](https://docs.gtk.org/glib/struct.KeyFile.html) format. It contains any number of group headers to identify applications, each followed by key-value pairs that specify the desktop environments in which to show that application. For example:
+The config file is a [KeyFile](https://docs.gtk.org/glib/struct.KeyFile.html). It contains any number of group headers to identify applications, each followed by key-value pairs that specify the desktop environments in which to show that application. For example:
 ```
 [org.kde.Konsole]
 OnlyShowIn=KDE

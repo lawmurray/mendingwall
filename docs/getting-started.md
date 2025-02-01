@@ -12,7 +12,7 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
 
     [:octicons-arrow-right-24: Go to package repository](https://download.indii.org)
 
--   :material-git: __Or install from source__
+-   :material-git: __Install from source__
 
     ---
   

@@ -32,7 +32,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
 
     ---
   
-    Mending Wall fixes common issues when hopping between desktop environments, such as  tiny cursors :material-cursor-default:{style="font-size:10px;"}, huge cursors :material-cursor-default:{style="font-size:24px;"}, tiny fonts :material-format-font:{style="font-size:10px;"}, huge fonts :material-format-font:{style="font-size:24px;"}, unintended dark mode changes, irksome icon changes, and scaling issues on HiDPI displays.
+    Mending Wall fixes common issues when hopping between desktop environments, such as  tiny cursors :material-cursor-default:{style="font-size:10px;"}, huge cursors :material-cursor-default:{style="font-size:24px;"}, tiny fonts :material-format-font:{style="font-size:10px;"}, huge fonts :material-format-font:{style="font-size:24px;"}, unintended dark mode changes, icon changes, and scaling issues on HiDPI displays.
 
     [:octicons-arrow-right-24: Learn more](mend-themes.md)
  
@@ -61,7 +61,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
     In future, Mending Wall may allow recovery from a state that is already broken, such as after using multiple desktop environments without Mending Wall enabled.
 
     !!! help "Work in progress"
-        This is work in progress. Consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
+        This feature is work in progress. Consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
 
 </div>
 
