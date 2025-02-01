@@ -1,5 +1,5 @@
 ---
-description: A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.
+description: A Linux app for hopping between desktop environments without broken themes or cluttered menus.
 ---
 
 <div style="text-align:center;" markdown>
@@ -8,7 +8,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
 
 # **Mending Wall**
 
-**Linux distributions offer a choice of free desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this, so you can enjoy them all.**
+**Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this, so you can enjoy them all.**
 
 [Install](getting-started.md){.md-button .md-button--primary style="margin:1em"}
 
