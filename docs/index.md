@@ -8,7 +8,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
 
 # **Mending Wall**
 
-**Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.**
+**Linux distributions offer a choice of free desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this, so you can enjoy them all.**
 
 [Install](getting-started.md){.md-button .md-button--primary style="margin:1em"}
 
@@ -40,7 +40,7 @@ description: A Linux app to help GNOME and KDE Plasma desktop environments be mo
 
     ---
   
-    Desktop environments each have their own core applications. Mending Wall tidies menus to show these only in their native desktop environment. No more six terminals, five file managers, three text editors.
+    Desktop environments each have their own core applications like a terminal, file manager, and text editor. With more than one desktop environment installed, menus can become cluttered with these. Mending Wall tidies menus to show core applications in their native desktop environment only. No more six terminals, five file managers, and three text editors.
 
     [:octicons-arrow-right-24: Learn More](tidy-menus.md)
 

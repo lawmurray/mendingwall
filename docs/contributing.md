@@ -42,6 +42,9 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
 </div>
 
+!!! help "Sponsorship"
+    If you cannot contribute time to the project, you might consider financial support instead by [becoming a sponsor](https://github.com/sponsors/lawmurray).
+
 
 ## Suggested workflow
 
@@ -65,8 +68,8 @@ Once you have chosen a work environment, you need to install at least two deskto
 
 You should now have four complete copies of the configuration in various states, from each of the four steps. You can now compare those (see below) and see what changed to cause the breakage, and propose updates to the Mending Wall config files to fix these breakages.
 
-!!! tip
-    As soon as you have some preliminary information, [start a discussion](https://github.com/lawmurray/mendingwall/discussions/) or [open an issue](https://github.com/lawmurray/mendingwall/issues/) to report. Other users may be able to help in understanding the problem and contributing a fix.
+!!! info
+    Preliminary information is valuable! As soon as you have something to share, [start a discussion](https://github.com/lawmurray/mendingwall/discussions/) or [open an issue](https://github.com/lawmurray/mendingwall/issues/). Other users may be able to help in understanding problems and contributing a fix.
 
 ### Copying configuration
 

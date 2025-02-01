@@ -23,11 +23,8 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
 </div>
 
 After installation, start the Mending Wall app and switch on the *Tidy Menus* and/or *Mend Themes* toggles. Both are recommended. The best time to do this is before you log in to a second desktop environment.
-
-!!! help "Theme already broken?"
-    This may happen if you have used multiple desktop environments **before** starting Mending Wall. It is currently a **work in progress** to provide a feature to recover from this situation. You might consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help with this.
     
-Mending Wall is in testing, and could do with [your help](contributing.md). Desktop environments are configured differently across Linux distributions and may require different interventions to fix issues, making [user feedback](contributing.md) essential. The following table summarizes the current status of testing.
+Mending Wall is in testing, and could do with [your help](contributing.md). Desktop environments are configured differently across Linux distributions and may require different interventions to fix issues, making [user feedback](contributing.md) essential. The following table summarizes the current state of testing.
 
 |              | :simple-gnome: GNOME | :simple-kde: KDE | :simple-xfce: Xfce | :simple-cinnamon: Cinnamon | [Others](contributing.md) |
 | ------------ | :---: | :-: | :--: | :------: | :----: |
