@@ -31,6 +31,7 @@ theme:
   features:
     - navigation.indexes
     - navigation.footer
+    - content.code.copy
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
