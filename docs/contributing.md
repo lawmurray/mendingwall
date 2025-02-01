@@ -16,7 +16,7 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
     ---
 
-    If you find a bug in the app, or can be more specific about what is not working for you, open an issue.
+    If you find a bug, or can be more specific about what is not working for you, open an issue. It is helpful to provide specific steps to reproduce it.
 
     [:octicons-arrow-right-24: Open an issue](https://github.com/lawmurray/mendingwall/issues)
 
@@ -24,7 +24,7 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
     ---
 
-    The *Mend Menus* and *Tidy Menus* features use simple config files. No programming experience is necessary to finetune their behavior, such as adding new applications, new theme-related settings and config files to save, or even whole new desktop environments.
+    Mending Wall uses simple config files, and no programming experience is necessary to tweak them. This can involve adding new applications to *Tidy Menus*, additional theme config to *Mend Menus*, or support for a whole new desktop environment.
 
     [:octicons-arrow-right-24: Learn about configuring Mend Themes](mend-themes.md#configuration)
 
@@ -45,10 +45,13 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
 ## Suggested workflow
 
+!!! info
+    This section is written for potential contributors who would like to explore the issues that Mending Wall seeks to address, in order to improve the app and Linux desktop experience.
+
 You have several options as a work environment:
 
-1. Use a virtual machine, perhaps run via [Boxes](https://apps.gnome.org/Boxes/) or [VirtualBox](https://www.virtualbox.org/) to make it easy. Install a Linux distribution to work with. There is value in testing different Linux distributions as they often apply their own themes to desktop environments and this may reveal new issues that require attention. This might be a good chance to try a new distribution!
-2. Use your current system but first create a snapshot that you can restore in case of problems, perhaps using [Timeshift](https://github.com/linuxmint/timeshift) or [Snapper](http://snapper.io/)
+1. Use a virtual machine, perhaps run via [Boxes](https://apps.gnome.org/Boxes/), [virt-manager](https://virt-manager.org/) or [VirtualBox](https://www.virtualbox.org/), and install a Linux distribution to work with. There is value in testing different Linux distributions, so consider it a chance to try something new!
+2. Use your current system but first create a snapshot that you can restore in case of problems, perhaps using [Timeshift](https://github.com/linuxmint/timeshift) or [Snapper](http://snapper.io/).
 3. Use your current system if you are determined to fix everything that breaks anyway. You do, after all, only live once.
 
 ### Investigating breakages
@@ -60,10 +63,10 @@ Once you have chosen a work environment, you need to install at least two deskto
 3. Log into the first desktop environment again. Often something will now be broken, e.g. the theme, cursors, icons, fonts. Make a copy of the (broken) configuration.
 4. Fix what is broken in the first desktop environment, which can usually be achieved through its settings app. Make a copy of the (now fixed) configuration.
 
-You should now have four complete copies of the configuration in various states, from each of the four steps. You can now compare those and see what changed to cause the breakage, and propose updates to the Mending Wall config files to address these.
+You should now have four complete copies of the configuration in various states, from each of the four steps. You can now compare those (see below) and see what changed to cause the breakage, and propose updates to the Mending Wall config files to fix these breakages.
 
 !!! tip
-    Now is a great time to [open an issue](https://github.com/lawmurray/mendingwall/issues/) to report the preliminary results of your investigation. Other users may be able to help in understanding the problem and contributing a fix.
+    As soon as you have some preliminary information, [start a discussion](https://github.com/lawmurray/mendingwall/discussions/) or [open an issue](https://github.com/lawmurray/mendingwall/issues/) to report. Other users may be able to help in understanding the problem and contributing a fix.
 
 ### Copying configuration
 
@@ -72,26 +75,29 @@ Desktop environments keep their configuration in one of two places:
 1. GSettings, stored in the dconf database, and
 2. config files, usually stored in `$HOME/.config/`.
 
-Choose a directory in which to create copies. By way of example, we can use `$HOME/backup`. Make that directory, change into it, and create a subdirectory for the new copy:
-```
-mkdir -p $HOME/backup
-cd $HOME/backup
-mkdir config1
-```
-Back up your entire `$HOME/.config` directory into there:
-```
-cp -r $HOME/.config config1/.
-```
-Dump your entire dconf database into there:
-```
-dconf dump / > config1/dconf.dump
-```
-You now have one copy, and can repeat with subdirectories `config2`, `config3`, `config4`, etc, at various steps.
+To create a copy of these, the suggested approach is:
+
+1. Choose a working directory, e.g. `$HOME/backup`. Make that directory, change into it, and create a subdirectory for the copy, e.g. `copy1`:
+    ```
+    mkdir -p $HOME/backup
+    cd $HOME/backup
+    mkdir copy1
+    ```
+2. Dump your entire dconf database into the subdirectory:
+    ```
+    dconf dump / > copy1/dconf.dump
+    ```
+3. Back up your entire `$HOME/.config` directory into the subdirectory:
+    ```
+    cp -r $HOME/.config copy1/.
+    ```
+    
+You now have the first copy in `copy1`, and can repeat with subdirectories `copy2`, `copy3`, `copy4`, etc, to take a snapshot of the configuration state at various times.
 
 
 ### Comparing configuration
 
-Once you have multiple copies of the configuration using the process described above, you can make comparisons just by using a recursive `diff` from within the working directory. To show just the files that have changed, use:
+Once you have multiple copies of the configuration, you can make comparisons with a recursive `diff` from within the working directory. To show just the files that have changed, use:
 ```
 diff -qr config1 config2
 ```
@@ -99,7 +105,7 @@ To show all the lines that have changed, use:
 ```
 diff -r config1 config2
 ```
-Changes in the `dconf.dump` file that you created with `dconf dump` indicate changes in GSettings paths, not config files, of course.
+Changes between `dconf.dump` files indicate changes in GSettings paths.
 
 
 ### Understanding the changes
@@ -116,23 +122,22 @@ Once you understand what is going on, you can make changes to the `themes.conf` 
 
 ### Testing the fix
 
-You will want to do some testing now to ensure that the fix actually works. If you found a way to fix the theme without using Mending Wall, then your work environment should be in a good state to continue. Otherwise, you may have to create a fresh virtual machine where you can at least test whether your fix can prevent the problems in the first place.
-
-From a first desktop environment that is working as desired, a typical test sequence is:
+You will want to do some testing now to ensure that the fix actually works. Using a fresh virtual machine is ideal to test from scratch. From a first desktop environment that is working as desired, a typical test sequence is:
 
 1. Start Mending Wall and ensure that *Mend Themes* is running.
 2. Log out of the first desktop environment.
-3. Log into the second desktop environment, then log out again.
-4. Log into the first desktop environment again.
-5. See whether your fix worked.
-6. Iterate if necessary.
+3. Log into the second desktop environment.
+4. Log out of the second desktop environment.
+5. Log into the first desktop environment again.
+6. See whether your fix worked.
+7. Iterate if necessary.
 
 
 ## Useful tools
 
-- For an app to modify `.desktop` files, consider [Main Menu](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor).
-
 - For an app to browse the `dconf` database and make edits, consider [Dconf Editor](https://apps.gnome.org/DconfEditor/).
+
+- For an app to modify `.desktop` files, consider [Libre Menu Editor](https://flathub.org/apps/page.codeberg.libre_menu_editor.LibreMenuEditor).
 
 - To watch for changes to the dconf database, use the `dconf` command-line tool:
    ```

@@ -27,16 +27,16 @@ After installation, start the Mending Wall app and switch on the *Tidy Menus* an
 !!! help "Theme already broken?"
     This may happen if you have used multiple desktop environments **before** starting Mending Wall. It is currently a **work in progress** to provide a feature to recover from this situation. You might consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help with this.
     
-Mending Wall is currently being tested, and could do with [your help](contributing.md). Desktop environments are all configured differently, but Linux distributions may also configure the same desktop environment differently, and so it is important to test widely across the two dimensions. As a guide, the following represents the current status.
+Mending Wall is in testing, and could do with [your help](contributing.md). Desktop environments are configured differently across Linux distributions and may require different interventions to fix issues, making [user feedback](contributing.md) essential. The following table summarizes the current status of testing.
 
 |              | :simple-gnome: GNOME | :simple-kde: KDE | :simple-xfce: Xfce | :simple-cinnamon: Cinnamon | [Others](contributing.md) |
 | ------------ | :---: | :-: | :--: | :------: | :----: |
-| :simple-ubuntu:&nbsp;**Ubuntu**<br/>:simple-debian:&nbsp;*Debian*<br/>:simple-linuxmint:&nbsp;*Linux Mint* | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
+| :simple-ubuntu:&nbsp;**Ubuntu**<br/>:simple-debian:&nbsp;*Debian*<br/>:simple-linuxmint:&nbsp;*Linux Mint* | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
 | :simple-endeavouros:&nbsp;**EndeavourOS**<br/>:simple-archlinux:&nbsp;*Arch&nbsp;Linux*<br/>:simple-manjaro:&nbsp;*Manjaro*| :material-check: | :material-check: |  :material-check: |  :material-check:| :material-checkbox-blank-circle-outline: |
 | :simple-opensuse:&nbsp;**openSUSE** | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
-| :simple-fedora:&nbsp;**Fedora** | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
+| :simple-fedora:&nbsp;**Fedora** | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
 | [:simple-linux: Others](contributing.md) | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
 /// caption
-**:simple-linux: Distribution** that has been tested. *:simple-linux: Distribution* that has not been tested, but is similar to one that has. :material-check: Tested :material-checkbox-blank-circle-outline: Not tested.
+**:simple-linux: Distribution** that has been tested. *:simple-linux: Distribution* that has not been tested, but is similar to one that has. :material-check: Tested. :material-checkbox-blank-circle-outline: Not tested.
 ///
 
