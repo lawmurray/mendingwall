@@ -34,7 +34,7 @@ description: A Linux app for hopping between desktop environments without broken
   
     Mending Wall fixes common issues when hopping between desktop environments, such as  tiny cursors :material-cursor-default:{style="font-size:10px;"}, huge cursors :material-cursor-default:{style="font-size:24px;"}, tiny fonts :material-format-font:{style="font-size:10px;"}, huge fonts :material-format-font:{style="font-size:24px;"}, unintended dark mode changes, icon changes, and scaling issues on HiDPI displays.
 
-    [:octicons-arrow-right-24: Learn more](mend-themes.md)
+    [:octicons-arrow-right-24: Learn more about fixing themes](mend-themes.md)
  
 -   :material-comment: __Tidy Menus__
 
@@ -42,7 +42,7 @@ description: A Linux app for hopping between desktop environments without broken
   
     Desktop environments each have their own core applications like a terminal, file manager, and text editor. With more than one desktop environment installed, menus can become cluttered with these. Mending Wall tidies menus to show core applications in their native desktop environment only. No more six terminals, five file managers, and three text editors.
 
-    [:octicons-arrow-right-24: Learn More](tidy-menus.md)
+    [:octicons-arrow-right-24: Learn more about tidying menus](tidy-menus.md)
 
 -   :material-slope-downhill: __Easy to use__
 
