@@ -50,7 +50,7 @@ description: A Linux app for hopping between desktop environments without broken
   
     Start it up and switch it on. The best time is before you log in to a second desktop environment.
 
-    ![Screenshot of the main application window, light mode](assets/screenshot_light.png#only-light){width=400}![Screenshot of the main application window, dark mode](assets/screenshot_dark.png#only-dark){width=400}
+    ![Screenshot of the main application window, light mode](assets/screenshot_light.webp#only-light){width=400 height=490}![Screenshot of the main application window, dark mode](assets/screenshot_dark.webp#only-dark){width=400 height=490}
     /// caption
     ///
 

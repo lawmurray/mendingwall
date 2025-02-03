@@ -2,12 +2,12 @@
 
 Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications in other desktop environments, but can clutter up menus with seemingly redundant applications.
 
-![The KDE menu in light mode showing six file manager applications.](assets/kde_many_file_manager_apps_light.png#only-light){width=400}![The KDE menu in dark mode showing six file manager applications.](assets/kde_many_file_manager_apps_dark.png#only-dark){width=400}
+![The KDE menu in light mode showing six file manager applications.](assets/kde_many_file_manager_apps_light.webp#only-light){width=400}![The KDE menu in dark mode showing six file manager applications.](assets/kde_many_file_manager_apps_dark.webp#only-dark){width=400}
 /// caption
 With GNOME, KDE and Xfce installed, the KDE menu shows six file manager applications.
 ///
 
-![The GNOME menu showing six terminal applications.](assets/gnome_many_terminal_apps.png){width=400}
+![The GNOME menu showing six terminal applications.](assets/gnome_many_terminal_apps.webp){width=400}
 /// caption
 Simlarly, the GNOME dash shows six terminal applications.
 ///
