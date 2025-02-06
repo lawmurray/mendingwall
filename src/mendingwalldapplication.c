@@ -131,8 +131,8 @@ static void restore_file(MendingwallDApplication* self, GFile* file) {
   }
 }
 
-static void update_app(MendingwallDApplication* self, const char* basename,
-    GKeyFile* app_file) {
+static gboolean update_app(MendingwallDApplication* self,
+    const char* basename, GKeyFile* app_file) {
   /* update OnlyShowIn */
   g_auto(GStrv) only_show_in = g_key_file_get_string_list(
       self->menus_config, basename, "OnlyShowIn", NULL, NULL);
@@ -152,6 +152,8 @@ static void update_app(MendingwallDApplication* self, const char* basename,
   /* add custom marker */
   g_key_file_set_boolean(app_file, "Desktop Entry", "X-MendingWall-Tidy",
       TRUE);
+
+  return only_show_in || not_show_in;
 }
 
 static void tidy_app(MendingwallDApplication* self, const char* basename) {
@@ -161,14 +163,14 @@ static void tidy_app(MendingwallDApplication* self, const char* basename) {
   if (g_key_file_load_from_data_dirs(app_file, app_path, NULL,
       G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     /* update app file */
-    update_app(self, basename, app_file);
-
-    /* save to user's data directory, if it does not already exist there */
-    g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
-        "applications", basename, NULL);
-    g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
-    if (!g_file_query_exists(to_file, NULL)) {
-      g_key_file_save_to_file(app_file, to_path, NULL);
+    if (update_app(self, basename, app_file)) {
+      /* save to user's data directory, if it does not already exist there */
+      g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
+          "applications", basename, NULL);
+      g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
+      if (!g_file_query_exists(to_file, NULL)) {
+        g_key_file_save_to_file(app_file, to_path, NULL);
+      }
     }
   }
 }
@@ -180,20 +182,20 @@ static void untidy_app(MendingwallDApplication* self, const char* basename) {
   if (g_key_file_load_from_data_dirs(app_file, app_path, NULL,
       G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     /* update app file */
-    update_app(self, basename, app_file);
-
-    /* check if a matching desktop entry file exists in the user's data
-     * directory; if so and its contents match what would be written, delete
-     * it, otherwise custom changes have been made so leave it */
-    g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
-        app_path, NULL);
-    g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
-    if (g_file_query_exists(to_file, NULL)) {
-      g_autofree gchar* app_data = g_key_file_to_data(app_file, NULL, NULL);
-      g_autofree gchar* to_data = NULL;
-      g_file_load_contents(to_file, NULL, &to_data, NULL, NULL, NULL);
-      if (g_str_equal(app_data, to_data)) {
-        g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    if (update_app(self, basename, app_file)) {
+      /* check if a matching desktop entry file exists in the user's data
+      * directory; if so and its contents match what would be written, delete
+      * it, otherwise custom changes have been made so leave it */
+      g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
+          app_path, NULL);
+      g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
+      if (g_file_query_exists(to_file, NULL)) {
+        g_autofree gchar* app_data = g_key_file_to_data(app_file, NULL, NULL);
+        g_autofree gchar* to_data = NULL;
+        g_file_load_contents(to_file, NULL, &to_data, NULL, NULL, NULL);
+        if (g_str_equal(app_data, to_data)) {
+          g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+        }
       }
     }
   }
