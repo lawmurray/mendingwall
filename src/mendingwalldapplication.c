@@ -495,7 +495,7 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
 MendingwallDApplication* mendingwalld_application_new(void) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(
       g_object_new(MENDINGWALL_TYPE_D_APPLICATION,
-          "application-id", "org.indii.mendingwalld",
+          "application-id", "org.indii.mendingwall.watch",
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
           NULL));

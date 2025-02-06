@@ -32,8 +32,8 @@ static void launch_daemon(MendingwallApplication* self) {
   g_settings_sync();  // ensure current settings visible in new process
   g_dbus_connection_call(
     g_application_get_dbus_connection(G_APPLICATION(self)),
-    "org.indii.mendingwalld",
-    "/org/indii/mendingwalld",
+    "org.indii.mendingwall.watch",
+    "/org/indii/mendingwall/watch",
     "org.freedesktop.Application",
     "Activate",
     g_variant_new_parsed("({'test': <1>}, )"),
@@ -57,8 +57,8 @@ static void on_changed(MendingwallApplication* self) {
 
   g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
-  g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwalld.desktop", NULL);
-  g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwalld.restore.desktop", NULL);
+  g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
+  g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
   g_autofree gchar* kde_path = g_build_filename(kde_env_path, "mendingwalld.sh", NULL);
 
   if (themes_enabled || menus_enabled) {
@@ -71,13 +71,13 @@ static void on_changed(MendingwallApplication* self) {
 
     /* install daemon autostart */
     g_autoptr(GKeyFile) daemon_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(daemon_autostart, "mendingwall/org.indii.mendingwalld.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(daemon_autostart, "mendingwall/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(daemon_autostart, daemon_path, NULL);
     }
 
     /* install restore autostart (used for everything but KDE) */
     g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwalld.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(restore_autostart, restore_path, NULL);
     }
 

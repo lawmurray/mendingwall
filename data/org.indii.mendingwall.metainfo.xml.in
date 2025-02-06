@@ -10,7 +10,7 @@
     <p>Linux distributions offer a choice of desktop environment, but installing more than one can break themes and clutter menus. Mending Wall fixes this.</p>
   </description>
 
-  <developer id="tld.vendor">
+  <developer id="org.indii">
     <name>Lawrence Murray</name>
   </developer>
 
@@ -56,6 +56,11 @@
       <caption>Mending Wall application, light mode.</caption>
     </screenshot>
   </screenshots>
+
+  <provides>
+    <binary>mendingwall</binary>
+    <binary>mendingwalld</binary>
+  </provides>
 
   <releases>
     <release version="0.1.0" date="2025-02-01">

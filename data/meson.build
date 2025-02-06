@@ -17,12 +17,12 @@ desktop_file = i18n.merge_file(
 
 restore_autostart_file = i18n.merge_file(
         input: configure_file(
-                         input: 'org.indii.mendingwalld.desktop.in',
-                        output: 'org.indii.mendingwalld.desktop.configure',
+                         input: 'org.indii.mendingwall.watch.desktop.in',
+                        output: 'org.indii.mendingwall.watch.desktop.configure',
                  configuration: conf,
                        install: false,
                ),
-       output: 'org.indii.mendingwalld.desktop',
+       output: 'org.indii.mendingwall.watch.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -31,12 +31,12 @@ restore_autostart_file = i18n.merge_file(
 
 daemon_autostart_file = i18n.merge_file(
         input: configure_file(
-                         input: 'org.indii.mendingwalld.restore.desktop.in',
-                        output: 'org.indii.mendingwalld.restore.desktop.configure',
+                         input: 'org.indii.mendingwall.restore.desktop.in',
+                        output: 'org.indii.mendingwall.restore.desktop.configure',
                  configuration: conf,
                        install: false,
                ),
-       output: 'org.indii.mendingwalld.restore.desktop',
+       output: 'org.indii.mendingwall.restore.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -59,8 +59,8 @@ configure_file(
 )
 
 configure_file(
-          input: 'org.indii.mendingwalld.service.in',
-         output: 'org.indii.mendingwalld.service',
+          input: 'org.indii.mendingwall.watch.service.in',
+         output: 'org.indii.mendingwall.watch.service',
   configuration: conf,
     install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
