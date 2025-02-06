@@ -450,18 +450,30 @@ void mendingwalld_application_dispose(GObject* o) {
   g_clear_object(&self->settings_backend);
   
   g_free(self->save_path);
-  g_ptr_array_free(self->theme_settings, TRUE);
-  g_ptr_array_free(self->theme_files, TRUE);
-  g_ptr_array_free(self->theme_monitors, TRUE);
+  if (self->theme_settings) {
+    g_ptr_array_free(self->theme_settings, TRUE);
+  }
+  if (self->theme_files) {
+    g_ptr_array_free(self->theme_files, TRUE);
+  }
+  if (self->theme_monitors) {
+    g_ptr_array_free(self->theme_monitors, TRUE);
+  }
 
   self->save_path = NULL;
   self->theme_settings = NULL;
   self->theme_files = NULL;
   self->theme_monitors = NULL;
 
-  g_key_file_free(self->menus_config);
-  g_ptr_array_free(self->menu_dirs, TRUE);
-  g_ptr_array_free(self->menu_monitors, TRUE);
+  if (self->menus_config) {
+    g_key_file_free(self->menus_config);
+  }
+  if (self->menu_dirs) {
+    g_ptr_array_free(self->menu_dirs, TRUE);
+  }
+  if (self->menu_monitors) {
+    g_ptr_array_free(self->menu_monitors, TRUE);
+  }
 
   self->menus_config = NULL;
   self->menu_dirs = NULL;
