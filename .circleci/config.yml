@@ -16,8 +16,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt update --assume-yes
-            apt install --assume-yes --no-install-recommends \
+            sudo apt update --assume-yes
+            sudo apt install --assume-yes --no-install-recommends \
               ca-certificates \
               git \
               ssh \
