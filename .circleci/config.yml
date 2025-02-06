@@ -46,9 +46,26 @@ jobs:
             mendingwall -h
             mendingwalld -h
 
+  deploy:
+    executor: linux
+    steps:
+      - run:
+          name: Trigger package update
+          command: |
+              curl -X POST https://circleci.com/api/v2/project/gh/lawmurray/download.indii.org/pipeline \
+                --header "Circle-Token: $CIRCLE_TOKEN" \
+                --header "content-type: application/json" \
+                --data '{"branch": "main"}'
+
 workflows:
 
   version: 2
   all:
     jobs:
       - linux
+      - deploy:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
