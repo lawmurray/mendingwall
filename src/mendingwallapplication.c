@@ -59,7 +59,7 @@ static void on_changed(MendingwallApplication* self) {
   g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
   g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
   g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
-  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "mendingwalld.sh", NULL);
+  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
 
   if (themes_enabled || menus_enabled) {
     /* make autostart directories in case they do not exist */
@@ -71,13 +71,13 @@ static void on_changed(MendingwallApplication* self) {
 
     /* install daemon autostart */
     g_autoptr(GKeyFile) daemon_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(daemon_autostart, "mendingwall/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(daemon_autostart, "applications/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(daemon_autostart, daemon_path, NULL);
     }
 
     /* install restore autostart (used for everything but KDE) */
     g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(restore_autostart, "applications/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(restore_autostart, restore_path, NULL);
     }
 
@@ -85,11 +85,11 @@ static void on_changed(MendingwallApplication* self) {
      * load_from_data_dirs() type function except for keyfiles, so enumerate
      * search */
     g_autoptr(GFile) kde_from = g_file_new_build_filename(
-        g_get_user_data_dir(), "mendingwall", "mendingwalld.sh", NULL);
+        g_get_user_data_dir(), "mendingwall", "org.indii.mendingwall.restore.sh", NULL);
     if (!g_file_query_exists(kde_from, NULL)) {
       foreach (dir, (const gchar**)g_get_system_data_dirs()) {
         kde_from = g_file_new_build_filename(dir, "mendingwall",
-            "mendingwalld.sh", NULL);
+            "org.indii.mendingwall.restore.sh", NULL);
         if (g_file_query_exists(kde_from, NULL)) {
           break;
         }
