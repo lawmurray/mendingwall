@@ -1,5 +1,5 @@
 site_name: Mending Wall
-site_description: A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.
+site_description: A Linux app for hopping between desktop environments without breakages.
 site_url: https://mendingwall.indii.org
 repo_url: https://github.com/lawmurray/mendingwall
 repo_name: lawmurray/mendingwall
@@ -58,8 +58,6 @@ theme:
         name: Switch to system preference
   icon:
     repo: material/github
-    admonition:
-      success: material/package-down
 
 markdown_extensions:
   - def_list
@@ -73,11 +71,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_div_format
   - pymdownx.tabbed:
       alternate_style: true
 plugins:
@@ -91,3 +84,4 @@ nav:
   - tidy-menus.md
   - contributing.md
   - faq.md
+
