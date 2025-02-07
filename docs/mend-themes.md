@@ -4,12 +4,12 @@ Applications native to one desktop environment can look out of place when run on
 
 To unify their look, desktop environments tweak themes to have non-native applications blend in better. They may not revert those tweaks on log out, however, leaving you with a mess when you then log in to a different desktop environment.
 
-![Screenshot of Nautilus (a file manager) in light mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.](assets/gnome_fixed_light.webp#only-light){width=400}![Screenshot of Nautilus (a file manager) in dark mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.](assets/gnome_fixed_dark.webp#only-dark){width=400}
+![Screenshot of Nautilus (a file manager) in light mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.](assets/gnome_fixed_light.webp#only-light){width=400 height=522}![Screenshot of Nautilus (a file manager) in dark mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.](assets/gnome_fixed_dark.webp#only-dark){width=400 height=522}
 /// caption
 GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.
 ///
 
-![Screenshot of Nautilus (a file manager) in light mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).](assets/gnome_broken_light.webp#only-light){width=400}![Screenshot of Nautilus (a file manager) in dark mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).](assets/gnome_broken_dark.webp#only-dark){width=400}
+![Screenshot of Nautilus (a file manager) in light mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).](assets/gnome_broken_light.webp#only-light){width=400 height=522}![Screenshot of Nautilus (a file manager) in dark mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).](assets/gnome_broken_dark.webp#only-dark){width=400 height=522}
 /// caption
 GNOME after using KDE Plasma: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).
 ///

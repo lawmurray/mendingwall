@@ -76,7 +76,6 @@ markdown_extensions:
 plugins:
   - search
   - social
-  - glightbox
 nav:
   - index.md
   - getting-started.md
