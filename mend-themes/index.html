@@ -58,8 +58,6 @@
       
     
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
-    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -93,7 +91,16 @@
       
     
     
-  </head>
+   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -103,7 +110,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -160,9 +167,19 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
@@ -170,9 +187,9 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
@@ -564,14 +581,18 @@
 <h1 id="mend-themes">Mend Themes</h1>
 <p>Applications native to one desktop environment can look out of place when run on another. For example, a GNOME app running on KDE Plasma may have a different title bar, button style, and icon style; similarly for a KDE Plasma app run on GNOME.</p>
 <p>To unify their look, desktop environments tweak themes to have non-native applications blend in better. They may not revert those tweaks on log out, however, leaving you with a mess when you then log in to a different desktop environment.</p>
-<p><img alt="Screenshot of Nautilus (a file manager) in light mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme." src="../assets/gnome_fixed_light.webp#only-light" width="400" /><img alt="Screenshot of Nautilus (a file manager) in dark mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme." src="../assets/gnome_fixed_dark.webp#only-dark" width="400" />
-/// caption
-GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.
-///</p>
-<p><img alt="Screenshot of Nautilus (a file manager) in light mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma)." src="../assets/gnome_broken_light.webp#only-light" width="400" /><img alt="Screenshot of Nautilus (a file manager) in dark mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma)." src="../assets/gnome_broken_dark.webp#only-dark" width="400" />
-/// caption
-GNOME after using KDE Plasma: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).
-///</p>
+<figure>
+<p><a class="glightbox" href="../assets/gnome_fixed_light.webp#only-light" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Screenshot of Nautilus (a file manager) in light mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme." src="../assets/gnome_fixed_light.webp#only-light" width="400" /></a><a class="glightbox" href="../assets/gnome_fixed_dark.webp#only-dark" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Screenshot of Nautilus (a file manager) in dark mode on GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme." src="../assets/gnome_fixed_dark.webp#only-dark" width="400" /></a></p>
+<figcaption>
+<p>GNOME before using KDE Plasma: the icons and cursor follow the default Adwaita theme.</p>
+</figcaption>
+</figure>
+<figure>
+<p><a class="glightbox" href="../assets/gnome_broken_light.webp#only-light" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Screenshot of Nautilus (a file manager) in light mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma)." src="../assets/gnome_broken_light.webp#only-light" width="400" /></a><a class="glightbox" href="../assets/gnome_broken_dark.webp#only-dark" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="Screenshot of Nautilus (a file manager) in dark mode on GNOME after using KDE: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma)." src="../assets/gnome_broken_dark.webp#only-dark" width="400" /></a></p>
+<figcaption>
+<p>GNOME after using KDE Plasma: the cursor is large and poorly rendered, the icons and cursors now follow the Breeze theme (default for KDE Plasma).</p>
+</figcaption>
+</figure>
 <p>To have Mending Wall fix all this, enable the <em>Mend Themes</em> feature. It ensures that the theme chosen for each desktop environment is maintained across sessions, even when running other desktop environments in between.</p>
 <h2 id="what-it-does">What it does</h2>
 <p><em>Mend Themes</em> saves the theme during each desktop session, then restores it when you next log in to the same desktop environment. For example:</p>
@@ -604,13 +625,13 @@ GNOME after using KDE Plasma: the cursor is large and poorly rendered, the icons
 </div>
 <p>The specific GSettings paths and config files to back up and restore are set in the config file <code>themes.conf</code>. If the environment variable <code>XDG_CONFIG_HOME</code> is set and <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> exists then that file is used, otherwise <code>$HOME/.config/mendingwall/themes.conf</code>, otherwise the directories listed in <code>XDG_CONFIG_DIRS</code> are checked in order for <code>mendingwall/themes.conf</code> until the file is found.</p>
 <p>If <code>themes.conf</code> is in a system directory and you wish to make changes to it, first copy it to <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> or <code>$HOME/.config/mendingwall/themes.conf</code>.</p>
-<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:</p>
-<pre><code>[GNOME]
+<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:
+<div class="highlight"><pre><span></span><code>[GNOME]
 GSettings=org.gnome.desktop.interface
 
 [KDE]
 ConfigFiles=kwinrc;kcminputrc
-</code></pre>
+</code></pre></div></p>
 <p>The group headers are surrounded by square brackets (<code>[...]</code>) and identify the desktop environments. The environment variable <code>XDG_CURRENT_DESKTOP</code> is used to determine which group to use. If <code>XDG_CURRENT_DESKTOP</code> lists multiple desktop environments (e.g. <code>Budgie:GNOME</code>, note colon-separated in this case, as per the <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">specification</a>) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. <code>Budgie:GNOME</code> really just indicates <a href="https://buddiesofbudgie.org/">Budgie</a>).</p>
 <p>Each key is followed by an equals sign (<code>=</code>), and where multiple values are required they are separated by semicolons (<code>;</code>). Recognized keys are:</p>
 <table>
@@ -775,11 +796,13 @@ ConfigFiles=kwinrc;kcminputrc
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.footer"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.footer", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
       
     
-  </body>
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
 </html>
