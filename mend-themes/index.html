@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A Linux app for hopping between desktop environments without breakages.">
+        <meta name="description" content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.">
       
       
       
@@ -58,6 +58,8 @@
       
     
     
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -69,7 +71,7 @@
       
         <meta  property="og:title"  content="Mend Themes - Mending Wall" >
       
-        <meta  property="og:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  property="og:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  property="og:image"  content="https://mendingwall.indii.org/assets/images/social/mend-themes.png" >
       
@@ -85,7 +87,7 @@
       
         <meta  name="twitter:title"  content="Mend Themes - Mending Wall" >
       
-        <meta  name="twitter:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  name="twitter:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  name="twitter:image"  content="https://mendingwall.indii.org/assets/images/social/mend-themes.png" >
       
@@ -625,13 +627,13 @@
 </div>
 <p>The specific GSettings paths and config files to back up and restore are set in the config file <code>themes.conf</code>. If the environment variable <code>XDG_CONFIG_HOME</code> is set and <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> exists then that file is used, otherwise <code>$HOME/.config/mendingwall/themes.conf</code>, otherwise the directories listed in <code>XDG_CONFIG_DIRS</code> are checked in order for <code>mendingwall/themes.conf</code> until the file is found.</p>
 <p>If <code>themes.conf</code> is in a system directory and you wish to make changes to it, first copy it to <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> or <code>$HOME/.config/mendingwall/themes.conf</code>.</p>
-<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:
-<div class="highlight"><pre><span></span><code>[GNOME]
+<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:</p>
+<pre><code>[GNOME]
 GSettings=org.gnome.desktop.interface
 
 [KDE]
 ConfigFiles=kwinrc;kcminputrc
-</code></pre></div></p>
+</code></pre>
 <p>The group headers are surrounded by square brackets (<code>[...]</code>) and identify the desktop environments. The environment variable <code>XDG_CURRENT_DESKTOP</code> is used to determine which group to use. If <code>XDG_CURRENT_DESKTOP</code> lists multiple desktop environments (e.g. <code>Budgie:GNOME</code>, note colon-separated in this case, as per the <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">specification</a>) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. <code>Budgie:GNOME</code> really just indicates <a href="https://buddiesofbudgie.org/">Budgie</a>).</p>
 <p>Each key is followed by an equals sign (<code>=</code>), and where multiple values are required they are separated by semicolons (<code>;</code>). Recognized keys are:</p>
 <table>

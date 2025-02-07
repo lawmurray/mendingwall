@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A Linux app for hopping between desktop environments without breakages.">
+        <meta name="description" content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.">
       
       
       
@@ -58,6 +58,8 @@
       
     
     
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -69,7 +71,7 @@
       
         <meta  property="og:title"  content="Tidy Menus - Mending Wall" >
       
-        <meta  property="og:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  property="og:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  property="og:image"  content="https://mendingwall.indii.org/assets/images/social/tidy-menus.png" >
       
@@ -85,7 +87,7 @@
       
         <meta  name="twitter:title"  content="Tidy Menus - Mending Wall" >
       
-        <meta  name="twitter:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  name="twitter:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  name="twitter:image"  content="https://mendingwall.indii.org/assets/images/social/tidy-menus.png" >
       
@@ -628,13 +630,13 @@
 </div>
 <p>The rules applied by <em>Tidy Menus</em> are set in the config file <code>menus.conf</code>. If the environment variable <code>XDG_CONFIG_HOME</code> is set and <code>$XDG_CONFIG_HOME/mendingwall/menus.conf</code> exists then that file is used, otherwise <code>$HOME/.config/mendingwall/menus.conf</code>, otherwise the directories listed in <code>XDG_CONFIG_DIRS</code> are checked in order for <code>mendingwall/menus.conf</code> until the file is found.</p>
 <p>If <code>menus.conf</code> is in a system directory and you wish to make changes to it, first copy it to <code>$XDG_CONFIG_HOME/mendingwall/menus.conf</code> or <code>$HOME/.config/mendingwall/menus.conf</code>.</p>
-<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify applications, each followed by key-value pairs that specify the desktop environments in which to show that application. For example:
-<div class="highlight"><pre><span></span><code>[org.kde.Konsole]
+<p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify applications, each followed by key-value pairs that specify the desktop environments in which to show that application. For example:</p>
+<pre><code>[org.kde.Konsole]
 OnlyShowIn=KDE
 
 [org.gnome.Console]
 OnlyShowIn=GNOME;X-Cinnamon
-</code></pre></div></p>
+</code></pre>
 <p>The group headers are surrounded by square brackets (<code>[...]</code>) and identify the applications. Each should be the name of the <code>.desktop</code> file of the application, but without the <code>.desktop</code> extension. The names are usually, but not always, reverse domain-name identifiers (e.g. they start with <code>org.gnome.</code> or <code>org.kde.</code>).</p>
 <p>Each key is followed by an equals sign (<code>=</code>), and where multiple values are required they are separated by semicolons (<code>;</code>). Recognized keys are:</p>
 <table>

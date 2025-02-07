@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A Linux app for hopping between desktop environments without breakages.">
+        <meta name="description" content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly.">
       
       
       
@@ -58,6 +58,8 @@
       
     
     
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -69,7 +71,7 @@
       
         <meta  property="og:title"  content="How You Can Help - Mending Wall" >
       
-        <meta  property="og:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  property="og:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  property="og:image"  content="https://mendingwall.indii.org/assets/images/social/contributing.png" >
       
@@ -85,7 +87,7 @@
       
         <meta  name="twitter:title"  content="How You Can Help - Mending Wall" >
       
-        <meta  name="twitter:description"  content="A Linux app for hopping between desktop environments without breakages." >
+        <meta  name="twitter:description"  content="A Linux app to help GNOME and KDE Plasma desktop environments be more neighborly." >
       
         <meta  name="twitter:image"  content="https://mendingwall.indii.org/assets/images/social/contributing.png" >
       
@@ -731,26 +733,23 @@
 <p>To create a copy of these, the suggested approach is:</p>
 <ol>
 <li>Choose a working directory, e.g. <code>$HOME/backup</code>. Make that directory, change into it, and create a subdirectory for the copy, e.g. <code>copy1</code>:
-    <div class="highlight"><pre><span></span><code>mkdir -p $HOME/backup
-cd $HOME/backup
-mkdir copy1
-</code></pre></div></li>
+    <code>mkdir -p $HOME/backup
+    cd $HOME/backup
+    mkdir copy1</code></li>
 <li>Dump your entire dconf database into the subdirectory:
-    <div class="highlight"><pre><span></span><code>dconf dump / &gt; copy1/dconf.dump
-</code></pre></div></li>
+    <code>dconf dump / &gt; copy1/dconf.dump</code></li>
 <li>Back up your entire <code>$HOME/.config</code> directory into the subdirectory:
-    <div class="highlight"><pre><span></span><code>cp -r $HOME/.config copy1/.
-</code></pre></div></li>
+    <code>cp -r $HOME/.config copy1/.</code></li>
 </ol>
 <p>You now have the first copy in <code>copy1</code>, and can repeat with subdirectories <code>copy2</code>, <code>copy3</code>, <code>copy4</code>, etc, to take a snapshot of the configuration state at various times.</p>
 <h3 id="comparing-configuration">Comparing configuration</h3>
-<p>Once you have multiple copies of the configuration, you can make comparisons with a recursive <code>diff</code> from within the working directory. To show just the files that have changed, use:
-<div class="highlight"><pre><span></span><code>diff -qr config1 config2
-</code></pre></div>
-To show all the lines that have changed, use:
-<div class="highlight"><pre><span></span><code>diff -r config1 config2
-</code></pre></div>
-Changes between <code>dconf.dump</code> files indicate changes in GSettings paths.</p>
+<p>Once you have multiple copies of the configuration, you can make comparisons with a recursive <code>diff</code> from within the working directory. To show just the files that have changed, use:</p>
+<pre><code>diff -qr config1 config2
+</code></pre>
+<p>To show all the lines that have changed, use:</p>
+<pre><code>diff -r config1 config2
+</code></pre>
+<p>Changes between <code>dconf.dump</code> files indicate changes in GSettings paths.</p>
 <h3 id="understanding-the-changes">Understanding the changes</h3>
 <p>The above commands should give you a good idea of which GSettings paths and config files need to be backed up and restored to preserve the theme of the first desktop environment. But the next step is to understand what these changes actually do, and whether they can be fixed without Mending Wall at all, such as by using the settings provided by the desktop environment, or an option that restores the default theme.</p>
 <p>This information is useful for users whose theme is already broken, and could also be automated with a new feature in Mending Wall, similar to the <em>Restore Default GNOME Theme</em> feature.</p>
@@ -777,11 +776,9 @@ Changes between <code>dconf.dump</code> files indicate changes in GSettings path
 </li>
 <li>
 <p>To watch for changes to the dconf database, use the <code>dconf</code> command-line tool:
-   <div class="highlight"><pre><span></span><code>dconf watch /
-</code></pre></div>
+   <code>dconf watch /</code>
    The path <code>/</code> can be made more specific, e.g.
-   <div class="highlight"><pre><span></span><code>dconf watch /org/gnome/desktop/
-</code></pre></div>
+   <code>dconf watch /org/gnome/desktop/</code>
    This will output changes to the path live as you mess about.</p>
 </li>
 </ul>
