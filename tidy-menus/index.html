@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.d7758b05.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -85,7 +85,16 @@
       
     
     
-  </head>
+   <link href="../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -224,6 +233,9 @@
   </div>
 </div>
     
+
+      <iframe align="center" src="https://github.com/sponsors/lawmurray/button" title="Sponsor lawmurray" height="32" width="114" style="border: 0; border-radius: 6px; margin-left: 8px;"></iframe>
+
     
       <div class="md-header__source">
         <a href="https://github.com/lawmurray/mendingwall" title="Go to repository" class="md-source" data-md-component="source">
@@ -296,6 +308,7 @@
   
   <span class="md-ellipsis">
     Home
+    
   </span>
   
 
@@ -316,6 +329,7 @@
   
   <span class="md-ellipsis">
     Getting Started
+    
   </span>
   
 
@@ -336,6 +350,7 @@
   
   <span class="md-ellipsis">
     Mend Themes
+    
   </span>
   
 
@@ -365,6 +380,7 @@
   
   <span class="md-ellipsis">
     Tidy Menus
+    
   </span>
   
 
@@ -376,6 +392,7 @@
   
   <span class="md-ellipsis">
     Tidy Menus
+    
   </span>
   
 
@@ -452,6 +469,7 @@
   
   <span class="md-ellipsis">
     How You Can Help
+    
   </span>
   
 
@@ -472,6 +490,7 @@
   
   <span class="md-ellipsis">
     Q &amp; A
+    
   </span>
   
 
@@ -556,6 +575,7 @@
                 
                   
 
+
   
   
 
@@ -563,13 +583,13 @@
 <h1 id="tidy-menus">Tidy Menus</h1>
 <p>Most desktop environments provide core applications such as a terminal, file manager and text editor. These provide much the same functionality as counterpart applications in other desktop environments, but can clutter up menus with seemingly redundant applications.</p>
 <figure>
-<p><img alt="The KDE menu in light mode showing six file manager applications." src="../assets/kde_many_file_manager_apps_light.webp#only-light" width="400" /><img alt="The KDE menu in dark mode showing six file manager applications." src="../assets/kde_many_file_manager_apps_dark.webp#only-dark" width="400" /></p>
+<p><a class="glightbox" href="../assets/kde_many_file_manager_apps_light.webp#only-light" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="The KDE menu in light mode showing six file manager applications." src="../assets/kde_many_file_manager_apps_light.webp#only-light" width="400" /></a><a class="glightbox" href="../assets/kde_many_file_manager_apps_dark.webp#only-dark" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="The KDE menu in dark mode showing six file manager applications." src="../assets/kde_many_file_manager_apps_dark.webp#only-dark" width="400" /></a></p>
 <figcaption>
 <p>With GNOME, KDE and Xfce installed, the KDE menu shows six file manager applications.</p>
 </figcaption>
 </figure>
 <figure>
-<p><img alt="The GNOME menu showing six terminal applications." src="../assets/gnome_many_terminal_apps.webp" width="400" /></p>
+<p><a class="glightbox" href="../assets/gnome_many_terminal_apps.webp" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="The GNOME menu showing six terminal applications." src="../assets/gnome_many_terminal_apps.webp" width="400" /></a></p>
 <figcaption>
 <p>Simlarly, the GNOME dash shows six terminal applications.</p>
 </figcaption>
@@ -782,8 +802,10 @@ OnlyShowIn=GNOME;X-Cinnamon
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.footer", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.60a45f97.min.js"></script>
+      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
-  </body>
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
 </html>
