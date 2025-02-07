@@ -63,6 +63,13 @@
   </provides>
 
   <releases>
+    <release version="0.1.1" date="2025-02-07">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.1.1</url>
+      <description translate="no">
+        <p>Fixed some unnecessary copying of desktop entries.</p>
+      </description>
+    </release>
+
     <release version="0.1.0" date="2025-02-01">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.1.0</url>
       <description translate="no">
