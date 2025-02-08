@@ -1,13 +1,16 @@
 version: 2.1
 
+environment:
+  DEBIAN_FRONTEND: noninteractive
+  REMOTE_USER: testuser
+  REMOTE_PASS: testpass
+
 executors:
 
   linux:
     docker:
       - image: ubuntu:latest
     resource_class: small
-    environment:
-      DEBIAN_FRONTEND: noninteractive
 
 commands:
 
@@ -19,6 +22,7 @@ commands:
             apt update --assume-yes
             apt install --assume-yes --no-install-recommends \
               ca-certificates \
+              sudo \
               curl \
               git \
               ssh \
@@ -34,10 +38,16 @@ commands:
               libadwaita-1-dev \
               gnome-remote-desktop
       - run:
+          name: Configure GNOME headless
+          command: |
+            sudo -u gnome-remote-desktop sh -c 'winpr-makecert -silent -rdp -path ~/.local/share/gnome-remote-desktop tls'
+            grdctl --headless rdp set-tls-key ~/.local/share/gnome-remote-desktop/tls.key
+            grdctl --headless rdp set-tls-cert ~/.local/share/gnome-remote-desktop/tls.crt
+            grdctl --headless rdp set-credentials $REMOTE_USER $REMOTE_PASS
+      - run:
           name: Start GNOME headless
           command: |
             grdctl --headless rdp enable
-            grdctl --headless vnc enable
             systemctl --user enable --now gnome-remote-desktop-headless.service
 
   build:
