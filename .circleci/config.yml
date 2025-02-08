@@ -42,21 +42,28 @@ commands:
             cd build
             meson compile
             meson install
+            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 
   test:
     steps:
       - run:
-          name: "Test: Smoke"
+          name: Smoke test
           command: |
             mendingwall -h
             mendingwalld -h
       - run:
-          name: "Test: Enable"
+          name: Test currently disabled
           command: |
             `gsettings get org.indii.mendingwall themes` == false || exit 1
             `gsettings get org.indii.mendingwall menu` == false || exit 1
+      - run:
+          name: Enable
+          command: |
             gsettings set org.indii.mendingwall themes true
             gsettings set org.indii.mendingwall menus true
+      - run:
+          name: Test now enabled
+          command: |
             `gsettings get org.indii.mendingwall themes` == true || exit 1
             `gsettings get org.indii.mendingwall menu` == true || exit 1
 
