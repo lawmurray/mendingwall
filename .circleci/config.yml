@@ -59,7 +59,7 @@ commands:
       - run:
           name: Start DBus
           command: |
-            dbus-launch > $BASH_ENV
+            dbus-launch --auto-syntax > $BASH_ENV
 
   build:
     steps:
