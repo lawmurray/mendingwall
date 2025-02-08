@@ -169,6 +169,9 @@ static void tidy_app(MendingwallDApplication* self, const char* basename) {
           "applications", basename, NULL);
       g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
       if (!g_file_query_exists(to_file, NULL)) {
+        g_autoptr(GFile) to_dir = g_file_new_build_filename(
+            g_get_user_data_dir(), "applications", NULL);
+        g_file_make_directory_with_parents(to_dir, NULL, NULL);
         g_key_file_save_to_file(app_file, to_path, NULL);
       }
     }
@@ -523,7 +526,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
     G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self),
-      "- mend themes");
+      "- mend themes and tidy menus");
   g_application_set_option_context_description(G_APPLICATION(self),
       "For more information see https://mendingwall.indii.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
