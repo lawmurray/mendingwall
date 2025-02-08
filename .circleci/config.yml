@@ -40,26 +40,26 @@ commands:
               dbus-x11 \
               gnome-remote-desktop \
               gnome-connections
-      - run:
-          name: Generate certificate
-          command: |
-            mkdir -p ~gnome-remote-desktop
-            winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
-      - run:
-          name: Configure GNOME headless
-          command: |
-            grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
-            grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
-            grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
-            grdctl --headless rdp enable
-      - run:
-          name: Start GNOME headless
-          command: |
-            systemctl enable gnome-remote-desktop.service
+      # - run:
+      #     name: Generate certificate
+      #     command: |
+      #       mkdir -p ~gnome-remote-desktop
+      #       winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
+      # - run:
+      #     name: Configure GNOME headless
+      #     command: |
+      #       grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
+      #       grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
+      #       grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
+      #       grdctl --headless rdp enable
+      # - run:
+      #     name: Start GNOME headless
+      #     command: |
+      #       systemctl enable gnome-remote-desktop.service
       - run:
           name: Start DBus
           command: |
-            dbus-launch --auto-syntax > $BASH_ENV
+            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
