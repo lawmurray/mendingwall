@@ -56,7 +56,10 @@ commands:
           name: Start GNOME headless
           command: |
             systemctl enable gnome-remote-desktop.service
-            sleep 10
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch > $BASH_ENV
 
   build:
     steps:
