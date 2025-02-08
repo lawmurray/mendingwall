@@ -37,7 +37,7 @@ commands:
               libglib2.0-dev \
               libadwaita-1-dev \
               winpr-utils \
-              dbus-user-session \
+              dbus-x11 \
               gnome-remote-desktop \
               gnome-connections
       - run:
