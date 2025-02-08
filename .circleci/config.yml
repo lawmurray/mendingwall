@@ -40,17 +40,18 @@ commands:
       - run:
           name: Generate certificate
           command: |
-            sudo -u gnome-remote-desktop sh -c 'mkdir -p ~/.local/share/gnome-remote-desktop/ && openssl req -new -newkey rsa:4096 -days 1 -nodes -x509 -subj /C=US/ST=NONE/L=NONE/O=GNOME/CN=gnome.org -out ~/.local/share/gnome-remote-desktop/tls.crt -keyout ~/.local/share/gnome-remote-desktop/tls.key'
+            mkdir -p ~/.local/share/gnome-remote-desktop/
+            openssl req -new -newkey rsa:4096 -days 1 -nodes -x509 -subj /C=US/ST=NONE/L=NONE/O=GNOME/CN=gnome.org -out ~/.local/share/gnome-remote-desktop/tls.crt -keyout ~/.local/share/gnome-remote-desktop/tls.key'
       - run:
           name: Configure GNOME headless
           command: |
             grdctl --headless rdp set-tls-key ~/.local/share/gnome-remote-desktop/tls.key
             grdctl --headless rdp set-tls-cert ~/.local/share/gnome-remote-desktop/tls.crt
             grdctl --headless rdp set-credentials $REMOTE_USER $REMOTE_PASS
+            grdctl --headless rdp enable
       - run:
           name: Start GNOME headless
           command: |
-            grdctl --headless rdp enable
             systemctl --user enable --now gnome-remote-desktop-headless.service
 
   build:
