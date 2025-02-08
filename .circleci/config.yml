@@ -17,7 +17,7 @@ commands:
           name: Install dependencies
           command: |
             apt update --assume-yes
-            apt install --assume-yes --no-install-recommends \
+            apt install --assume-yes --nto-install-recommends \
               ca-certificates \
               curl \
               git \
@@ -33,13 +33,8 @@ commands:
               libglib2.0-dev \
               libadwaita-1-dev
 
-jobs:
-
-  linux:
-    executor: linux
+  build:
     steps:
-      - checkout
-      - environment
       - run:
           name: Build
           command: |
@@ -47,11 +42,33 @@ jobs:
             cd build
             meson compile
             meson install
+
+  test:
+    steps:
       - run:
-          name: Test
+          name: "Test: Smoke"
           command: |
             mendingwall -h
             mendingwalld -h
+      - run:
+          name: "Test: Enable"
+          command: |
+            `gsettings get org.indii.mendingwall themes` == false || exit 1
+            `gsettings get org.indii.mendingwall menu` == false || exit 1
+            gsettings set org.indii.mendingwall themes true
+            gsettings set org.indii.mendingwall menus true
+            `gsettings get org.indii.mendingwall themes` == true || exit 1
+            `gsettings get org.indii.mendingwall menu` == true || exit 1
+
+jobs:
+
+  linux:
+    executor: linux
+    steps:
+      - checkout
+      - environment
+      - build
+      - test
 
   deploy:
     executor: linux
