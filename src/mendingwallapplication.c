@@ -29,17 +29,46 @@ struct _MendingwallApplication {
 
 G_DEFINE_TYPE(MendingwallApplication, mendingwall_application, ADW_TYPE_APPLICATION)
 
-static void on_changed(MendingwallApplication* self) {
-  gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
-  gboolean menus_enabled = g_settings_get_boolean(self->global, "menus");
+static void launch_daemon(MendingwallApplication* self) {
+  gboolean themes = g_settings_get_boolean(self->global, "themes");
+  gboolean menus = g_settings_get_boolean(self->global, "menus");
+
+  if (themes || menus) {
+    /* launch daemon; fine if already running, new instance will quit */
+    g_settings_sync();  // ensure current settings visible in new process
+    g_dbus_connection_call(
+      g_application_get_dbus_connection(G_APPLICATION(self)),
+      "org.indii.mendingwall.watch",
+      "/org/indii/mendingwall/watch",
+      "org.freedesktop.Application",
+      "Activate",
+      g_variant_new_parsed("({'test': <1>}, )"),
+      NULL,
+      G_DBUS_CALL_FLAGS_NONE,
+      -1,
+      NULL,
+      NULL,
+      NULL
+    );
+
+    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
+      * a consistent environment */
+    //static const gchar* argv[] = { "mendingwall", "--watch" };
+    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  }
+}
+
+static void install_autostart(MendingwallApplication* self) {
+  gboolean themes = g_settings_get_boolean(self->global, "themes");
+  gboolean menus = g_settings_get_boolean(self->global, "menus");
 
   g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
   g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
-  g_autofree gchar* daemon_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
+  g_autofree gchar* watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
   g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
   g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
 
-  if (themes_enabled || menus_enabled) {
+  if (themes || menus) {
     /* make autostart directories in case they do not exist */
     g_autoptr(GFile) autostart_dir = g_file_new_for_path(autostart_path);
     g_autoptr(GFile) kde_env_dir = g_file_new_for_path(kde_env_path);
@@ -47,10 +76,10 @@ static void on_changed(MendingwallApplication* self) {
     g_file_make_directory_with_parents(autostart_dir, NULL, NULL);
     g_file_make_directory_with_parents(kde_env_dir, NULL, NULL);
 
-    /* install daemon autostart */
-    g_autoptr(GKeyFile) daemon_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(daemon_autostart, "applications/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-      g_key_file_save_to_file(daemon_autostart, daemon_path, NULL);
+    /* install watch autostart */
+    g_autoptr(GKeyFile) watch_autostart = g_key_file_new();
+    if (g_key_file_load_from_data_dirs(watch_autostart, "applications/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      g_key_file_save_to_file(watch_autostart, watch_path, NULL);
     }
 
     /* install restore autostart (used for everything but KDE) */
@@ -82,38 +111,21 @@ static void on_changed(MendingwallApplication* self) {
           G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL,
           NULL);
     }
-
-    /* launch daemon; fine if already running, new instance will quit */
-    g_settings_sync();  // ensure current settings visible in new process
-    g_dbus_connection_call(
-      g_application_get_dbus_connection(G_APPLICATION(self)),
-      "org.indii.mendingwall.watch",
-      "/org/indii/mendingwall/watch",
-      "org.freedesktop.Application",
-      "Activate",
-      g_variant_new_parsed("({'test': <1>}, )"),
-      NULL,
-      G_DBUS_CALL_FLAGS_NONE,
-      -1,
-      NULL,
-      NULL,
-      NULL
-    );
-
-    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
-      * a consistent environment */
-    //static const gchar* argv[] = { "mendingwall", "--watch" };
-    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   } else {
     /* uninstall autostart files */
-    g_autoptr(GFile) daemon_file = g_file_new_for_path(daemon_path);
+    g_autoptr(GFile) watch_file = g_file_new_for_path(watch_path);
     g_autoptr(GFile) restore_file = g_file_new_for_path(restore_path);
     g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
 
-    g_file_delete_async(daemon_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    g_file_delete_async(watch_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
     g_file_delete_async(restore_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
     g_file_delete_async(kde_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
   }
+}
+
+static void on_changed(MendingwallApplication* self) {
+  launch_daemon(self);
+  install_autostart(self);
 }
 
 static void on_about(MendingwallApplication* self) {
@@ -144,7 +156,8 @@ static void on_startup(MendingwallApplication* self) {
 static void on_activate(MendingwallApplication* self) {
   g_settings_set_boolean(self->global, "themes", self->themes);
   g_settings_set_boolean(self->global, "menus", self->menus);
-  on_changed(self);
+  launch_daemon(self);
+  install_autostart(self);
   if (!self->headless) {
     gtk_window_present(GTK_WINDOW(self->window));
   }
