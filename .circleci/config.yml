@@ -20,7 +20,7 @@ commands:
           name: Install dependencies
           command: |
             apt update --assume-yes
-            apt install --assume-yes --no-install-recommends \
+            apt install --assume-yes \
               ca-certificates \
               sudo \
               curl \
@@ -40,7 +40,6 @@ commands:
               dbus-x11 \
               gnome-remote-desktop \
               gnome-connections
-            export $(dbus-launch)
       - run:
           name: Generate certificate
           command: |
