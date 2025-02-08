@@ -52,7 +52,7 @@ commands:
       - run:
           name: Start GNOME headless
           command: |
-            systemctl --user enable --now gnome-remote-desktop-headless.service
+            systemctl enable --now gnome-remote-desktop-headless.service
 
   build:
     steps:
