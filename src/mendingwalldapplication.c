@@ -169,8 +169,8 @@ static void tidy_app(MendingwallDApplication* self, const char* basename) {
           "applications", basename, NULL);
       g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
       if (!g_file_query_exists(to_file, NULL)) {
-        g_autofree gchar* to_dir = g_build_filename(g_get_user_data_dir(),
-            "applications", NULL);
+        g_autoptr(GFile) to_dir = g_file_new_build_filename(
+            g_get_user_data_dir(), "applications", NULL);
         g_file_make_directory_with_parents(to_dir, NULL, NULL);
         g_key_file_save_to_file(app_file, to_path, NULL);
       }
