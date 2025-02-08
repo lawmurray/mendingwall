@@ -35,14 +35,13 @@ commands:
               libglib2.0-bin \
               libglib2.0-dev \
               libadwaita-1-dev \
-              gnutls-bin \
+              openssl \
               gnome-remote-desktop
       - run:
           name: Generate certificate
           command: |
             mkdir -p ~/.local/share/gnome-remote-desktop/
-            certtool --generate-privkey --outfile ~/.local/share/gnome-remote-desktop/tls.key
-            certtool --generate-self-signed --load-privkey ~/.local/share/gnome-remote-desktop/tls.key
+            openssl req -new -newkey rsa:4096 -days 1 -nodes -x509 -subj /C=US/ST=NONE/L=NONE/O=GNOME/CN=gnome.org -out ~/.local/share/gnome-remote-desktop/tls.crt -keyout ~/.local/share/gnome-remote-desktop/tls.key
       - run:
           name: Configure GNOME headless
           command: |
