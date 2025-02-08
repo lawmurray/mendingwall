@@ -83,7 +83,7 @@ commands:
           name: Test currently disabled
           command: |
             [[ `gsettings get org.indii.mendingwall themes` == false ]] || exit 1
-            [[ `gsettings get org.indii.mendingwall menu` == false ]] || exit 1
+            [[ `gsettings get org.indii.mendingwall menus` == false ]] || exit 1
       - run:
           name: Enable
           command: |
@@ -93,7 +93,7 @@ commands:
           name: Test now enabled
           command: |
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
-            [[ `gsettings get org.indii.mendingwall menu` == true ]] || exit 1
+            [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
 jobs:
 
