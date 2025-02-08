@@ -110,7 +110,7 @@ commands:
       - run:
           name: Is daemon now running?
           command: |
-            [[ `ps -C -o pid= mendingwalld` == 1 ]] || exit 1
+            [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
 
 jobs:
 
