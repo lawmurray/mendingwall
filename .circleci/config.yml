@@ -45,10 +45,10 @@ commands:
       - run:
           name: Configure GNOME headless
           command: |
-            grdctl --headless rdp enable
-            grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
-            grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
-            grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
+            sudo -u gnome-remote-desktop grdctl --headless rdp enable
+            sudo -u gnome-remote-desktop grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
+            sudo -u gnome-remote-desktop grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
+            sudo -u gnome-remote-desktop grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
       - run:
           name: Start GNOME headless
           command: |
