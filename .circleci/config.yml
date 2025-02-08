@@ -8,6 +8,7 @@ executors:
     resource_class: small
     environment:
       DEBIAN_FRONTEND: noninteractive
+      DISPLAY: :0.0
       RDP_USER: testuser
       RDP_PASS: testpass
 
