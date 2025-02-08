@@ -42,7 +42,7 @@ commands:
               xwayland-run \
               gnome-remote-desktop \
               gnome-connections \
-              vanilla-gnome-desktop
+              ubuntu-gnome-desktop
       # - run:
       #     name: Generate certificate
       #     command: |
@@ -154,6 +154,17 @@ commands:
           name: Have KDE apps been tidied?
           command: |
             [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]] || exit 1
+
+      - run:
+          name: Set GNOME icon theme to Breeze
+          command: |
+            [[ `gsettings get org.gnome.desktop.interface icon-theme` != Breeze ]] || exit 1
+            gsettings set org.gnome.desktop.interface icon-theme Breeze
+            sleep 2
+      - run:
+          name: Is GNOME saved icon theme Breeze?
+          command: |
+            [[ `grep icon-theme ~/.local/share/mendingwall/save/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
 
 jobs:
 
