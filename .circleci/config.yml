@@ -87,8 +87,8 @@ commands:
       - run:
           name: Enable
           command: |
-            gsettings set org.indii.mendingwall themes true
-            gsettings set org.indii.mendingwall menus true
+            mendingwall --enable-themes --headless
+            mendingwall --enable-menus --headless
       - run:
           name: Test now enabled
           command: |
