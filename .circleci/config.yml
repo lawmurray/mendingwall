@@ -38,6 +38,7 @@ commands:
               libadwaita-1-dev \
               winpr-utils \
               dbus-x11 \
+              xwayland-run \
               gnome-remote-desktop \
               gnome-connections
       # - run:
@@ -87,8 +88,8 @@ commands:
       - run:
           name: Enable
           command: |
-            mendingwall --enable-themes --headless
-            mendingwall --enable-menus --headless
+            xwfb-run mendingwall -- --enable-themes --headless
+            xwfb-run mendingwall -- --enable-menus --headless
       - run:
           name: Test now enabled
           command: |
