@@ -1,16 +1,15 @@
 version: 2.1
 
-environment:
-  DEBIAN_FRONTEND: noninteractive
-  REMOTE_USER: testuser
-  REMOTE_PASS: testpass
-
 executors:
 
   linux:
     docker:
       - image: ubuntu:latest
     resource_class: small
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      REMOTE_USER: testuser
+      REMOTE_PASS: testpass
 
 commands:
 
