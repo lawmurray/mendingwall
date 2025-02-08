@@ -1,5 +1,6 @@
-/subprojects/blueprint-compiler
+/subprojects/
 /venv
 /.cache
 /site/
-
+/repo/
+/.flatpak-builder/
