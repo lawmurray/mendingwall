@@ -11,6 +11,8 @@ executors:
       DISPLAY: :0.0
       RDP_USER: testuser
       RDP_PASS: testpass
+      XDG_CURRENT_DESKTOP: GNOME
+      XDG_DATA_DIRS: /usr/share
 
 commands:
 
@@ -118,6 +120,15 @@ commands:
                -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
                -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
             ]] || exit 1
+
+      # potential error is daemon just waiting for activate signal
+      - run:
+          name: Sleep
+          command: sleep 10
+      - run:
+          name: Is daemon still running?
+          command: |
+            [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
 
 jobs:
 
