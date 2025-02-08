@@ -523,7 +523,7 @@ MendingwallDApplication* mendingwalld_application_new(void) {
     G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self),
-      "- mend themes");
+      "- mend themes and tidy menus");
   g_application_set_option_context_description(G_APPLICATION(self),
       "For more information see https://mendingwall.indii.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);

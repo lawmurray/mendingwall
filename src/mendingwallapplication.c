@@ -24,32 +24,10 @@ struct _MendingwallApplication {
   
   GSettings* global;
   GObject* window;
+  gboolean themes, menus, headless;
 };
 
 G_DEFINE_TYPE(MendingwallApplication, mendingwall_application, ADW_TYPE_APPLICATION)
-
-static void launch_daemon(MendingwallApplication* self) {
-  g_settings_sync();  // ensure current settings visible in new process
-  g_dbus_connection_call(
-    g_application_get_dbus_connection(G_APPLICATION(self)),
-    "org.indii.mendingwall.watch",
-    "/org/indii/mendingwall/watch",
-    "org.freedesktop.Application",
-    "Activate",
-    g_variant_new_parsed("({'test': <1>}, )"),
-    NULL,
-    G_DBUS_CALL_FLAGS_NONE,
-    -1,
-    NULL,
-    NULL,
-    NULL
-  );
-
-  /* alternatively, can launch with g_spawn_async(), but dbus preferred for
-    * a consistent environment */
-  //static const gchar* argv[] = { "mendingwall", "--watch" };
-  //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
-}
 
 static void on_changed(MendingwallApplication* self) {
   gboolean themes_enabled = g_settings_get_boolean(self->global, "themes");
@@ -106,7 +84,26 @@ static void on_changed(MendingwallApplication* self) {
     }
 
     /* launch daemon; fine if already running, new instance will quit */
-    launch_daemon(self);
+    g_settings_sync();  // ensure current settings visible in new process
+    g_dbus_connection_call(
+      g_application_get_dbus_connection(G_APPLICATION(self)),
+      "org.indii.mendingwall.watch",
+      "/org/indii/mendingwall/watch",
+      "org.freedesktop.Application",
+      "Activate",
+      g_variant_new_parsed("({'test': <1>}, )"),
+      NULL,
+      G_DBUS_CALL_FLAGS_NONE,
+      -1,
+      NULL,
+      NULL,
+      NULL
+    );
+
+    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
+      * a consistent environment */
+    //static const gchar* argv[] = { "mendingwall", "--watch" };
+    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   } else {
     /* uninstall autostart files */
     g_autoptr(GFile) daemon_file = g_file_new_for_path(daemon_path);
@@ -126,25 +123,31 @@ static void on_about(MendingwallApplication* self) {
 }
 
 static void on_startup(MendingwallApplication* self) {
-  g_autoptr(GtkBuilder) builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
+  if (!self->headless) {
+    g_autoptr(GtkBuilder) builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
 
-  /* main window */
-  self->window = gtk_builder_get_object(builder, "main");
+    /* main window */
+    self->window = gtk_builder_get_object(builder, "main");
 
-  /* bind gsettings */
-  g_settings_bind(self->global, "themes", gtk_builder_get_object(builder, "themes"), "active", G_SETTINGS_BIND_DEFAULT);
-  g_settings_bind(self->global, "menus", gtk_builder_get_object(builder, "menus"), "active", G_SETTINGS_BIND_DEFAULT);
+    /* bind gsettings */
+    g_settings_bind(self->global, "themes", gtk_builder_get_object(builder, "themes"), "active", G_SETTINGS_BIND_DEFAULT);
+    g_settings_bind(self->global, "menus", gtk_builder_get_object(builder, "menus"), "active", G_SETTINGS_BIND_DEFAULT);
 
-  /* connect signals */
-  g_signal_connect_swapped(self->global, "changed", G_CALLBACK(on_changed), self);
-  g_signal_connect_swapped(gtk_builder_get_object(builder, "about_button"), "clicked", G_CALLBACK(on_about), self);
+    /* connect signals */
+    g_signal_connect_swapped(self->global, "changed", G_CALLBACK(on_changed), self);
+    g_signal_connect_swapped(gtk_builder_get_object(builder, "about_button"), "clicked", G_CALLBACK(on_about), self);
 
-  gtk_window_set_application(GTK_WINDOW(self->window), GTK_APPLICATION(self));
+    gtk_window_set_application(GTK_WINDOW(self->window), GTK_APPLICATION(self));
+  }
 }
 
 static void on_activate(MendingwallApplication* self) {
-  launch_daemon(self);
-  gtk_window_present(GTK_WINDOW(self->window));
+  g_settings_set_boolean(self->global, "themes", self->themes);
+  g_settings_set_boolean(self->global, "menus", self->menus);
+  on_changed(self);
+  if (!self->headless) {
+    gtk_window_present(GTK_WINDOW(self->window));
+  }
 }
 
 void mendingwall_application_dispose(GObject* o) {
@@ -164,6 +167,10 @@ void mendingwall_application_class_init(MendingwallApplicationClass* klass) {
 
 void mendingwall_application_init(MendingwallApplication* self) {
   self->global = g_settings_new("org.indii.mendingwall");
+  self->window = NULL;
+  self->themes = g_settings_get_boolean(self->global, "themes");
+  self->menus = g_settings_get_boolean(self->global, "menus");
+  self->headless = FALSE;
 }
 
 MendingwallApplication* mendingwall_application_new(void) {
@@ -173,6 +180,26 @@ MendingwallApplication* mendingwall_application_new(void) {
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
           NULL));
+
+  /* command-line options */
+  GOptionEntry option_entries[] = {
+    { "enable-themes", 0, 0, G_OPTION_ARG_NONE, &self->themes,
+        "Toggle on mend themes feature", NULL },
+    { "disable-themes", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,
+        &self->themes, "Toggle off mend themes feature", NULL },
+    { "enable-menus", 0, 0, G_OPTION_ARG_NONE, &self->menus,
+        "Toggle on tidy menus feature", NULL },
+    { "disable-menus", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,
+        &self->menus, "Toggle off tidy menus feature", NULL },
+    { "headless", 0, 0, G_OPTION_ARG_NONE, &self->headless,
+        "Headless mode, do not show interface", NULL },
+    G_OPTION_ENTRY_NULL
+  };
+  g_application_set_option_context_summary(G_APPLICATION(self),
+      "- mend themes and tidy menus");
+  g_application_set_option_context_description(G_APPLICATION(self),
+      "For more information see https://mendingwall.indii.org");
+  g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
   g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
