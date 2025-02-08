@@ -41,7 +41,7 @@ commands:
       - run:
           name: Generate certificate
           command: |
-            sudo -u mkdir -p ~gnome-remote-desktop
+            sudo -u gnome-remote-desktop mkdir -p ~gnome-remote-desktop
             sudo -u gnome-remote-desktop winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
       - run:
           name: Configure GNOME headless
