@@ -56,6 +56,7 @@ commands:
           name: Start GNOME headless
           command: |
             systemctl enable gnome-remote-desktop.service
+            sleep 10
 
   build:
     steps:
