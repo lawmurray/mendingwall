@@ -41,7 +41,8 @@ commands:
               dbus-x11 \
               xwayland-run \
               gnome-remote-desktop \
-              gnome-connections
+              gnome-connections \
+              vanilla-gnome-desktop
       # - run:
       #     name: Generate certificate
       #     command: |
@@ -132,6 +133,20 @@ commands:
           name: Have GNOME apps been tidied?
           command: |
             [[ `ls ~/.local/share/applications/org.gnome.*.desktop | wc -l` > 0 ]] || exit 1
+      - run:
+          name: Have GNOME settings been saved?
+          command: |
+            [[ -f ~/.local/share/mendingwall/save/GNOME.gsettings ]] || exit 1
+      - run:
+          name: Touch config file
+          command: |
+            touch ~/.config/kwinrc
+            sleep 2
+      - run:
+          name: Has config file been saved?
+          command: |
+            [[ -f ~/.local/share/mendingwall/save/GNOME/kwinrc ]] || exit 1
+
       - run:
           name: Install KDE Plasma
           command: apt install kde-standard
