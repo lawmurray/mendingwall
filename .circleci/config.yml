@@ -41,19 +41,19 @@ commands:
       - run:
           name: Generate certificate
           command: |
-            sudo -u gnome-remote-desktop mkdir -p ~gnome-remote-desktop
-            sudo -u gnome-remote-desktop winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
+            mkdir -p ~gnome-remote-desktop
+            winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
       - run:
           name: Configure GNOME headless
           command: |
-            sudo -u gnome-remote-desktop grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
-            sudo -u gnome-remote-desktop grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
-            sudo -u gnome-remote-desktop grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
-            sudo -u gnome-remote-desktop grdctl --headless rdp enable
+            grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
+            grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
+            grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
+            grdctl --headless rdp enable
       - run:
           name: Start GNOME headless
           command: |
-            sudo -u gnome-remote-desktop systemctl enable --user --now gnome-remote-desktop-headless.service
+            systemctl enable --user --now gnome-remote-desktop-headless.service
 
   build:
     steps:
