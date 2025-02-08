@@ -12,7 +12,6 @@ executors:
       RDP_USER: testuser
       RDP_PASS: testpass
       XDG_CURRENT_DESKTOP: GNOME
-      XDG_DATA_DIRS: /usr/share
 
 commands:
 
