@@ -120,14 +120,25 @@ commands:
                -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
             ]] || exit 1
 
-      # potential error is daemon just waiting for activate signal
       - run:
-          name: Sleep
+          name: Sleep, in case daemon is just waiting for activate signal
           command: sleep 10
       - run:
           name: Is daemon still running?
           command: |
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+
+      - run:
+          name: Have GNOME apps been tidied?
+          command: |
+            [[ `ls ~/.local/share/applications/org.gnome.*.desktop | wc -l` > 0 ]] || exit 1
+      - run:
+          name: Install KDE Plasma
+          command: apt install kde-standard
+      - run:
+          name: Have KDE apps been tidied?
+          command: |
+            [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]] || exit 1
 
 jobs:
 
@@ -152,8 +163,6 @@ jobs:
                 --data '{"branch": "main"}'
 
 workflows:
-
-  version: 2
   all:
     jobs:
       - linux
