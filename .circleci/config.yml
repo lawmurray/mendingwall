@@ -149,7 +149,7 @@ commands:
 
       - run:
           name: Install KDE Plasma
-          command: apt install kde-standard
+          command: apt install --assume-yes kde-standard
       - run:
           name: Have KDE apps been tidied?
           command: |
