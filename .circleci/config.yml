@@ -111,6 +111,13 @@ commands:
           name: Is daemon now running?
           command: |
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+      - run:
+          name: Are autostart files installed?
+          command: |
+            [[ -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
 jobs:
 
