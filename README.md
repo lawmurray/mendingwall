@@ -12,7 +12,7 @@ Mending Wall is free software, copyright (C) 2025 Lawrence Murray, licensed unde
 
 ## Installation
 
-Mending Wall is currently installed from source. A local installation to your home directory is sufficient; root permissions are not required to install or run.
+Packages are available from [download.indii.org](https://download.indii.org). You can also install from source following the instructions provided here. A local installation to your home directory is sufficient; root permissions are not required to install or run.
 
 Building requires Meson, Blueprint, GTK 4, GLib 2, and libadwaita.
 
