@@ -4,7 +4,7 @@ executors:
 
   linux:
     docker:
-      - image: ubuntu:latest
+      - image: ubuntu:oracular
     resource_class: small
     environment:
       DEBIAN_FRONTEND: noninteractive
