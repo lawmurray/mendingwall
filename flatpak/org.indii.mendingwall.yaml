@@ -14,7 +14,7 @@ finish-args:
   - --filesystem=~/.config/dconf
   - --talk-name=ca.desrt.dconf
   - --env=DCONF_USER_CONFIG_DIR=.config/dconf
-  - --env=GIO_EXTRA_MODULES=/app/lib64/gio/modules/
+  - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
 
   - --filesystem=xdg-config:create
   - --filesystem=xdg-config/autostart:create
