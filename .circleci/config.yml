@@ -54,8 +54,8 @@ commands:
       - run:
           name: Augment environment
           command: |
-            echo 'MENDINGWALL=mendingwall' >> $BASH_ENV
-            echo 'MENDINGWALLD=mendingwalld' >> $BASH_ENV
+            echo 'export MENDINGWALL=mendingwall' >> $BASH_ENV
+            echo 'export MENDINGWALLD=mendingwalld' >> $BASH_ENV
 
   test:
     steps:
