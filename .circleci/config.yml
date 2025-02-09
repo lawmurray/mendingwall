@@ -38,6 +38,8 @@ commands:
               libglib2.0-dev \
               libadwaita-1-dev \
               libportal-dev \
+              libportal-gtk3-dev \
+              libportal-gtk4-dev \
               winpr-utils \
               dbus-x11 \
               xwayland-run \
