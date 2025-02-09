@@ -69,7 +69,7 @@ commands:
       - run:
           name: Build Flatpak
           command: |
-            flatpak-builder --disable-rofiles-fuse --install builddir flatpak/org.indii.mendingwall.yaml
+            flatpak-builder --disable-rofiles-fuse --user --install builddir flatpak/org.indii.mendingwall.yaml
       - run:
           name: Augment environment
           command: |
