@@ -8,9 +8,6 @@ executors:
     resource_class: small
     environment:
       DEBIAN_FRONTEND: noninteractive
-      DISPLAY: :0.0
-      RDP_USER: testuser
-      RDP_PASS: testpass
       XDG_CURRENT_DESKTOP: GNOME
 
 commands:
@@ -43,25 +40,7 @@ commands:
               winpr-utils \
               dbus-x11 \
               xwayland-run \
-              gnome-remote-desktop \
-              gnome-connections \
               ubuntu-gnome-desktop
-      # - run:
-      #     name: Generate certificate
-      #     command: |
-      #       mkdir -p ~gnome-remote-desktop
-      #       winpr-makecert -silent -rdp -path ~gnome-remote-desktop rdp-tls
-      # - run:
-      #     name: Configure GNOME headless
-      #     command: |
-      #       grdctl --headless rdp set-credentials "${RDP_USER}" "${RDP_PASS}"
-      #       grdctl --headless rdp set-tls-key ~gnome-remote-desktop/rdp-tls.key
-      #       grdctl --headless rdp set-tls-cert ~gnome-remote-desktop/rdp-tls.crt
-      #       grdctl --headless rdp enable
-      # - run:
-      #     name: Start GNOME headless
-      #     command: |
-      #       systemctl enable gnome-remote-desktop.service
       - run:
           name: Start DBus
           command: |
