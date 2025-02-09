@@ -93,9 +93,10 @@ modules:
       - type: dir
         path: ../
     post-install:
-      # overwrite the org.indii.mendingwall.restore.sh script for KDE startup
-      # with one that calls flatpak
-      - printf "#!/usr/bin/env sh\n\nflatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall --restore\n" > /app/share/mendingwall/org.indii.mendingwall.restore.sh
+      # for autostart files, which will launch from outside flatpak, wrap
+      # calls to mendingwalld with flatpak run
+      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
 
-      # call mendingwall and mendingwalld via start scripts
-      - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop
+      # for all autostart and desktop files, wrap calls to mendingwall and
+      # mendingwalld with start scripts
+      - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
