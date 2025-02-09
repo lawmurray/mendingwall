@@ -29,6 +29,8 @@ commands:
               appstream \
               desktop-file-utils \
               meson \
+              flatpak \
+              flatpak-build \
               python3-gi \
               libgtk-4-dev \
               libglib2.0-bin \
@@ -37,7 +39,6 @@ commands:
               libportal-dev \
               libportal-gtk3-dev \
               libportal-gtk4-dev \
-              winpr-utils \
               xwayland-run \
               ubuntu-gnome-desktop
 
