@@ -74,8 +74,8 @@ commands:
       - run:
           name: Set commands
           command: |
-            echo 'export MENDINGWALL="flatpak run --command="/app/bin/start-mendingwall" org.indii.mendingwall' >> $BASH_ENV
-            echo 'export MENDINGWALLD="flatpak run --command="/app/bin/start-mendingwalld" org.indii.mendingwall' >> $BASH_ENV
+            echo 'export MENDINGWALL="flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall"' >> $BASH_ENV
+            echo 'export MENDINGWALLD="flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall"' >> $BASH_ENV
 
   test:
     steps:
