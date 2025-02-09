@@ -65,6 +65,7 @@ commands:
           command: |
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
             flatpak install -y flathub org.flatpak.Builder
+            chmod u+s /usr/bin/bwrap
       - run:
           name: Build Flatpak
           command: |
