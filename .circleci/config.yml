@@ -42,12 +42,6 @@ commands:
               dbus-x11 \
               xwayland-run \
               ubuntu-gnome-desktop
-      - run:
-          name: Install Flatpak dependencies
-          command: |
-            flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-            flatpak install --noninteractive flathub org.gnome.Sdk 47
-            flatpak install --noninteractive flathub org.gnome.Platform 47
 
   build:
     steps:
@@ -67,11 +61,16 @@ commands:
   build_flatpak:
     steps:
       - run:
+          name: Configure Flathub
+          command: |
+            flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            flatpak install -y flathub org.flatpak.Builder
+      - run:
           name: Build Flatpak
           command: |
-            flatpak-builder --disable-rofiles-fuse --user --install builddir flatpak/org.indii.mendingwall.yaml
+            flatpak run org.flatpak.Builder --force-clean --sandbox --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
-          name: Augment environment
+          name: Set commands
           command: |
             echo 'export MENDINGWALL="flatpak run --command="/app/bin/start-mendingwall" org.indii.mendingwall' >> $BASH_ENV
             echo 'export MENDINGWALLD="flatpak run --command="/app/bin/start-mendingwalld" org.indii.mendingwall' >> $BASH_ENV
