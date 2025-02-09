@@ -3,9 +3,9 @@ version: 2.1
 executors:
 
   linux:
-    docker:
-      - image: ubuntu:oracular
-    resource_class: small
+    machine:
+      image: ubuntu-2404:current
+    resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
       XDG_CURRENT_DESKTOP: GNOME
@@ -17,10 +17,9 @@ commands:
       - run:
           name: Install dependencies
           command: |
-            apt update --assume-yes
-            apt install --assume-yes \
+            sudo apt update --assume-yes
+            sudo apt install --assume-yes \
               ca-certificates \
-              sudo \
               curl \
               git \
               ssh \
@@ -65,11 +64,10 @@ commands:
           command: |
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
             flatpak install -y flathub org.flatpak.Builder
-            chmod u+s /usr/bin/bwrap
       - run:
           name: Build Flatpak
           command: |
-            flatpak run org.flatpak.Builder --force-clean --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
+            flatpak run org.flatpak.Builder --force-clean --sandbox --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
           name: Set commands
           command: |
