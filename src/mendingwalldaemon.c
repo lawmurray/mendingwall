@@ -32,8 +32,14 @@ static void on_quit(MendingwallDaemon* self) {
 void mendingwall_daemon_dispose(GObject* self) {
   MendingwallDaemon* app = MENDINGWALL_DAEMON(self);
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(app);
-  g_clear_object(&priv->session_manager);
-  g_clear_object(&priv->client_private);
+
+  if (priv->session_manager) {
+    g_clear_object(&priv->session_manager);
+  }
+  if (priv->client_private) {
+    g_clear_object(&priv->client_private);
+  }
+
   G_OBJECT_CLASS(mendingwall_daemon_parent_class)->dispose(self);
 }
 

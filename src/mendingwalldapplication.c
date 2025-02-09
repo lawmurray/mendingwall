@@ -448,39 +448,43 @@ static void on_activate(MendingwallDApplication* self) {
 void mendingwalld_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
-  g_clear_object(&self->global);
-  g_clear_object(&self->config_dir);
-  g_clear_object(&self->settings_backend);
-  
-  g_free(self->save_path);
+  if (self->global) {
+    g_clear_object(&self->global);
+  }
+  if (self->config_dir) {
+    g_clear_object(&self->config_dir);
+  }
+  if (self->settings_backend) {
+    g_clear_object(&self->settings_backend);
+  }
+  if (self->save_path) {
+    g_free(self->save_path);
+    self->save_path = NULL;
+  }
   if (self->theme_settings) {
     g_ptr_array_free(self->theme_settings, TRUE);
+    self->theme_settings = NULL;
   }
   if (self->theme_files) {
     g_ptr_array_free(self->theme_files, TRUE);
+    self->theme_files = NULL;
   }
   if (self->theme_monitors) {
     g_ptr_array_free(self->theme_monitors, TRUE);
+    self->theme_monitors = NULL;
   }
-
-  self->save_path = NULL;
-  self->theme_settings = NULL;
-  self->theme_files = NULL;
-  self->theme_monitors = NULL;
-
   if (self->menus_config) {
     g_key_file_free(self->menus_config);
+    self->menus_config = NULL;
   }
   if (self->menu_dirs) {
     g_ptr_array_free(self->menu_dirs, TRUE);
+    self->menu_dirs = NULL;
   }
   if (self->menu_monitors) {
     g_ptr_array_free(self->menu_monitors, TRUE);
+    self->menu_monitors = NULL;
   }
-
-  self->menus_config = NULL;
-  self->menu_dirs = NULL;
-  self->menu_monitors = NULL;
 
   G_OBJECT_CLASS(mendingwalld_application_parent_class)->dispose(o);
 }
