@@ -38,13 +38,8 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               winpr-utils \
-              dbus-x11 \
               xwayland-run \
               ubuntu-gnome-desktop
-      - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
@@ -55,7 +50,6 @@ commands:
             cd build
             meson compile
             meson install
-            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 
   test:
     steps:
