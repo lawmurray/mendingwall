@@ -68,7 +68,7 @@ commands:
       - run:
           name: Build Flatpak
           command: |
-            flatpak run org.flatpak.Builder --force-clean --sandbox --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
+            flatpak run org.flatpak.Builder --force-clean --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
           name: Set commands
           command: |
