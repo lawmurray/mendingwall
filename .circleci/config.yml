@@ -30,7 +30,7 @@ commands:
               desktop-file-utils \
               meson \
               flatpak \
-              flatpak-build \
+              flatpak-builder \
               python3-gi \
               libgtk-4-dev \
               libglib2.0-bin \
