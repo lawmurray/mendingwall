@@ -57,13 +57,26 @@ commands:
           command: |
             echo 'export MENDINGWALL=mendingwall' >> $BASH_ENV
             echo 'export MENDINGWALLD=mendingwalld' >> $BASH_ENV
+
+  build_flatpak:
+    steps:
+      - run:
+          name: Build Flatpak
+          command: |
+            flatpak-builder --install builddir flatpak/org.indii.mendingwall.yaml
+      - run:
+          name: Augment environment
+          command: |
+            echo 'export MENDINGWALL="flatpak run --command="/app/bin/start-mendingwall" org.indii.mendingwall' >> $BASH_ENV
+            echo 'export MENDINGWALLD="flatpak run --command="/app/bin/start-mendingwalld" org.indii.mendingwall' >> $BASH_ENV
+
+  test:
+    steps:
       - run:
           name: Start DBus
           command: |
             dbus-launch --auto-syntax >> $BASH_ENV
 
-  test:
-    steps:
       - run:
           name: Does help work?
           command: |
@@ -163,6 +176,14 @@ jobs:
       - build
       - test
 
+  linux_flatpak:
+    executor: linux
+    steps:
+      - checkout
+      - environment
+      - build_flatpak
+      - test
+
   deploy:
     executor: linux
     steps:
@@ -179,6 +200,7 @@ workflows:
   all:
     jobs:
       - linux
+      - linux_flatpak
       - deploy:
           filters:
             tags:
