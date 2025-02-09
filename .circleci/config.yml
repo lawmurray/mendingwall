@@ -45,6 +45,7 @@ commands:
       - run:
           name: Install Flatpak dependencies
           command: |
+            flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
             flatpak install flathub org.gnome.Sdk 47
             flatpak install flathub org.gnome.Platform 47
 
