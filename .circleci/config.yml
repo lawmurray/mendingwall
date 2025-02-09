@@ -42,6 +42,11 @@ commands:
               dbus-x11 \
               xwayland-run \
               ubuntu-gnome-desktop
+      - run:
+          name: Install Flatpak dependencies
+          command: |
+            flatpak install flathub org.gnome.Sdk 47
+            flatpak install flathub org.gnome.Platform 47
 
   build:
     steps:
