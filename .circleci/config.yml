@@ -51,14 +51,19 @@ commands:
             cd build
             meson compile
             meson install
+      - run:
+          name: Augment environment
+          command: |
+            echo 'MENDINGWALL=mendingwall' >> $BASH_ENV
+            echo 'MENDINGWALLD=mendingwalld' >> $BASH_ENV
 
   test:
     steps:
       - run:
           name: Does help work?
           command: |
-            mendingwall -h
-            mendingwalld -h
+            $MENDINGWALL -h
+            $MENDINGWALLD -h
 
       - run:
           name: Is mend themes disabled by default?
@@ -67,7 +72,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            xwfb-run mendingwall -- --enable-themes --headless
+            xwfb-run $MENDINGWALL -- --enable-themes --headless
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -80,7 +85,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            xwfb-run mendingwall -- --enable-menus --headless
+            xwfb-run $MENDINGWALL -- --enable-menus --headless
       - run:
           name: Is tidy menus now enabled?
           command: |
