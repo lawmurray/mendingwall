@@ -18,26 +18,30 @@
 #include <config.h>
 #include <mendingwalldaemon.h>
 
+#include <libportal/portal.h>
+
 typedef struct {
-  GDBusProxy* session_manager;
-  GDBusProxy* client_private;
+  XdpPortal* portal;
 } MendingwallDaemonPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(MendingwallDaemon, mendingwall_daemon, G_TYPE_APPLICATION)
 
-static void on_quit(MendingwallDaemon* self) {
-  g_application_quit(G_APPLICATION(self));
+static void on_session_state_changed(MendingwallDaemon* self, gboolean,
+    XdpLoginSessionState* state) {
+  MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
+  if (*state == XDP_LOGIN_SESSION_QUERY_END) {
+    xdp_portal_session_monitor_query_end_response(priv->portal);
+  } else if (*state == XDP_LOGIN_SESSION_ENDING) {
+    g_application_quit(G_APPLICATION(self));
+  }
 }
 
 void mendingwall_daemon_dispose(GObject* self) {
   MendingwallDaemon* app = MENDINGWALL_DAEMON(self);
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(app);
 
-  if (priv->session_manager) {
-    g_clear_object(&priv->session_manager);
-  }
-  if (priv->client_private) {
-    g_clear_object(&priv->client_private);
+  if (priv->portal) {
+    g_clear_object(&priv->portal);
   }
 
   G_OBJECT_CLASS(mendingwall_daemon_parent_class)->dispose(self);
@@ -54,8 +58,7 @@ void mendingwall_daemon_class_init(MendingwallDaemonClass* klass) {
 
 void mendingwall_daemon_init(MendingwallDaemon* self) {
   MendingwallDaemonPrivate* priv = mendingwall_daemon_get_instance_private(self);
-  priv->session_manager = NULL;
-  priv->client_private = NULL;
+  priv->portal = NULL;
 }
 
 void mendingwall_daemon_hold(MendingwallDaemon* self) {
@@ -64,57 +67,10 @@ void mendingwall_daemon_hold(MendingwallDaemon* self) {
   /* keep running as background process, as application has no main window */
   g_application_hold(G_APPLICATION(self));
 
-  /* register with org.gnome.SessionManager via dbus to terminate at end of
-   * session; this is necessary for Linux distributions that do not have
-   * systemd (or otherwise) configured to kill all user processes at end of
-   * session */
-  const gchar* app_id = g_application_get_application_id(G_APPLICATION(self));
-  const gchar* desktop_autostart_id = g_getenv("DESKTOP_AUTOSTART_ID");
-  g_autofree const gchar* client_id = g_strdup(desktop_autostart_id ? desktop_autostart_id : "");
-
-  GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
-  if (dbus) {
-    priv->session_manager = g_dbus_proxy_new_sync(dbus,
-        G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
-        G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
-        G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-        NULL,
-        "org.gnome.SessionManager",
-        "/org/gnome/SessionManager",
-        "org.gnome.SessionManager",
-        NULL,
-        NULL);
-    if (priv->session_manager) {
-      g_autoptr(GVariant) res = g_dbus_proxy_call_sync(
-          priv->session_manager,
-          "RegisterClient",
-          g_variant_new("(ss)", app_id, client_id),
-          G_DBUS_CALL_FLAGS_NONE,
-          G_MAXINT,
-          NULL,
-          NULL);
-      if (res) {
-        g_autofree const gchar* client_path = NULL;
-        g_variant_get(res, "(o)", &client_path);
-        if (client_path) {
-          /* quit on session end */
-          priv->client_private = g_dbus_proxy_new_sync(dbus,
-              G_DBUS_PROXY_FLAGS_NONE,
-              NULL,
-              "org.gnome.SessionManager",
-              client_path,
-              "org.gnome.SessionManager.ClientPrivate",
-              NULL,
-              NULL);
-          if (priv->client_private) {
-            g_signal_connect_swapped(
-                priv->client_private,
-                "g-signal::EndSession",
-                G_CALLBACK(on_quit),
-                self);
-          }
-        }
-      }
-    }
-  }
+  /* register with portal for session end; this is necessary when systemd (or
+   * otherwise) is not configured to kill user processes at end of session; it
+   * is also used for the monitoring of background apps in GNOME */
+  priv->portal = xdp_portal_new();
+  g_signal_connect_swapped(priv->portal, "session-state-changed",
+      G_CALLBACK(on_session_state_changed), NULL);
 }
