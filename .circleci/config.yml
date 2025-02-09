@@ -39,6 +39,7 @@ commands:
               libportal-dev \
               libportal-gtk3-dev \
               libportal-gtk4-dev \
+              dbus-x11 \
               xwayland-run \
               ubuntu-gnome-desktop
 
@@ -52,10 +53,14 @@ commands:
             meson compile
             meson install
       - run:
-          name: Augment environment
+          name: Set commands
           command: |
             echo 'export MENDINGWALL=mendingwall' >> $BASH_ENV
             echo 'export MENDINGWALLD=mendingwalld' >> $BASH_ENV
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
 
   test:
     steps:
