@@ -53,7 +53,7 @@ commands:
             meson setup build
             cd build
             meson compile
-            meson install
+            sudo meson install
       - run:
           name: Set commands
           command: |
