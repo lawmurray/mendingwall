@@ -9,4 +9,3 @@ Categories=Settings;Utility
 Keywords=;
 StartupNotify=true
 DBusActivatable=true
-NoDisplay=true

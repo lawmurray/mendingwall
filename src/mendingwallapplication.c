@@ -78,13 +78,13 @@ static void install_autostart(MendingwallApplication* self) {
 
     /* install watch autostart */
     g_autoptr(GKeyFile) watch_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(watch_autostart, "applications/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(watch_autostart, "mendingwall/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(watch_autostart, watch_path, NULL);
     }
 
     /* install restore autostart (used for everything but KDE) */
     g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
-    if (g_key_file_load_from_data_dirs(restore_autostart, "applications/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+    if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
       g_key_file_save_to_file(restore_autostart, restore_path, NULL);
     }
 

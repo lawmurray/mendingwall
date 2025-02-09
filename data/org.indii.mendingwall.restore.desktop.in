@@ -9,4 +9,3 @@ Categories=Settings;Utility
 Keywords=;
 X-GNOME-Autostart-Phase=Initialization
 NotShowIn=KDE
-NoDisplay=true

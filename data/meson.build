@@ -26,7 +26,7 @@ restore_autostart_file = i18n.merge_file(
          type: 'desktop',
        po_dir: '../po',
       install: true,
-  install_dir: get_option('datadir') / 'applications',
+  install_dir: get_option('datadir') / 'mendingwall',
 )
 
 daemon_autostart_file = i18n.merge_file(
@@ -40,7 +40,14 @@ daemon_autostart_file = i18n.merge_file(
          type: 'desktop',
        po_dir: '../po',
       install: true,
-  install_dir: get_option('datadir') / 'applications',
+  install_dir: get_option('datadir') / 'mendingwall',
+)
+
+configure_file(
+          input: 'org.indii.mendingwall.restore.sh.in',
+         output: 'org.indii.mendingwall.restore.sh',
+  configuration: conf,
+    install_dir: get_option('datadir') / 'mendingwall'
 )
 
 appstream_file = i18n.merge_file(
@@ -63,13 +70,6 @@ configure_file(
          output: 'org.indii.mendingwall.watch.service',
   configuration: conf,
     install_dir: get_option('datadir') / 'dbus-1' / 'services'
-)
-
-configure_file(
-          input: 'org.indii.mendingwall.restore.sh.in',
-         output: 'org.indii.mendingwall.restore.sh',
-  configuration: conf,
-    install_dir: get_option('datadir') / 'mendingwall'
 )
 
 install_data(
