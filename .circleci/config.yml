@@ -38,6 +38,7 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
+              xwayland-run \
               ubuntu-gnome-desktop
       - run:
           name: Start DBus
@@ -95,7 +96,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwall --enable-themes --headless
+            xwfb-run mendingwall -- --enable-themes --headless
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -108,7 +109,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwall -- --enable-menus --headless
+            xwfb-run mendingwall -- --enable-menus --headless
       - run:
           name: Is tidy menus now enabled?
           command: |
