@@ -39,10 +39,6 @@ commands:
               libportal-gtk4-dev \
               dbus-x11 \
               ubuntu-gnome-desktop
-      - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
@@ -54,9 +50,9 @@ commands:
             meson compile
             sudo meson install
       - run:
-          name: Reload dbus config
+          name: Start DBus
           command: |
-            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
+            dbus-launch --auto-syntax >> $BASH_ENV
 
   build_flatpak:
     steps:
@@ -66,10 +62,14 @@ commands:
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
             flatpak --print-updated-env >> $BASH_ENV
             echo 'export XDG_DATA_DIRS' >> $BASH_ENV
-            flatpak install -y flathub org.flatpak.Builder
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
       - run:
           name: Build Flatpak
           command: |
+            flatpak install -y flathub org.flatpak.Builder
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
           name: Create wrapper commands for mendingwall and mendingwalld
@@ -85,10 +85,6 @@ commands:
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
-      - run:
-          name: Reload dbus config
-          command: |
-            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 
   test:
     steps:
