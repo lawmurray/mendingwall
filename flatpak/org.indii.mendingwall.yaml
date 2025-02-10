@@ -11,6 +11,7 @@ finish-args:
   - --socket=fallback-x11
 
   - --filesystem=xdg-run/dconf
+  - --filesystem=xdg-config/dconf:rw
   - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
