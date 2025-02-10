@@ -218,6 +218,19 @@ commands:
             sleep 2
             [[ `ps -C mendingwalld -o pid= | wc -l` == 0 ]] || exit 1
 
+      - run:
+          name: Delete config file
+          command: |
+            rm ~/.config/kwinrc
+      - run:
+          name: Restore theme
+          command: |
+            mendingwalld --restore
+      - run:
+          name: Does config file now exist?
+          command: |
+            [[ -f ~/.config/kwinrc ]] || exit 1
+
 jobs:
 
   linux:
