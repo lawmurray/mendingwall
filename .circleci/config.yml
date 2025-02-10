@@ -39,6 +39,10 @@ commands:
               libportal-gtk4-dev \
               dbus-x11 \
               ubuntu-gnome-desktop
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
@@ -49,6 +53,10 @@ commands:
             cd build
             meson compile
             sudo meson install
+      - run:
+          name: Reload dbus config
+          command: |
+            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 
   build_flatpak:
     steps:
@@ -75,14 +83,13 @@ commands:
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Reload dbus config
+          command: |
+            gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.ReloadConfig
 
   test:
     steps:
-      - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
-
       - run:
           name: Does help work?
           command: |
