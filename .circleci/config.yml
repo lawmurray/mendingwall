@@ -54,11 +54,6 @@ commands:
             cd build
             meson compile
             sudo meson install
-      - run:
-          name: Set commands
-          command: |
-            echo 'export MENDINGWALL=xwfb-run mendingwall --' >> $BASH_ENV
-            echo 'export MENDINGWALLD=mendingwalld' >> $BASH_ENV
 
   build_flatpak:
     steps:
@@ -72,10 +67,12 @@ commands:
           command: |
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
-          name: Set commands
+          name: Create wrapper commands for mendingwall and mendingwalld
           command: |
-            echo 'export MENDINGWALL="xwfb-run flatpak -- run --command=/app/bin/start-mendingwall org.indii.mendingwall"' >> $BASH_ENV
-            echo 'export MENDINGWALLD="flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall"' >> $BASH_ENV
+            mkdir -p ~/bin
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall $@ >> ~/bin/mendingwall\n"
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall $@ >> ~/bin/mendingwalld\n"
+            chmod +x ~/bin/mendingwall*
       - run:
           name: Install GSettings schema to host
           command: |
@@ -89,8 +86,8 @@ commands:
       - run:
           name: Does help work?
           command: |
-            $MENDINGWALL -h
-            $MENDINGWALLD -h
+            mendingwall -h
+            mendingwalld -h
 
       - run:
           name: Is mend themes disabled by default?
@@ -99,7 +96,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            $MENDINGWALL --enable-themes --headless
+            mendingwall --enable-themes --headless
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -112,7 +109,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            $MENDINGWALL --enable-menus --headless
+            mendingwall --enable-menus --headless
       - run:
           name: Is tidy menus now enabled?
           command: |
