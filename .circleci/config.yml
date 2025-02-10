@@ -3,8 +3,8 @@ version: 2.1
 executors:
 
   linux:
-    docker:
-      - image: ubuntu:oracular
+    machine:
+      image: ubuntu-2404:current
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
@@ -17,10 +17,9 @@ commands:
       - run:
           name: Install dependencies
           command: |
-            apt update --assume-yes
-            apt install --assume-yes \
+            sudo apt update --assume-yes
+            sudo apt install --assume-yes \
               ca-certificates \
-              sudo \
               curl \
               git \
               ssh \
