@@ -11,16 +11,13 @@ finish-args:
   - --socket=fallback-x11
 
   - --filesystem=xdg-run/dconf
-  - --filesystem=~/.config/dconf
   - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  - --filesystem=~/.config:create
-  - --filesystem=~/.config/autostart:create
-  - --filesystem=~/.config/plasma-workspace/env:create
-  - --filesystem=~/.local/share/applications:create
-  - --filesystem=~/.local/share/flatpak/exports/share/applications:ro
+  - --filesystem=xdg-config:create
+  - --filesystem=xdg-data/applications:create
+  - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
