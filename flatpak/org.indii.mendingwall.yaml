@@ -10,7 +10,6 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
 
-  - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
