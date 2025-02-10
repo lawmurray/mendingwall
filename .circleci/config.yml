@@ -225,6 +225,7 @@ commands:
       - run:
           name: Restore theme
           command: |
+            gsettings set org.indii.mendingwall themes true
             mendingwalld --restore
       - run:
           name: Does config file now exist?
