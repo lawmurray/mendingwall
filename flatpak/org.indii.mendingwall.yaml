@@ -15,11 +15,9 @@ finish-args:
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  - --filesystem=xdg-config/dconf
-  - --filesystem=xdg-config/autostart:create
-  - --filesystem=xdg-config/plasma-workspace/env:create
-  - --filesystem=xdg-data/applications:create
-  - --filesystem=xdg-data/flatpak/exports/share/applications:ro
+  - --filesystem=~/.config:create
+  - --filesystem=~/.local/share/applications:create
+  - --filesystem=~/.local/share/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
