@@ -38,16 +38,11 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
-              xwayland-run \
               ubuntu-gnome-desktop
       - run:
           name: Start DBus
           command: |
             dbus-launch --auto-syntax >> $BASH_ENV
-      - run:
-          name: Setuid on xwfb-run
-          command: |
-            sudo chmod u+s /usr/bin/xwfb-run
 
   build:
     steps:
@@ -100,7 +95,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            xwfb-run mendingwall -- --enable-themes --headless
+            mendingwall --enable-themes --headless
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -113,7 +108,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            xwfb-run mendingwall -- --enable-menus --headless
+            mendingwall -- --enable-menus --headless
       - run:
           name: Is tidy menus now enabled?
           command: |
