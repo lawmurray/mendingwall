@@ -38,12 +38,7 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
-              xwayland-run \
               ubuntu-gnome-desktop
-      - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
@@ -83,6 +78,11 @@ commands:
 
   test:
     steps:
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
+
       - run:
           name: Does help work?
           command: |
