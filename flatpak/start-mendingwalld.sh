@@ -9,5 +9,6 @@
 # about arbitrary permissions. For the purposes of Mending Wall this
 # hard-coded set ought to be sufficient anyway.
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:$XDG_DATA_DIRS"
+export XDG_CONFIG_HOME=.config
 export GSETTINGS_BACKEND=dconf
 exec mendingwalld "$@"
