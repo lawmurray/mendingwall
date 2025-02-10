@@ -44,6 +44,10 @@ commands:
           name: Start DBus
           command: |
             dbus-launch --auto-syntax >> $BASH_ENV
+      - run:
+          name: Setuid on xwfb-run
+          command: |
+            sudo chmod u+s /usr/bin/xwfb-run
 
   build:
     steps:
