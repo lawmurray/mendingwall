@@ -39,6 +39,11 @@ commands:
               libportal-gtk4-dev \
               dbus-x11 \
               ubuntu-gnome-desktop
+      - run:
+          name: Update environment variables for Flatpak
+          command: |
+            flatpak --print-updated-env >> $BASH_ENV
+            echo 'export XDG_DATA_DIRS' >> $BASH_ENV
 
   build:
     steps:
@@ -60,8 +65,6 @@ commands:
           name: Configure Flathub
           command: |
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-            flatpak --print-updated-env >> $BASH_ENV
-            echo 'export XDG_DATA_DIRS' >> $BASH_ENV
       - run:
           name: Start DBus
           command: |
