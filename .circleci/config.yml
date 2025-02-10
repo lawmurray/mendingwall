@@ -158,14 +158,15 @@ commands:
           name: Have GNOME settings been saved?
           command: |
             [[ -f $SAVE_DIR/GNOME.gsettings ]] || exit 1
+
       - run:
           name: Touch config file
           command: |
             touch ~/.config/kwinrc
-            sleep 2
       - run:
           name: Has config file been saved?
           command: |
+            sleep 2
             [[ -f $SAVE_DIR/GNOME/kwinrc ]] || exit 1
 
       - run:
@@ -175,6 +176,7 @@ commands:
       - run:
           name: Have KDE apps been tidied?
           command: |
+            sleep 2
             [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]] || exit 1
 
       - run:
@@ -182,11 +184,39 @@ commands:
           command: |
             [[ `gsettings get org.gnome.desktop.interface icon-theme` != Breeze ]] || exit 1
             gsettings set org.gnome.desktop.interface icon-theme Breeze
-            sleep 2
       - run:
           name: Is GNOME saved icon theme Breeze?
           command: |
+            sleep 2
             [[ `grep icon-theme $SAVE_DIR/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
+
+      - run:
+          name: Disable mend themes
+          command: |
+            mendingwall --disable-themes --headless
+      - run:
+          name: Is mend themes now disabled?
+          command: |
+            [[ `gsettings get org.indii.mendingwall themes` == false ]] || exit 1
+      - run:
+          name: Is daemon still running?
+          command: |
+            sleep 2
+            [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+
+      - run:
+          name: Disable tidy menus
+          command: |
+            mendingwall --disable-menus --headless
+      - run:
+          name: Is tidy menus now disabled?
+          command: |
+            [[ `gsettings get org.indii.mendingwall menus` == false ]] || exit 1
+      - run:
+          name: Is daemon now terminated?
+          command: |
+            sleep 2
+            [[ `ps -C mendingwalld -o pid= | wc -l` == 0 ]] || exit 1
 
 jobs:
 
