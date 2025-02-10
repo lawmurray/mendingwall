@@ -80,13 +80,6 @@ commands:
             printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall \$@\n" > ~/bin/mendingwall
             printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall \$@\n" > ~/bin/mendingwalld
             chmod +x ~/bin/mendingwall*
-      - run:
-          name: Install GSettings schema to host
-          command: |
-            SCHEMAS_DIR=$HOME/.local/share/glib-2.0/schemas
-            mkdir -p $SCHEMAS_DIR
-            cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
-            glib-compile-schemas $SCHEMAS_DIR
 
   test:
     steps:
