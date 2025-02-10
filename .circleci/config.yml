@@ -70,8 +70,8 @@ commands:
           name: Create wrapper commands for mendingwall and mendingwalld
           command: |
             mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall $@\n" > ~/bin/mendingwall
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall $@\n" > ~/bin/mendingwalld
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall \$@\n" > ~/bin/mendingwall
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall \$@\n" > ~/bin/mendingwalld
             chmod +x ~/bin/mendingwall*
       - run:
           name: Install GSettings schema to host
