@@ -38,6 +38,7 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
+              xwayland-run \
               ubuntu-gnome-desktop
       - run:
           name: Start DBus
@@ -56,7 +57,7 @@ commands:
       - run:
           name: Set commands
           command: |
-            echo 'export MENDINGWALL=mendingwall' >> $BASH_ENV
+            echo 'export MENDINGWALL=xwfb-run -- mendingwall' >> $BASH_ENV
             echo 'export MENDINGWALLD=mendingwalld' >> $BASH_ENV
 
   build_flatpak:
@@ -73,7 +74,7 @@ commands:
       - run:
           name: Set commands
           command: |
-            echo 'export MENDINGWALL="flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall"' >> $BASH_ENV
+            echo 'export MENDINGWALL="xwfb-run -- flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall"' >> $BASH_ENV
             echo 'export MENDINGWALLD="flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall"' >> $BASH_ENV
       - run:
           name: Install GSettings schema to host
