@@ -58,6 +58,10 @@ commands:
             cd build
             meson compile
             sudo meson install
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
 
   build_flatpak:
     steps:
@@ -87,6 +91,10 @@ commands:
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/.var/app/org.indii.mendingwall/data/mendingwall/save' >> $BASH_ENV
 
   test:
     steps:
@@ -149,7 +157,7 @@ commands:
       - run:
           name: Have GNOME settings been saved?
           command: |
-            [[ -f ~/.local/share/mendingwall/save/GNOME.gsettings ]] || exit 1
+            [[ -f $SAVE_DIR/GNOME.gsettings ]] || exit 1
       - run:
           name: Touch config file
           command: |
@@ -158,7 +166,7 @@ commands:
       - run:
           name: Has config file been saved?
           command: |
-            [[ -f ~/.local/share/mendingwall/save/GNOME/kwinrc ]] || exit 1
+            [[ -f $SAVE_DIR/GNOME/kwinrc ]] || exit 1
 
       - run:
           name: Install KDE Plasma
@@ -178,7 +186,7 @@ commands:
       - run:
           name: Is GNOME saved icon theme Breeze?
           command: |
-            [[ `grep icon-theme ~/.local/share/mendingwall/save/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
+            [[ `grep icon-theme $SAVE_DIR/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
 
 jobs:
 
