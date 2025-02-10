@@ -53,8 +53,6 @@ modules:
       - type: git
         url: https://gitlab.gnome.org/GNOME/dconf
         tag: 0.40.0
-      - type: patch
-        path: dconf-override.patch
 
   - name: libportal
     buildsystem: meson
