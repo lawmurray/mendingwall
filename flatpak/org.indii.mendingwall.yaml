@@ -17,6 +17,8 @@ finish-args:
   - --env=GSETTINGS_BACKEND=dconf
 
   - --filesystem=xdg-config/kwinrc:rw
+  - --filesystem=xdg-config/autostart:create
+  - --filesystem=xdg-config/plasma-workspace/env:create
   - --filesystem=xdg-data/applications:create
   - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
