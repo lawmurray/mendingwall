@@ -64,6 +64,8 @@ commands:
           name: Configure Flathub
           command: |
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            flatpak --print-updated-env >> $BASH_ENV
+            echo 'export XDG_DATA_DIRS' >> $BASH_ENV
             flatpak install -y flathub org.flatpak.Builder
       - run:
           name: Build Flatpak
