@@ -10,15 +10,36 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
 
+  # autostart requires; portal is not used as it does not support the earlier
+  # init phases needed to restore themes before first use
+  - --filesystem=xdg-config/autostart:create
+  - --filesystem=xdg-config/plasma-workspace/env:create
+
+  # dconf backend for GSettings, so can save and restore themes
   - --filesystem=xdg-run/dconf
   - --filesystem=xdg-config/dconf:rw
   - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  - --filesystem=xdg-config/kwinrc:rw
-  - --filesystem=xdg-config/autostart:create
-  - --filesystem=xdg-config/plasma-workspace/env:create
+  # config files for desktop environments, so can save and restore themes
+  - --filesystem=xdg-config/gtk-3.0:create
+  - --filesystem=xdg-config/gtk-4.0:create
+  - --filesystem=xdg-config/gtkrc
+  - --filesystem=xdg-config/gtkrc-2.0
+  - --filesystem=xdg-config/monitors.xml
+  - --filesystem=xdg-config/kcminputrc
+  - --filesystem=xdg-config/kdeglobals
+  - --filesystem=xdg-config/kglobalshortcutsrc
+  - --filesystem=xdg-config/kwinrc
+  - --filesystem=xdg-config/kwinoutputconfig.json
+  - --filesystem=xdg-config/plasmashellrc
+  - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
+  - --filesystem=xdg-config/systemsettingsrc
+  - --filesystem=xdg-config/Trolltech.conf
+  - --filesystem=xdg-config/xsettingsd:create
+
+  # application directories, so can tidy menus
   - --filesystem=xdg-data/applications:create
   - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
