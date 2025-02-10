@@ -15,6 +15,7 @@ finish-args:
   - --talk-name=ca.desrt.dconf
   - --env=DCONF_USER_CONFIG_DIR=.config/dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
+  - --env=GSETTINGS_BACKEND=dconf
 
   - --filesystem=xdg-config:create
   - --filesystem=xdg-config/autostart:create
@@ -24,10 +25,6 @@ finish-args:
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
-
-  - --env=XDG_DATA_DIRS=/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:$XDG_DATA_DIRS
-  - --unset-env=XDG_CONFIG_HOME
-  - --env=GSETTINGS_BACKEND=dconf
 
 cleanup:
   - /include
