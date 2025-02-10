@@ -23,9 +23,9 @@ finish-args:
   - --env=GSETTINGS_BACKEND=dconf
 
   # config files for desktop environments, so can save and restore themes;
-  # read-only is needed for xdg-config itself to establish file monitors on
-  # files directly within it
-  - --filesystem=xdg-config:ro
+  # write access is needed to xdg-config itself to restore config files that
+  # may exist in one desktop environment that do not exist in another
+  - --filesystem=xdg-config:rw
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
   - --filesystem=xdg-config/gtkrc
