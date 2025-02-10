@@ -23,6 +23,7 @@ finish-args:
   - --env=GSETTINGS_BACKEND=dconf
 
   # config files for desktop environments, so can save and restore themes
+  - --filesystem=xdg-config:ro
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
   - --filesystem=xdg-config/gtkrc
