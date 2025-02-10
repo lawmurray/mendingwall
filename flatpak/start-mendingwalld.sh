@@ -8,7 +8,7 @@
 # (--talk-name=org.freedesktop.Flatpak) and results in a warning on Flathub
 # about arbitrary permissions. For the purposes of Mending Wall this
 # hard-coded set ought to be sufficient anyway.
-export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:$XDG_DATA_DIRS"
-unset XDG_CONFIG_HOME  # i.e. use default
-export GSETTINGS_BACKEND=dconf
+#export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:$XDG_DATA_DIRS"
+#unset XDG_CONFIG_HOME  # i.e. use default
+#export GSETTINGS_BACKEND=dconf
 exec mendingwalld "$@"
