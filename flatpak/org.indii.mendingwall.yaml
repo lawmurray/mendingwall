@@ -13,7 +13,6 @@ finish-args:
   - --filesystem=xdg-run/dconf
   - --filesystem=~/.config/dconf
   - --talk-name=ca.desrt.dconf
-  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
