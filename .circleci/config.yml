@@ -70,8 +70,8 @@ commands:
           name: Create wrapper commands for mendingwall and mendingwalld
           command: |
             mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall $@\n" >> ~/bin/mendingwall
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall $@\n" >> ~/bin/mendingwalld
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall $@\n" > ~/bin/mendingwall
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall $@\n" > ~/bin/mendingwalld
             chmod +x ~/bin/mendingwall*
       - run:
           name: Install GSettings schema to host
@@ -96,7 +96,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwall --enable-themes --headless
+            xwfb-run mendingwall -- --enable-themes --headless
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -109,7 +109,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwall --enable-menus --headless
+            xwfb-run mendingwall -- --enable-menus --headless
       - run:
           name: Is tidy menus now enabled?
           command: |
