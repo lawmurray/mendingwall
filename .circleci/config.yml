@@ -44,6 +44,10 @@ commands:
           command: |
             flatpak --print-updated-env >> $BASH_ENV
             echo 'export XDG_DATA_DIRS' >> $BASH_ENV
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
 
   build:
     steps:
@@ -54,10 +58,6 @@ commands:
             cd build
             meson compile
             sudo meson install
-      - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
 
   build_flatpak:
     steps:
@@ -66,13 +66,12 @@ commands:
           command: |
             flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
       - run:
-          name: Start DBus
+          name: Install Flatpak Builder
           command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
+            flatpak install -y flathub org.flatpak.Builder
       - run:
           name: Build Flatpak
           command: |
-            flatpak install -y flathub org.flatpak.Builder
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
           name: Create wrapper commands for mendingwall and mendingwalld
