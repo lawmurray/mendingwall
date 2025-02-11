@@ -60,7 +60,17 @@ sudo zypper install \
 ```
 On Arch-based:
 ```
-sudo pacman -S meson blueprint-compiler glib2 gtk4 libadwaita libportal libportal-gtk3 libportal-gtk4 gettext desktop-file-utils
+sudo pacman -S \
+    meson \
+    blueprint-compiler \
+    glib2 \
+    gtk4 \
+    libadwaita \
+    libportal \
+    libportal-gtk3 \
+    libportal-gtk4 \
+    gettext \
+    desktop-file-utils
 ```
 Other Linux distributions will almost certainly provide these packages too, although names may differ.
 
