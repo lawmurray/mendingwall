@@ -28,6 +28,7 @@ sudo apt install \
     libportal-gtk3-dev \
     libportal-gtk4-dev \
     gettext \
+    appstream \
     desktop-file-utils
 ```
 On Fedora:
@@ -42,6 +43,7 @@ sudo dnf install \
     libportal-gtk3-devel \
     libportal-gtk4-devel \
     gettext \
+    appstream \
     desktop-file-utils
 ```
 On openSUSE:
@@ -56,6 +58,7 @@ sudo zypper install \
     libportal-gtk3-devel \
     libportal-gtk4-devel \
     gettext \
+    appstream \
     desktop-file-utils
 ```
 On Arch-based:
@@ -70,6 +73,7 @@ sudo pacman -S \
     libportal-gtk3 \
     libportal-gtk4 \
     gettext \
+    appstream \
     desktop-file-utils
 ```
 Other Linux distributions will almost certainly provide these packages too, although names may differ.
