@@ -34,27 +34,26 @@ static void launch_daemon(MendingwallApplication* self) {
   gboolean menus = g_settings_get_boolean(self->global, "menus");
 
   if (themes || menus) {
-    /* launch daemon; fine if already running, new instance will quit */
-    g_settings_sync();  // ensure current settings visible in new process
-    g_dbus_connection_call(
-      g_application_get_dbus_connection(G_APPLICATION(self)),
-      "org.indii.mendingwall.watch",
-      "/org/indii/mendingwall/watch",
-      "org.freedesktop.Application",
-      "Activate",
-      g_variant_new_parsed("({'test': <1>}, )"),
-      NULL,
-      G_DBUS_CALL_FLAGS_NONE,
-      -1,
-      NULL,
-      NULL,
-      NULL
-    );
+    /* ensure that current settings will be visible in new processes */
+    g_settings_sync();
 
-    /* alternatively, can launch with g_spawn_async(), but dbus preferred for
-      * a consistent environment */
-    //static const gchar* argv[] = { "mendingwall", "--watch" };
-    //g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    /* launch daemon; fine if already running, new instance will quit */
+    g_dbus_connection_call(
+        g_application_get_dbus_connection(G_APPLICATION(self)),
+        "org.indii.mendingwall.watch",
+        "/org/indii/mendingwall/watch",
+        "org.freedesktop.Application",
+        "Activate",
+        g_variant_new_parsed("({'test': <1>}, )"),
+        NULL,
+        G_DBUS_CALL_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        NULL
+    );
+    // static const gchar* argv[] = { "mendingwalld", "--watch", NULL };
+    // g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   }
 }
 

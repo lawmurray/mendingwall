@@ -10,15 +10,39 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
 
-  - --filesystem=xdg-run/dconf
-  - --filesystem=~/.config/dconf
-  - --talk-name=ca.desrt.dconf
-  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
-  - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
-
-  - --filesystem=xdg-config:create
+  # autostart requires; portal is not used as it does not support the earlier
+  # init phases needed to restore themes before first use
   - --filesystem=xdg-config/autostart:create
   - --filesystem=xdg-config/plasma-workspace/env:create
+
+  # dconf backend for GSettings, so can save and restore themes
+  - --filesystem=xdg-run/dconf
+  - --filesystem=xdg-config/dconf:rw
+  - --talk-name=ca.desrt.dconf
+  - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
+  - --env=GSETTINGS_BACKEND=dconf
+
+  # config files for desktop environments, so can save and restore themes;
+  # write access is needed to xdg-config itself to restore config files that
+  # may exist in one desktop environment that do not exist in another
+  - --filesystem=xdg-config:rw
+  - --filesystem=xdg-config/gtk-3.0:create
+  - --filesystem=xdg-config/gtk-4.0:create
+  - --filesystem=xdg-config/gtkrc
+  - --filesystem=xdg-config/gtkrc-2.0
+  - --filesystem=xdg-config/monitors.xml
+  - --filesystem=xdg-config/kcminputrc
+  - --filesystem=xdg-config/kdeglobals
+  - --filesystem=xdg-config/kglobalshortcutsrc
+  - --filesystem=xdg-config/kwinrc
+  - --filesystem=xdg-config/kwinoutputconfig.json
+  - --filesystem=xdg-config/plasmashellrc
+  - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
+  - --filesystem=xdg-config/systemsettingsrc
+  - --filesystem=xdg-config/Trolltech.conf
+  - --filesystem=xdg-config/xsettingsd:create
+
+  # application directories, so can tidy menus
   - --filesystem=xdg-data/applications:create
   - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
@@ -53,8 +77,6 @@ modules:
       - type: git
         url: https://gitlab.gnome.org/GNOME/dconf
         tag: 0.40.0
-      - type: patch
-        path: dconf-override.patch
 
   - name: libportal
     buildsystem: meson
@@ -97,6 +119,6 @@ modules:
       # calls to mendingwalld with flatpak run
       - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
 
-      # for all autostart and desktop files, wrap calls to mendingwall and
-      # mendingwalld with start scripts
-      - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
+      # for all autostart, desktop and service files, wrap calls to
+      # mendingwall and mendingwalld with start scripts
+      - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh /app/share/dbus-1/services/org.indii.mendingwall*.service
