@@ -1,0 +1,39 @@
+name: mendingwall
+base: core24
+version: git
+summary: Hop between desktop environments, enjoy them all
+description: |
+  Linux distributions offer a choice of desktop environment, but
+  installing more than one can break themes and clutter menus. Mending
+  Wall fixes this.
+
+grade: devel # must be 'stable' to release into candidate/stable channels
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+parts:
+  mendingwall:
+    plugin: meson
+    source: https://github.com/lawmurray/mendingwall.git
+    build-packages:
+      - meson
+      - blueprint-compiler
+      - gettext
+      - appstream
+      - desktop-file-utils
+      - libgtk-4-dev
+      - libglib2.0-dev
+      - libadwaita-1-dev
+      - libportal-dev
+      - libportal-gtk4-dev
+      - libportal-gtk3-dev
+    stage-packages:
+      - libgtk-4-1
+      - libadwaita-1-0
+      - libportal1
+
+apps:
+  mendingwall:
+    command: usr/local/bin/mendingwall
+  mendingwalld:
+    command: usr/local/bin/mendingwalld
+
