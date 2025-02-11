@@ -4,7 +4,7 @@
 
 Mending Wall is a Linux application to fix issues when hopping between multiple desktop environments, such as tiny/huge cursors, tiny/huge fonts, light/dark mode switches and scaling issues. It also tidies application menus, showing core applications in their native environment only.
 
-Mending Wall is free software, copyright (C) 2025 Lawrence Murray, licensed under the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+Mending Wall is free software, copyright © 2025 Lawrence Murray, licensed under the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 > [!CAUTION]
 > This is an early release. During development, it has been tested with Ubuntu 24.04, Fedora 41, openSUSE Tumbleweed and EndeavourOS with GNOME and KDE, and to a lesser extent Xfce and Cinnamon. I would recommend trying it in a virtual machine, or creating a snapshot of your system before proceeding (with e.g. [Timeshift](https://github.com/linuxmint/timeshift) or [Snapper](http://snapper.io/)), in case Mending Wall fails to fix breakages caused by installing a second desktop environment in your main system, which may leave you with a manual cleanup.
