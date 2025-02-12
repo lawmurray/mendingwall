@@ -110,7 +110,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            sudo snapcraft install --dangerous *.snap
+            sudo snapcraft install *.snap
       - run:
           name: Create wrapper command for mendingwalld
           command: |
