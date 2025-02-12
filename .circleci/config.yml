@@ -100,10 +100,6 @@ commands:
   build_snap:
     steps:
       - run:
-          name: Authenticate
-          command: |
-            sudo snap login
-      - run:
           name: Install snapcraft
           command: |
             snap install snapcraft
@@ -114,7 +110,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            snapcraft install --dangerous *.snap
+            sudo snapcraft install --dangerous *.snap
       - run:
           name: Create wrapper command for mendingwalld
           command: |
