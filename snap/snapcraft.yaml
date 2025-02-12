@@ -1,12 +1,9 @@
 name: mendingwall
-base: core24
+title: Mending Wall
 version: git
-summary: Hop between desktop environments, enjoy them all
-description: |
-  Linux distributions offer a choice of desktop environment, but
-  installing more than one can break themes and clutter menus. Mending
-  Wall fixes this.
+adopt-info: mendingwall
 
+base: core24
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: devmode # use 'strict' once you have the right plugs and slots
 
@@ -14,6 +11,8 @@ parts:
   mendingwall:
     plugin: meson
     source: https://github.com/lawmurray/mendingwall.git
+    parse-info:
+      - usr/local/share/metainfo/org.indii.mendingwall.metainfo.xml
     build-packages:
       - meson
       - blueprint-compiler
