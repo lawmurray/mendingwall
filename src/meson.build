@@ -13,17 +13,18 @@ blueprints = custom_target('blueprints',
 # following lines can be exchanged to regenerate the files dynamically,
 # and check updated versions into the repository if necessary.
 #
-resources = ['resources.h', 'resources.c']
-#resources = gnome.compile_resources('resources',
-#  'mendingwall.gresource.xml',
-#  c_name: 'mendingwall',
-#  dependencies: blueprints
-#)
+#resources = ['resources.h', 'resources.c']
+resources = gnome.compile_resources('resources',
+  'mendingwall.gresource.xml',
+  c_name: 'mendingwall',
+  dependencies: blueprints
+)
 
 # mendingwall program
 mendingwall_sources = [
   'mendingwall.c',
   'mendingwallapplication.c',
+  'utility.c',
 ]
 mendingwall_sources += blueprints
 mendingwall_sources += resources
@@ -37,11 +38,26 @@ executable('mendingwall', mendingwall_sources,
        install: true,
 )
 
+# mendingwallcli program
+mendingwallcli_sources = [
+  'mendingwallcliapplication.c',
+  'mendingwallcli.c',
+  'utility.c',
+]
+mendingwallcli_deps = [
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
+]
+executable('mendingwallcli', mendingwallcli_sources,
+  dependencies: mendingwallcli_deps,
+       install: true,
+)
+
 # mendingwalld program
 mendingwalld_sources = [
-  'mendingwalldaemon.c',
   'mendingwalldapplication.c',
   'mendingwalld.c',
+  'utility.c',
 ]
 mendingwalld_deps = [
   dependency('glib-2.0'),

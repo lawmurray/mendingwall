@@ -16,20 +16,13 @@
  */
 #pragma once
 
-#include <config.h>
-
 #include <gio/gio.h>
 
 G_BEGIN_DECLS
 
-#define MENDINGWALL_TYPE_DAEMON mendingwall_daemon_get_type()
-G_DECLARE_DERIVABLE_TYPE(MendingwallDaemon, mendingwall_daemon, MENDINGWALL, DAEMON, GApplication)
+#define MENDINGWALL_TYPE_CLI_APPLICATION mendingwall_cli_application_get_type()
+G_DECLARE_FINAL_TYPE(MendingwallCLIApplication, mendingwall_cli_application, MENDINGWALL, CLI_APPLICATION, GApplication)
 
-struct _MendingwallDaemonClass {
-  GApplicationClass parent_class;
-  gpointer padding[12];
-};
-
-void mendingwall_daemon_hold(MendingwallDaemon* self);
+MendingwallCLIApplication* mendingwall_cli_application_new(void);
 
 G_END_DECLS

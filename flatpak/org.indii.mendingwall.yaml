@@ -10,44 +10,37 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
 
-  # autostart requires; portal is not used as it does not support the earlier
-  # init phases needed to restore themes before first use
+  # directories for writing autostart files; the background portal is not used
+  # as it does not support the earlier init phases needed to restore themes
+  # before first use, specifically the X-GNOME-Autostart-Phase key and, for KDE,
+  # the ~/.config/plasma-workspace/env directory
   - --filesystem=xdg-config/autostart:create
   - --filesystem=xdg-config/plasma-workspace/env:create
 
-  # dconf backend for GSettings, so can save and restore themes
+  # dconf backend for GSettings, so that can save and restore configuration of
+  # desktop environments
   - --filesystem=xdg-run/dconf
   - --filesystem=xdg-config/dconf:rw
   - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  # config files for desktop environments, so can save and restore themes;
-  # write access is needed to xdg-config itself to restore config files that
-  # may exist in one desktop environment that do not exist in another
+  # config files, so that can save and restore configuration of desktop
+  # environments
   - --filesystem=xdg-config:rw
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
-  - --filesystem=xdg-config/gtkrc
-  - --filesystem=xdg-config/gtkrc-2.0
-  - --filesystem=xdg-config/monitors.xml
-  - --filesystem=xdg-config/kcminputrc
-  - --filesystem=xdg-config/kdeglobals
-  - --filesystem=xdg-config/kglobalshortcutsrc
-  - --filesystem=xdg-config/kwinrc
-  - --filesystem=xdg-config/kwinoutputconfig.json
-  - --filesystem=xdg-config/plasmashellrc
-  - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
-  - --filesystem=xdg-config/systemsettingsrc
-  - --filesystem=xdg-config/Trolltech.conf
   - --filesystem=xdg-config/xsettingsd:create
 
-  # application directories, so can tidy menus
-  - --filesystem=xdg-data/applications:create
+  # application directories, to find .desktop files of installed applications
   - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
+
+  # user application directory, to write updated .desktop files of installed
+  # applications
+  - --filesystem=xdg-data/applications:create
 
 cleanup:
   - /include
@@ -81,6 +74,7 @@ modules:
   - name: libportal
     buildsystem: meson
     config-opts:
+      - "--buildtype=release"
       - "-Ddocs=false"
       - "-Dtests=false"
       - "-Dvapi=false"
@@ -98,27 +92,18 @@ modules:
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler
         tag: v0.16.0
 
-  - name: scripts
-    buildsystem: simple
-    build-commands:
-      - install -Dm 755 start-mendingwall.sh /app/bin/start-mendingwall
-      - install -Dm 755 start-mendingwalld.sh /app/bin/start-mendingwalld
-    sources:
-      - type: file
-        path: start-mendingwall.sh
-      - type: file
-        path: start-mendingwalld.sh
-
   - name: mendingwall
     buildsystem: meson
+    config-opts:
+      - "-Dc_args=-DBUILD_FOR_FLATPAK"
     sources:
-      - type: dir
-        path: ../
+      - type: git
+        url: https://github.com/lawmurray/mendingwall
+        branch: snap
     post-install:
       # for autostart files, which will launch from outside flatpak, wrap
-      # calls to mendingwalld with flatpak run
-      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
+      # calls to mendingwalld with flatpak run...
+      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
 
-      # for all autostart, desktop and service files, wrap calls to
-      # mendingwall and mendingwalld with start scripts
-      - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh /app/share/dbus-1/services/org.indii.mendingwall*.service
+      # ...and calls to mendingwallcli
+      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwallcli org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh

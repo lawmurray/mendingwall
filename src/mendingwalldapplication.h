@@ -16,13 +16,13 @@
  */
 #pragma once
 
-#include <mendingwalldaemon.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
-#define MENDINGWALL_TYPE_D_APPLICATION mendingwalld_application_get_type()
-G_DECLARE_FINAL_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL, D_APPLICATION, MendingwallDaemon)
+#define MENDINGWALL_TYPE_D_APPLICATION mendingwall_d_application_get_type()
+G_DECLARE_FINAL_TYPE(MendingwallDApplication, mendingwall_d_application, MENDINGWALL, D_APPLICATION, GApplication)
 
-MendingwallDApplication* mendingwalld_application_new(void);
+MendingwallDApplication* mendingwall_d_application_new(void);
 
 G_END_DECLS

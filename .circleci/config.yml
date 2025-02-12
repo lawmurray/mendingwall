@@ -2,12 +2,13 @@ version: 2.1
 
 executors:
 
-  linux:
+  vm:
     machine:
-      image: ubuntu-2404:current
+      image: ubuntu-2404:edge
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
+      NEEDRESTART_MODE: a
       XDG_CURRENT_DESKTOP: GNOME
 
 commands:
@@ -28,8 +29,9 @@ commands:
               appstream \
               desktop-file-utils \
               meson \
-              flatpak \
               blueprint-compiler \
+              flatpak \
+              snapd \
               libgtk-4-dev \
               libglib2.0-bin \
               libglib2.0-dev \
@@ -38,7 +40,32 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
-              ubuntu-gnome-desktop
+              dbus-user-session
+
+  build_source:
+    steps:
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
+      - run:
+          name: Build
+          command: |
+            meson setup build
+            cd build
+            meson compile
+            sudo meson install
+      - run:
+          name: Set environment variable for command
+          command: |
+            echo "export MENDINGWALLCLI=mendingwallcli" >> $BASH_ENV
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
+
+  build_flatpak:
+    steps:
       - run:
           name: Update environment variables for Flatpak
           command: |
@@ -48,23 +75,6 @@ commands:
           name: Start DBus
           command: |
             dbus-launch --auto-syntax >> $BASH_ENV
-
-  build:
-    steps:
-      - run:
-          name: Build
-          command: |
-            meson setup build
-            cd build
-            meson compile
-            sudo meson install
-      - run:
-          name: Set environment variable for save directory
-          command: |
-            echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
-
-  build_flatpak:
-    steps:
       - run:
           name: Configure Flathub
           command: |
@@ -74,16 +84,16 @@ commands:
           command: |
             flatpak install -y flathub org.flatpak.Builder
       - run:
-          name: Build Flatpak
+          name: Build and install Flatpak
           command: |
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
-          name: Create wrapper commands for mendingwall and mendingwalld
+          name: Build single-file bundle
           command: |
-            mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall \$@\n" > ~/bin/mendingwall
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall \$@\n" > ~/bin/mendingwalld
-            chmod +x ~/bin/mendingwall*
+            flatpak build-bundle repo mendingwall.flatpak org.indii.mendingwall
+      - store_artifacts:
+          name: Store single-file bundle as artifact
+          path: mendingwall.flatpak
       - run:
           name: Install GSettings schema to host
           command: |
@@ -92,17 +102,88 @@ commands:
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
       - run:
+          name: Set environment variable for command
+          command: |
+            echo "export MENDINGWALLCLI='flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall'" >> $BASH_ENV
+      - run:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/.var/app/org.indii.mendingwall/data/mendingwall/save' >> $BASH_ENV
+
+  build_snap:
+    steps:
+      - run:
+           # workaround for a very strange issue where writes to GSettings can
+           # be lost if ~/.config/dconf/user does not yet exist; creating an
+           # empty file seems sufficient to fix it
+           name: Workaround for dconf user database issue
+           command: |
+             mkdir -p $HOME/.config/dconf
+             touch $HOME/.config/dconf/user
+      - run:
+           # snap does not seem to like dbus-launch, use systemd instead
+           name: Start DBus
+           command: |
+             systemctl --user start dbus.service
+             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
+      - run:
+          # docker interferes with lxd, see
+          # https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
+          name: Fix Snap network issues
+          command: |
+            sudo iptables  -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo ip6tables -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo iptables  -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+            sudo ip6tables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+      - run:
+          name: Install snapcraft
+          command: |
+            sudo snap install --classic snapcraft
+      - run:
+          name: Build Snap
+          command: |
+            snapcraft
+            mv *.snap mendingwall.snap
+      - store_artifacts:
+          name: Store snap as artifact
+          path: mendingwall.snap
+      - run:
+          name: Install Snap
+          command: |
+            sudo snap install --dangerous mendingwall.snap
+      - run:
+          name: Connect Snap interfaces
+          command: |
+            sudo snap connect mendingwall:user-config
+            sudo snap connect mendingwall:user-share
+            sudo snap connect mendingwall:system-share
+      - run:
+          name: Install GSettings schema to host
+          command: |
+            SCHEMAS_DIR=$HOME/.local/share/glib-2.0/schemas
+            mkdir -p $SCHEMAS_DIR
+            cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
+            glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Set environment variable for command
+          command: |
+            echo "export MENDINGWALLCLI=mendingwall.mendingwallcli" >> $BASH_ENV
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/snap/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
 
   test:
     steps:
       - run:
           name: Does help work?
           command: |
-            mendingwall -h
-            mendingwalld -h
+            $MENDINGWALLCLI -h
+
+      - run:
+          name: Install GNOME
+          command: |
+            sudo apt install --assume-yes vanilla-gnome-desktop
 
       - run:
           name: Is mend themes disabled by default?
@@ -111,7 +192,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwall --enable-themes --headless
+            $MENDINGWALLCLI --enable-themes
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -124,24 +205,21 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwall --enable-menus --headless
+            $MENDINGWALLCLI --enable-menus
       - run:
           name: Is tidy menus now enabled?
           command: |
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
+          name: Start daemon
+          command: |
+            $MENDINGWALLCLI --watch
+      - run:
           name: Is daemon now running?
           command: |
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
-      - run:
-          name: Are autostart files installed?
-          command: |
-            [[ -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
-               -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
-               -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
-            ]] || exit 1
-
       - run:
           name: Sleep, in case daemon is just waiting for activate signal
           command: sleep 10
@@ -149,6 +227,23 @@ commands:
           name: Is daemon still running?
           command: |
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+
+      - run:
+          name: Install autostart
+          command: |
+            $MENDINGWALLCLI --install
+      - run:
+          name: Are autostart files installed?
+          command: |
+            [[ -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
+      - run:
+          name: Is the KDE startup script executable?
+          command: |
+            [[ -x ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
           name: Have GNOME apps been tidied?
@@ -166,17 +261,28 @@ commands:
       - run:
           name: Has config file been saved?
           command: |
-            sleep 2
+            sleep 5
             [[ -f $SAVE_DIR/GNOME/kwinrc ]] || exit 1
+
+      - run:
+          name: Touch config file in subdirectory
+          command: |
+            mkdir -p ~/.config/gtk-4.0
+            touch ~/.config/gtk-4.0/colors.css
+      - run:
+          name: Has config file in subdirectory been saved?
+          command: |
+            sleep 5
+            [[ -f $SAVE_DIR/GNOME/gtk-4.0/colors.css ]] || exit 1
 
       - run:
           name: Install KDE Plasma
           command: |
-            sudo apt install --assume-yes kde-standard
+            sudo apt install --assume-yes kde-plasma-desktop
       - run:
           name: Have KDE apps been tidied?
           command: |
-            sleep 2
+            sleep 5
             [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]] || exit 1
 
       - run:
@@ -187,13 +293,13 @@ commands:
       - run:
           name: Is GNOME saved icon theme Breeze?
           command: |
-            sleep 2
+            sleep 5
             [[ `grep icon-theme $SAVE_DIR/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
 
       - run:
           name: Disable mend themes
           command: |
-            mendingwall --disable-themes --headless
+            $MENDINGWALLCLI --disable-themes --install
       - run:
           name: Is mend themes now disabled?
           command: |
@@ -201,13 +307,20 @@ commands:
       - run:
           name: Is daemon still running?
           command: |
-            sleep 2
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+      - run:
+          name: Are autostart files still installed?
+          command: |
+            [[ -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
           name: Disable tidy menus
           command: |
-            mendingwall --disable-menus --headless
+            $MENDINGWALLCLI --disable-menus --install
       - run:
           name: Is tidy menus now disabled?
           command: |
@@ -215,43 +328,80 @@ commands:
       - run:
           name: Is daemon now terminated?
           command: |
-            sleep 2
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 0 ]] || exit 1
+      - run:
+          name: Are autostart files uninstalled?
+          command: |
+            [[ ! -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               ! -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               ! -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
-          name: Delete config file
+          name: Delete config files
           command: |
-            rm ~/.config/kwinrc
+            rm ~/.config/kwinrc ~/.config/gtk-4.0/colors.css
       - run:
           name: Restore theme
           command: |
-            gsettings set org.indii.mendingwall themes true
-            mendingwalld --restore
+            $MENDINGWALLCLI --enable-themes --restore
       - run:
           name: Does config file now exist?
           command: |
             [[ -f ~/.config/kwinrc ]] || exit 1
+      - run:
+          name: Does config file in subdirectory now exist?
+          command: |
+            [[ -f ~/.config/gtk-4.0/colors.css ]] || exit 1
+
+      - run:
+          name: Delete config files from save
+          command: |
+            rm $SAVE_DIR/GNOME/kwinrc $SAVE_DIR/GNOME/gtk-4.0/colors.css
+      - run:
+          name: Restore theme
+          command: |
+            $MENDINGWALLCLI --enable-themes --restore
+      - run:
+          name: Does config file no longer exist?
+          command: |
+            [[ ! -f ~/.config/kwinrc ]] || exit 1
+      - run:
+          name: Does config file in subdirectory no longer exist?
+          command: |
+            [[ ! -f ~/.config/gtk-4.0/colors.css ]] || exit 1
 
 jobs:
 
-  linux:
-    executor: linux
+  source:
+    executor: vm
     steps:
       - checkout
       - environment
-      - build
+      - build_source
       - test
 
-  linux_flatpak:
-    executor: linux
+  flatpak:
+    executor: vm
     steps:
       - checkout
       - environment
       - build_flatpak
       - test
 
+  snap:
+    executor: vm
+    steps:
+      - checkout
+      - environment
+      - build_snap
+
+      # not working, for reasons that may be platform related
+      #- test
+
   deploy:
-    executor: linux
+    executor: vm
     steps:
       - environment
       - run:
@@ -265,8 +415,9 @@ jobs:
 workflows:
   all:
     jobs:
-      - linux
-      - linux_flatpak
+      - source
+      - flatpak
+      - snap
       - deploy:
           filters:
             tags:

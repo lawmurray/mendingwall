@@ -14,24 +14,16 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#pragma once
 
-#define foreach_with_iterator(value, values, iterator) \
-    typeof(values) iterator = values; \
-    for (typeof(*iterator) value = *iterator; value; value = *++iterator)
-#define foreach_iterator(line) \
-    iter_ ## line ## _
-#define foreach_with_line(value, values, line) \
-    foreach_with_iterator(value, values, foreach_iterator(line))
-
-/**
- * A tidier way to loop over null-terminated arrays of pointers.
- * 
- * ```c
- * foreach(value, values) {
- *   //
- * }
- * ```
- */
-#define foreach(value, values) \
-    foreach_with_line(value, values, __LINE__)
+ #include <config.h>
+ #include <utility.h>
+ #include <mendingwallcliapplication.h>
+ 
+ int main(int argc, char* argv[]) {
+   configure_environment();
+   MendingwallCLIApplication* app = mendingwall_cli_application_new();
+   int status = g_application_run(G_APPLICATION(app), argc, argv);
+   g_object_unref(app);
+   return status;
+ }
+ 
