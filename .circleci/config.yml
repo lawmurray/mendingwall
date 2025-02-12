@@ -102,7 +102,7 @@ commands:
       - run:
           name: Install snapcraft
           command: |
-            sudo snap install snapcraft
+            sudo snap install --classic snapcraft
       - run:
           name: Build Snap
           command: |
