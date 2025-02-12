@@ -15,6 +15,11 @@ commands:
   environment:
     steps:
       - run:
+          name: Stop Docker, as conflicts with LXD
+          command: |
+            sudo systemctl stop docker
+            sudo systemctl stop docker.socket
+      - run:
           name: Install dependencies
           command: |
             sudo apt update --assume-yes
