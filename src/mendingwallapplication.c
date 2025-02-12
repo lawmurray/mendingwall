@@ -130,6 +130,7 @@ static void on_changed(MendingwallApplication* self) {
 static void on_about(MendingwallApplication* self) {
   g_autoptr(GtkBuilder) builder = gtk_builder_new_from_resource("/org/indii/mendingwall/about.ui");
   GObject* about = gtk_builder_get_object(builder, "about");
+  adw_about_dialog_set_version(ADW_ABOUT_DIALOG(about), PACKAGE_VERSION);
   adw_dialog_present(ADW_DIALOG(about), GTK_WIDGET(self->window));
 }
 
