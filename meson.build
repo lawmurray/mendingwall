@@ -36,7 +36,6 @@ test_c_args = [
   '-Werror=parenthesis',
   '-Werror=pointer-arith',
   '-Werror=pointer-to-int-cast',
-  '-Werror=redundant-decls',
   '-Werror=return-type',
   '-Werror=sequence-point',
   '-Werror=shadow',

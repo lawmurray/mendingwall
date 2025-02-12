@@ -29,6 +29,7 @@ commands:
               desktop-file-utils \
               meson \
               flatpak \
+              snapd \
               blueprint-compiler \
               libgtk-4-dev \
               libglib2.0-bin \
@@ -95,6 +96,42 @@ commands:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/.var/app/org.indii.mendingwall/data/mendingwall/save' >> $BASH_ENV
+
+  build_snap:
+    steps:
+      - run:
+          name: Authenticate
+          command: |
+            sudo snap login
+      - run:
+          name: Install snapcraft
+          command: |
+            snap install snapcraft
+      - run:
+          name: Build Snap
+          command: |
+            snapcraft
+      - run:
+          name: Install Snap
+          command: |
+            snapcraft install --dangerous *.snap
+      - run:
+          name: Create wrapper command for mendingwalld
+          command: |
+            mkdir -p ~/bin
+            printf "#!/bin/sh\n\nexec mendingwall.mendingwalld \$@\n" > ~/bin/mendingwalld
+            chmod +x ~/bin/mendingwalld
+      - run:
+          name: Install GSettings schema to host
+          command: |
+            SCHEMAS_DIR=$HOME/.local/share/glib-2.0/schemas
+            mkdir -p $SCHEMAS_DIR
+            cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
+            glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/.snap/data/mendingwall/x1/.local/share' >> $BASH_ENV
 
   test:
     steps:
@@ -250,6 +287,14 @@ jobs:
       - build_flatpak
       - test
 
+  linux_snap:
+    executor: linux
+    steps:
+      - checkout
+      - environment
+      - build_snap
+      - test
+
   deploy:
     executor: linux
     steps:
@@ -267,6 +312,7 @@ workflows:
     jobs:
       - linux
       - linux_flatpak
+      - linux_snap
       - deploy:
           filters:
             tags:

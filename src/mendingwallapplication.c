@@ -38,6 +38,10 @@ static void launch_daemon(MendingwallApplication* self) {
     g_settings_sync();
 
     /* launch daemon; fine if already running, new instance will quit */
+    #ifdef ENABLE_SPAWN
+    static const gchar* argv[] = { "mendingwalld", "--watch", NULL };
+    g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    #else
     g_dbus_connection_call(
         g_application_get_dbus_connection(G_APPLICATION(self)),
         "org.indii.mendingwall.watch",
@@ -52,8 +56,7 @@ static void launch_daemon(MendingwallApplication* self) {
         NULL,
         NULL
     );
-    // static const gchar* argv[] = { "mendingwalld", "--watch", NULL };
-    // g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    #endif
   }
 }
 

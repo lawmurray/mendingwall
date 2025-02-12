@@ -4,23 +4,27 @@ version: git
 adopt-info: mendingwall
 
 base: core24
-grade: devel # must be 'stable' to release into candidate/stable channels
-confinement: devmode # use 'strict' once you have the right plugs and slots
+grade: stable
+confinement: strict
 
 parts:
   mendingwall:
     plugin: meson
-    source: https://github.com/lawmurray/mendingwall.git
+    meson-parameters:
+      - --prefix=/usr
+      - --buildtype=release
+      - -Dc_args=-DENABLE_SPAWN
+    source: .
     parse-info:
-      - usr/local/share/metainfo/org.indii.mendingwall.metainfo.xml
+      - usr/share/metainfo/org.indii.mendingwall.metainfo.xml
     build-packages:
       - meson
-      - blueprint-compiler
       - gettext
       - appstream
       - desktop-file-utils
       - libgtk-4-dev
       - libglib2.0-dev
+      - libglib2.0-bin
       - libadwaita-1-dev
       - libportal-dev
       - libportal-gtk4-dev
@@ -30,9 +34,31 @@ parts:
       - libadwaita-1-0
       - libportal1
 
+slots:
+  mendingwall:
+    interface: dbus
+    bus: session
+    name: org.indii.mendingwall
+
+  mendingwalld:
+    interface: dbus
+    bus: session
+    name: org.indii.mendingwall.watch
+
 apps:
   mendingwall:
-    command: usr/local/bin/mendingwall
-  mendingwalld:
-    command: usr/local/bin/mendingwalld
+    command: usr/bin/mendingwall
+    desktop: usr/share/applications/org.indii.mendingwall.desktop
+    common-id: org.indii.mendingwall
+    extensions:
+      - gnome
+    slots:
+      - mendingwall
 
+  mendingwalld:
+    command: usr/bin/mendingwalld
+    common-id: org.indii.mendingwall.watch
+    extensions:
+      - gnome
+    slots:
+      - mendingwalld
