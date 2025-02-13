@@ -118,7 +118,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            sudo snapcraft install *.snap
+            sudo snap install *.snap
       - run:
           name: Create wrapper command for mendingwalld
           command: |
