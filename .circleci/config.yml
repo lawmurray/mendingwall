@@ -40,6 +40,7 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
+              dbus-user-session \
               ubuntu-gnome-desktop
 
   build_source:
@@ -104,11 +105,14 @@ commands:
   build_snap:
     steps:
       - run:
-          name: Start DBus
-          command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
+           # snap does not seem to like dbus-launch, use systemd instead
+           name: Start DBus
+           command: |
+             systemctl --user start dbus.service
+             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
       - run:
-          # see https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
+          # docker interferes with lxd, see
+          # https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
           name: Fix Snap network issues
           command: |
             sudo iptables  -I DOCKER-USER -i lxdbr0 -j ACCEPT
