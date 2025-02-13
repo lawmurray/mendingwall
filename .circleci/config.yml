@@ -38,17 +38,12 @@ commands:
               libportal-dev \
               libportal-gtk3-dev \
               libportal-gtk4-dev \
-              dbus-x11 \
+              dbus-user-session \
               ubuntu-gnome-desktop
-      - run:
-          name: Update environment variables for Flatpak
-          command: |
-            flatpak --print-updated-env >> $BASH_ENV
-            echo 'export XDG_DATA_DIRS' >> $BASH_ENV
       - run:
           name: Start DBus
           command: |
-            dbus-launch --auto-syntax >> $BASH_ENV
+            systemctl --user start dbus.service
 
   build_source:
     steps:
@@ -66,6 +61,15 @@ commands:
 
   build_flatpak:
     steps:
+      - run:
+          name: Update environment variables for Flatpak
+          command: |
+            flatpak --print-updated-env >> $BASH_ENV
+            echo 'export XDG_DATA_DIRS' >> $BASH_ENV
+      - run:
+          name: Restart DBus for changed XDG_DATA_DIRS
+          command: |
+            systemctl --user restart dbus.service
       - run:
           name: Configure Flathub
           command: |
