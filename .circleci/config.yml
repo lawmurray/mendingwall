@@ -9,6 +9,16 @@ executors:
     environment:
       DEBIAN_FRONTEND: noninteractive
       XDG_CURRENT_DESKTOP: GNOME
+      SUDO: sudo
+
+  container:
+    docker:
+      - image: ubuntu:noble
+    resource_class: medium
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      XDG_CURRENT_DESKTOP: GNOME
+      SUDO: ''
 
 commands:
 
@@ -17,13 +27,13 @@ commands:
       - run:
           name: Stop Docker, as conflicts with LXD
           command: |
-            sudo systemctl stop docker
-            sudo systemctl stop docker.socket
+            $SUDO systemctl stop docker
+            $SUDO systemctl stop docker.socket
       - run:
           name: Install dependencies
           command: |
-            sudo apt update --assume-yes
-            sudo apt install --assume-yes \
+            $SUDO apt update --assume-yes
+            $SUDO apt install --assume-yes \
               ca-certificates \
               curl \
               git \
@@ -63,7 +73,7 @@ commands:
             meson setup build
             cd build
             meson compile
-            sudo meson install
+            $SUDO meson install
       - run:
           name: Set environment variable for save directory
           command: |
@@ -107,7 +117,7 @@ commands:
       - run:
           name: Install snapcraft
           command: |
-            sudo snap install --classic snapcraft
+            $SUDO snap install --classic snapcraft
       - run:
           name: Build Snap
           command: |
@@ -115,7 +125,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            sudo snapcraft install *.snap
+            $SUDO snapcraft install *.snap
       - run:
           name: Create wrapper command for mendingwalld
           command: |
@@ -210,7 +220,7 @@ commands:
       - run:
           name: Install KDE Plasma
           command: |
-            sudo apt install --assume-yes kde-standard
+            $SUDO apt install --assume-yes kde-standard
       - run:
           name: Have KDE apps been tidied?
           command: |
@@ -289,7 +299,7 @@ jobs:
       - test
 
   snap:
-    executor: vm
+    executor: container
     steps:
       - checkout
       - environment
