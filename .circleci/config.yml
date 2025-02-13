@@ -44,6 +44,7 @@ commands:
           name: Start DBus
           command: |
             systemctl --user start dbus.service
+            echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
 
   build_source:
     steps:
@@ -70,6 +71,7 @@ commands:
           name: Restart DBus for changed XDG_DATA_DIRS
           command: |
             systemctl --user restart dbus.service
+            echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
       - run:
           name: Configure Flathub
           command: |
