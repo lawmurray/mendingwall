@@ -82,7 +82,7 @@ MendingwallCLIApplication* mendingwall_cli_application_new(void) {
     { "disable-menus", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,
         &self->menus, "Toggle off tidy menus feature", NULL },
     { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore,
-      "Restore theme from save for current desktop environment", NULL },
+      "Restore theme from save", NULL },
       G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self),

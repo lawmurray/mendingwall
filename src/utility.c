@@ -29,7 +29,7 @@ void launch_daemon(GApplication* app) {
   const gchar* snap = g_getenv("SNAP");
   g_autofree gchar* path = g_build_filename(snap, "usr", "bin", "mendingwalld", NULL);
   const gchar* argv[] = { path, NULL };
-  g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
+  g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_DEFAULT|G_SPAWN_CHILD_INHERITS_STDOUT|G_SPAWN_CHILD_INHERITS_STDERR, NULL, NULL, NULL, NULL);
   #else
   g_dbus_connection_call(
       g_application_get_dbus_connection(app),

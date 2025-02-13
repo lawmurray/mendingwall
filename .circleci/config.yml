@@ -134,7 +134,7 @@ commands:
           name: Create wrapper script for mendingwallcli
           command: |
             mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec mendingwall.mendingwallcli \$@\n" > ~/bin/mendingwallcli
+            printf '#!/bin/sh\n\nexec mendingwall.mendingwallcli \$@\n' > ~/bin/mendingwallcli
             chmod +x ~/bin/mendingwallcli
       - run:
           name: Install GSettings schema to host
