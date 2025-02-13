@@ -147,6 +147,11 @@ commands:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/.snap/data/mendingwall/x1/.local/share' >> $BASH_ENV
+      - run:
+           name: Restart DBus
+           command: |
+             systemctl --user restart dbus.service
+             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
 
   test:
     steps:
