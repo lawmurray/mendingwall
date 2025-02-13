@@ -110,6 +110,10 @@ commands:
   build_snap:
     steps:
       - run:
+          name: Start snapd
+          command: |
+            $SUDO systemctl restart snapd snapd.socket
+      - run:
           name: Install snapcraft
           command: |
             $SUDO snap install --classic snapcraft
