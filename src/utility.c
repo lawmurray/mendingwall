@@ -27,8 +27,8 @@ void launch_daemon(GApplication* app) {
   /* launch daemon; fine if already running, new instance will quit */
   #ifdef BUILD_FOR_SNAP
   const gchar* snap = g_getenv("SNAP");
-  g_autofree char* path = g_build_filename(snap, "usr", "bin", "mendingwalld");
-  static const gchar* argv[] = { path, NULL };
+  g_autofree const gchar* path = g_build_filename(snap, "usr", "bin", "mendingwalld");
+  const gchar* argv[] = { path, NULL };
   g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, NULL, NULL);
   #else
   g_dbus_connection_call(
