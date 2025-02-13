@@ -130,7 +130,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            sudo snap install --dangerous *.snap
+            sudo snap install --devmode --dangerous *.snap
       - run:
           name: Create wrapper script for mendingwallcli
           command: |
