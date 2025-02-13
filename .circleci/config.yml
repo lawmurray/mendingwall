@@ -2,7 +2,7 @@ version: 2.1
 
 executors:
 
-  linux:
+  vm:
     machine:
       image: ubuntu-2404:current
     resource_class: medium
@@ -55,7 +55,7 @@ commands:
           command: |
             dbus-launch --auto-syntax >> $BASH_ENV
 
-  build:
+  build_source:
     steps:
       - run:
           name: Build
@@ -272,24 +272,24 @@ commands:
 
 jobs:
 
-  linux:
-    executor: linux
+  source:
+    executor: vm
     steps:
       - checkout
       - environment
-      - build
+      - build_source
       - test
 
-  linux_flatpak:
-    executor: linux
+  flatpak:
+    executor: vm
     steps:
       - checkout
       - environment
       - build_flatpak
       - test
 
-  linux_snap:
-    executor: linux
+  snap:
+    executor: vm
     steps:
       - checkout
       - environment
@@ -297,7 +297,7 @@ jobs:
       - test
 
   deploy:
-    executor: linux
+    executor: vm
     steps:
       - environment
       - run:
@@ -311,9 +311,9 @@ jobs:
 workflows:
   all:
     jobs:
-      - linux
-      - linux_flatpak
-      - linux_snap
+      - source
+      - flatpak
+      - snap
       - deploy:
           filters:
             tags:
