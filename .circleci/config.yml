@@ -40,8 +40,7 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-x11 \
-              dbus-user-session \
-              ubuntu-gnome-desktop
+              dbus-user-session
 
   build_source:
     steps:
@@ -155,6 +154,11 @@ commands:
           name: Does help work?
           command: |
             mendingwallcli -h
+
+      - run:
+          name: Install GNOME
+          command: |
+            sudo apt install --assume-yes ubuntu-gnome-desktop
 
       - run:
           name: Is mend themes disabled by default?
