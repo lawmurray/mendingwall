@@ -18,6 +18,7 @@ parts:
     parse-info:
       - usr/share/metainfo/org.indii.mendingwall.metainfo.xml
     build-packages:
+      - git
       - meson
       - gettext
       - appstream
