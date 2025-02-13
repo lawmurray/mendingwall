@@ -13,7 +13,7 @@ parts:
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
-      - -Dc_args=-DENABLE_SPAWN
+      - -Dc_args=-DBUILD_FOR_SNAP
     source: .
     parse-info:
       - usr/share/metainfo/org.indii.mendingwall.metainfo.xml
