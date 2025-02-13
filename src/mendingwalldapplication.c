@@ -281,7 +281,7 @@ static void on_changed_menus(gpointer user_data) {
 
 static void on_session_state_changed(MendingwallDApplication* self, gboolean,
   XdpLoginSessionState* state) {
-  if (*state == XDP_LOGIN_SESSION_QUERY_END) {
+  if (*state == XDP_LOGIN_SESSION_QUERY_END && self->portal) {
     xdp_portal_session_monitor_query_end_response(self->portal);
   } else if (*state == XDP_LOGIN_SESSION_ENDING) {
     g_application_quit(G_APPLICATION(self));
@@ -301,7 +301,7 @@ static void on_startup(MendingwallDApplication* self) {
       "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* basic initialization */
-  self->portal = xdp_portal_new();
+  self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
@@ -379,8 +379,10 @@ static void on_startup(MendingwallDApplication* self) {
     /* register with portal for session end; this is necessary when systemd
      * (or otherwise) is not configured to kill user processes at end of
      * session; also used for the monitoring of background apps in GNOME */
-    g_signal_connect_swapped(self->portal, "session-state-changed",
-        G_CALLBACK(on_session_state_changed), NULL);
+    if (self->portal) {
+      g_signal_connect_swapped(self->portal, "session-state-changed",
+          G_CALLBACK(on_session_state_changed), NULL);
+    }
 
     /* watch settings to quit later if disabled */
     g_signal_connect_swapped(self->global, "changed::themes",
