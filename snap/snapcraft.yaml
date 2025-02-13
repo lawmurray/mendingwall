@@ -46,6 +46,12 @@ slots:
     bus: session
     name: org.indii.mendingwall.watch
 
+plugs:
+  dconf:
+    interface: dbus
+    bus: session
+    name: ca.desrt.dconf
+
 apps:
   mendingwall:
     command: usr/bin/mendingwall
@@ -55,6 +61,8 @@ apps:
       - gnome
     slots:
       - mendingwall
+    plugs:
+      - dconf
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -63,3 +71,5 @@ apps:
       - gnome
     slots:
       - mendingwalld
+    plugs:
+      - dconf
