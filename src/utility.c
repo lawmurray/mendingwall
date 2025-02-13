@@ -35,7 +35,7 @@ void launch_daemon(GApplication* app) {
       "/org/indii/mendingwall/watch",
       "org.freedesktop.Application",
       "Activate",
-      g_variant_new_parsed("({'test': <1>}, )"),
+      g_variant_new_parsed("({'': <0>}, )"),
       NULL,
       G_DBUS_CALL_FLAGS_NONE,
       -1,
