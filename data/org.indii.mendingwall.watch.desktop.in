@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Mending Wall Watch
-Exec=@bindir@/mendingwalld --watch
+Exec=@bindir@/mendingwalld
 Icon=org.indii.mendingwall
-Comment=Watch themes and menus
+Comment=Save and watch themes and menus
 Terminal=false
 Type=Application
 Categories=Settings;Utility

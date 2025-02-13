@@ -14,22 +14,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#pragma once
 
-#include <config.h>
-
-#include <gio/gio.h>
-
-G_BEGIN_DECLS
-
-#define MENDINGWALL_TYPE_DAEMON mendingwall_daemon_get_type()
-G_DECLARE_DERIVABLE_TYPE(MendingwallDaemon, mendingwall_daemon, MENDINGWALL, DAEMON, GApplication)
-
-struct _MendingwallDaemonClass {
-  GApplicationClass parent_class;
-  gpointer padding[12];
-};
-
-void mendingwall_daemon_hold(MendingwallDaemon* self);
-
-G_END_DECLS
+ #include <config.h>
+ #include <mendingwallcliapplication.h>
+ 
+ int main(int argc, char* argv[]) {
+   MendingwallCLIApplication* app = mendingwall_cli_application_new();
+   int status = g_application_run(G_APPLICATION(app), argc, argv);
+   g_object_unref(app);
+   return status;
+ }
+ 

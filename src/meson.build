@@ -24,6 +24,7 @@ resources = ['resources.h', 'resources.c']
 mendingwall_sources = [
   'mendingwall.c',
   'mendingwallapplication.c',
+  'utility.c',
 ]
 mendingwall_sources += blueprints
 mendingwall_sources += resources
@@ -37,11 +38,26 @@ executable('mendingwall', mendingwall_sources,
        install: true,
 )
 
+# mendingwallcli program
+mendingwallcli_sources = [
+  'mendingwallcliapplication.c',
+  'mendingwallcli.c',
+  'utility.c',
+]
+mendingwallcli_deps = [
+  dependency('glib-2.0'),
+  dependency('gio-2.0'),
+]
+executable('mendingwallcli', mendingwallcli_sources,
+  dependencies: mendingwallcli_deps,
+       install: true,
+)
+
 # mendingwalld program
 mendingwalld_sources = [
-  'mendingwalldaemon.c',
   'mendingwalldapplication.c',
   'mendingwalld.c',
+  'utility.c',
 ]
 mendingwalld_deps = [
   dependency('glib-2.0'),

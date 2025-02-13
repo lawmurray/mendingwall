@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 #include <config.h>
-#include <foreach.h>
+#include <utility.h>
 #include <mendingwalldapplication.h>
 
 #define G_SETTINGS_ENABLE_BACKEND 1
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
+#include <libportal/portal.h>
 
 struct _MendingwallDApplication {
-  MendingwallDaemon parent_instance;
+  GApplication parent_instance;
 
+  XdpPortal* portal;
   GSettings* global;
   GFile* config_dir;
   GSettingsBackend* settings_backend;
@@ -38,11 +39,9 @@ struct _MendingwallDApplication {
   GKeyFile* menus_config;
   GPtrArray* menu_dirs;
   GPtrArray* menu_monitors;
-
-  gboolean restore, watch;
 };
 
-G_DEFINE_TYPE(MendingwallDApplication, mendingwalld_application, MENDINGWALL_TYPE_DAEMON)
+G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, G_TYPE_APPLICATION)
 
 static void save_setting(MendingwallDApplication* self, GSettings* settings,
     gchar* key) {
@@ -74,29 +73,6 @@ static void save_settings(MendingwallDApplication* self, GSettings* settings) {
   g_settings_apply(saved);
 }
 
-static void restore_settings(MendingwallDApplication* self, GSettings* settings) {
-  /* get settings schema */
-  g_autoptr(GSettingsSchema) schema = NULL;
-  g_object_get(settings, "settings-schema", &schema, NULL);
-  const gchar* schema_id = g_settings_schema_get_id(schema);
-  g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
-
-  /* restore settings from file backend; if there are no saved settings this
-   * will restore defaults; this is deliberate, it means that when starting a
-   * new desktop environment for the first time after running some other
-   * desktop environment, existing settings are reset, the user's settings
-   * look pristine, and the new desktop environment performs its default
-   * initial setup */
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
-      self->settings_backend);
-  g_settings_delay(settings);
-  foreach(key, keys) {
-    g_autoptr(GVariant) value = g_settings_get_value(saved, key);
-    g_settings_set_value(settings, key, value);
-  }
-  g_settings_apply(settings);
-}
-
 static void save_file(MendingwallDApplication* self, GFile* file) {
   g_autofree char* rel = g_file_get_relative_path(self->config_dir, file);
   g_autoptr(GFile) saved = g_file_new_build_filename(self->save_path, rel, NULL);
@@ -110,24 +86,6 @@ static void save_file(MendingwallDApplication* self, GFile* file) {
     /* delete any existing saved file; it does not exist in the current
      * configuration */
     g_file_delete_async(saved, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
-  }
-}
-
-static void restore_file(MendingwallDApplication* self, GFile* file) {
-  g_autofree char* rel = g_file_get_relative_path(self->config_dir, file);
-  g_autoptr(GFile) saved = g_file_new_build_filename(self->save_path, rel, NULL);
-  if (g_file_query_exists(saved, NULL)) {
-    /* restore file */
-    g_file_copy_async(saved, file, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
-        G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
-  } else {
-    /* delete file; it does not exist in the desired configuraiton; this
-     * happens either because the file is not part of the save, or there is no
-     * save; the latter occurs when starting a new desktop environment for the
-     * first time after running some other desktop environment, and by
-     * deleting all config files, the user's home directory looks pristine,
-     * and the new desktop environment performs its default initial setup */
-    g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
   }
 }
 
@@ -233,18 +191,6 @@ static void save_themes(MendingwallDApplication* self) {
   }
 }
 
-static void restore_themes(MendingwallDApplication* self) {
-  /* restore settings */
-  foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    restore_settings(self, settings);
-  }
-
-  /* restore config files */
-  foreach(file, (GFile**)self->theme_files->pdata) {
-    restore_file(self, file);
-  }
-}
-
 static void tidy_menus(MendingwallDApplication* self) {
   g_auto(GStrv) basenames = g_key_file_get_groups(self->menus_config, NULL);
   foreach(basename, basenames) {
@@ -333,6 +279,15 @@ static void on_changed_menus(gpointer user_data) {
   }
 }
 
+static void on_session_state_changed(MendingwallDApplication* self, gboolean,
+  XdpLoginSessionState* state) {
+  if (*state == XDP_LOGIN_SESSION_QUERY_END) {
+    xdp_portal_session_monitor_query_end_response(self->portal);
+  } else if (*state == XDP_LOGIN_SESSION_ENDING) {
+    g_application_quit(G_APPLICATION(self));
+  }
+}
+
 static void on_startup(MendingwallDApplication* self) {
   /* current desktop */
   const char* desktop = g_getenv("XDG_CURRENT_DESKTOP");
@@ -346,6 +301,7 @@ static void on_startup(MendingwallDApplication* self) {
       "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* basic initialization */
+  self->portal = xdp_portal_new();
   self->global = g_settings_new("org.indii.mendingwall");
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
@@ -405,30 +361,26 @@ static void on_startup(MendingwallDApplication* self) {
   }
 
   /* start */
-  gboolean restore = self->restore;
-  gboolean watch = self->watch;
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
 
-  if (themes && restore) {
-    restore_themes(self);
-  }
-  if (themes && watch) {
+  if (themes) {
     watch_themes(self);
-  }
-  if (themes && (watch || !restore)) {
     save_themes(self);
   }
-  if (menus && watch) {
-    watch_menus(self);
-  }
   if (menus) {
+    watch_menus(self);
     tidy_menus(self);
   }
+  if (themes || menus) {
+    /* keep running as background process */
+    g_application_hold(G_APPLICATION(self));
 
-  if ((themes || menus) && watch) {
-    /* keep running */
-    mendingwall_daemon_hold(MENDINGWALL_DAEMON(self));
+    /* register with portal for session end; this is necessary when systemd
+     * (or otherwise) is not configured to kill user processes at end of
+     * session; also used for the monitoring of background apps in GNOME */
+    g_signal_connect_swapped(self->portal, "session-state-changed",
+        G_CALLBACK(on_session_state_changed), NULL);
 
     /* watch settings to quit later if disabled */
     g_signal_connect_swapped(self->global, "changed::themes",
@@ -445,9 +397,12 @@ static void on_activate(MendingwallDApplication* self) {
   //
 }
 
-void mendingwalld_application_dispose(GObject* o) {
+void mendingwall_d_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
+  if (self->portal) {
+    g_clear_object(&self->portal);
+  }
   if (self->global) {
     g_clear_object(&self->global);
   }
@@ -486,19 +441,20 @@ void mendingwalld_application_dispose(GObject* o) {
     self->menu_monitors = NULL;
   }
 
-  G_OBJECT_CLASS(mendingwalld_application_parent_class)->dispose(o);
+  G_OBJECT_CLASS(mendingwall_d_application_parent_class)->dispose(o);
 }
 
-void mendingwalld_application_finalize(GObject* o) {
-  G_OBJECT_CLASS(mendingwalld_application_parent_class)->finalize(o);
+void mendingwall_d_application_finalize(GObject* o) {
+  G_OBJECT_CLASS(mendingwall_d_application_parent_class)->finalize(o);
 }
 
-void mendingwalld_application_class_init(MendingwallDApplicationClass* klass) {
-  G_OBJECT_CLASS(klass)->dispose = mendingwalld_application_dispose;
-  G_OBJECT_CLASS(klass)->finalize = mendingwalld_application_finalize;
+void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
+  G_OBJECT_CLASS(klass)->dispose = mendingwall_d_application_dispose;
+  G_OBJECT_CLASS(klass)->finalize = mendingwall_d_application_finalize;
 }
 
-void mendingwalld_application_init(MendingwallDApplication* self) {
+void mendingwall_d_application_init(MendingwallDApplication* self) {
+  self->portal = NULL;
   self->global = NULL;
   self->config_dir = NULL;
   self->settings_backend = NULL;
@@ -509,11 +465,9 @@ void mendingwalld_application_init(MendingwallDApplication* self) {
   self->menus_config = NULL;
   self->menu_dirs = NULL;
   self->menu_monitors = NULL;
-  self->restore = FALSE;
-  self->watch = FALSE;
 }
 
-MendingwallDApplication* mendingwalld_application_new(void) {
+MendingwallDApplication* mendingwall_d_application_new(void) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(
       g_object_new(MENDINGWALL_TYPE_D_APPLICATION,
           "application-id", "org.indii.mendingwall.watch",
@@ -523,10 +477,6 @@ MendingwallDApplication* mendingwalld_application_new(void) {
 
   /* command-line options */
   GOptionEntry option_entries[] = {
-    { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore,
-        "Restore theme on launch (otherwise save)", NULL },
-    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch,
-        "Continue to watch for changes and save", NULL },
     G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self),

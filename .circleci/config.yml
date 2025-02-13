@@ -84,12 +84,11 @@ commands:
           command: |
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
       - run:
-          name: Create wrapper commands for mendingwall and mendingwalld
+          name: Create wrapper script for mendingwallcli
           command: |
             mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwall org.indii.mendingwall \$@\n" > ~/bin/mendingwall
-            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwalld org.indii.mendingwall \$@\n" > ~/bin/mendingwalld
-            chmod +x ~/bin/mendingwall*
+            printf "#!/bin/sh\n\nexec flatpak run --command=/app/bin/start-mendingwallcli org.indii.mendingwall \$@\n" > ~/bin/mendingwallcli
+            chmod +x ~/bin/mendingwallcli
       - run:
           name: Install GSettings schema to host
           command: |
@@ -129,11 +128,11 @@ commands:
           command: |
             sudo snap install --dangerous *.snap
       - run:
-          name: Create wrapper command for mendingwalld
+          name: Create wrapper script for mendingwallcli
           command: |
             mkdir -p ~/bin
-            printf "#!/bin/sh\n\nexec mendingwall.mendingwalld \$@\n" > ~/bin/mendingwalld
-            chmod +x ~/bin/mendingwalld
+            printf "#!/bin/sh\n\nexec mendingwall.mendingwallcli \$@\n" > ~/bin/mendingwallcli
+            chmod +x ~/bin/mendingwallcli
       - run:
           name: Install GSettings schema to host
           command: |
@@ -151,8 +150,7 @@ commands:
       - run:
           name: Does help work?
           command: |
-            mendingwall -h
-            mendingwalld -h
+            mendingwallcli -h
 
       - run:
           name: Is mend themes disabled by default?
@@ -161,7 +159,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwall --enable-themes --headless
+            mendingwallcli --enable-themes
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -174,7 +172,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwall --enable-menus --headless
+            mendingwallcli --enable-menus
       - run:
           name: Is tidy menus now enabled?
           command: |
@@ -243,7 +241,7 @@ commands:
       - run:
           name: Disable mend themes
           command: |
-            mendingwall --disable-themes --headless
+            mendingwallcli --disable-themes
       - run:
           name: Is mend themes now disabled?
           command: |
@@ -257,7 +255,7 @@ commands:
       - run:
           name: Disable tidy menus
           command: |
-            mendingwall --disable-menus --headless
+            mendingwallcli --disable-menus
       - run:
           name: Is tidy menus now disabled?
           command: |
@@ -275,8 +273,7 @@ commands:
       - run:
           name: Restore theme
           command: |
-            gsettings set org.indii.mendingwall themes true
-            mendingwalld --restore
+            mendingwallcli --enable-themes --restore
       - run:
           name: Does config file now exist?
           command: |

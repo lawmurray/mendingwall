@@ -102,10 +102,13 @@ modules:
     buildsystem: simple
     build-commands:
       - install -Dm 755 start-mendingwall.sh /app/bin/start-mendingwall
+      - install -Dm 755 start-mendingwallcli.sh /app/bin/start-mendingwallcli
       - install -Dm 755 start-mendingwalld.sh /app/bin/start-mendingwalld
     sources:
       - type: file
         path: start-mendingwall.sh
+      - type: file
+        path: start-mendingwallcli.sh
       - type: file
         path: start-mendingwalld.sh
 
@@ -117,8 +120,8 @@ modules:
     post-install:
       # for autostart files, which will launch from outside flatpak, wrap
       # calls to mendingwalld with flatpak run
-      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
+      - sed -i -E "s,/app/bin/mendingwall([a-z]*),flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwall\\1 org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
 
       # for all autostart, desktop and service files, wrap calls to
-      # mendingwall and mendingwalld with start scripts
+      # mendingwall, mendingwallcli and mendingwalld with start scripts
       - sed -i -E 's,/app/bin/mendingwall,/app/bin/start-mendingwall,g' /app/share/applications/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh /app/share/dbus-1/services/org.indii.mendingwall*.service

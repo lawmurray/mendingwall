@@ -41,6 +41,11 @@ slots:
     bus: session
     name: org.indii.mendingwall
 
+  mendingwallcli:
+    interface: dbus
+    bus: session
+    name: org.indii.mendingwall.cli
+
   mendingwalld:
     interface: dbus
     bus: session
@@ -61,6 +66,16 @@ apps:
       - gnome
     slots:
       - mendingwall
+    plugs:
+      - dconf
+
+  mendingwallcli:
+    command: usr/bin/mendingwallcli
+    common-id: org.indii.mendingwall.cli
+    extensions:
+      - gnome
+    slots:
+      - mendingwallcli
     plugs:
       - dconf
 

@@ -20,9 +20,9 @@
 
 G_BEGIN_DECLS
 
-#define MENDINGWALL_TYPE_D_APPLICATION mendingwall_d_application_get_type()
-G_DECLARE_FINAL_TYPE(MendingwallDApplication, mendingwall_d_application, MENDINGWALL, D_APPLICATION, GApplication)
+#define MENDINGWALL_TYPE_CLI_APPLICATION mendingwall_cli_application_get_type()
+G_DECLARE_FINAL_TYPE(MendingwallCLIApplication, mendingwall_cli_application, MENDINGWALL, CLI_APPLICATION, GApplication)
 
-MendingwallDApplication* mendingwall_d_application_new(void);
+MendingwallCLIApplication* mendingwall_cli_application_new(void);
 
 G_END_DECLS
