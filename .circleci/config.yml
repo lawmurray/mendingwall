@@ -298,7 +298,7 @@ jobs:
       - test
 
   snap:
-    executor: container
+    executor: vm
     steps:
       - checkout
       - environment
