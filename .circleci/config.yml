@@ -9,16 +9,6 @@ executors:
     environment:
       DEBIAN_FRONTEND: noninteractive
       XDG_CURRENT_DESKTOP: GNOME
-      SUDO: sudo
-
-  container:
-    docker:
-      - image: ubuntu:noble
-    resource_class: medium
-    environment:
-      DEBIAN_FRONTEND: noninteractive
-      XDG_CURRENT_DESKTOP: GNOME
-      SUDO: ''
 
 commands:
 
@@ -27,8 +17,8 @@ commands:
       - run:
           name: Install dependencies
           command: |
-            $SUDO apt update --assume-yes
-            $SUDO apt install --assume-yes \
+            sudo apt update --assume-yes
+            sudo apt install --assume-yes \
               ca-certificates \
               curl \
               git \
@@ -68,7 +58,7 @@ commands:
             meson setup build
             cd build
             meson compile
-            $SUDO meson install
+            sudo meson install
       - run:
           name: Set environment variable for save directory
           command: |
@@ -110,13 +100,17 @@ commands:
   build_snap:
     steps:
       - run:
-          name: Start snapd
+          # see https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
+          name: Fix Snap network issues
           command: |
-            $SUDO systemctl restart snapd snapd.socket
+            sudo iptables  -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo ip6tables -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo iptables  -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+            sudo ip6tables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
       - run:
           name: Install snapcraft
           command: |
-            $SUDO snap install --classic snapcraft
+            sudo snap install --classic snapcraft
       - run:
           name: Build Snap
           command: |
@@ -124,7 +118,7 @@ commands:
       - run:
           name: Install Snap
           command: |
-            $SUDO snapcraft install *.snap
+            sudo snapcraft install *.snap
       - run:
           name: Create wrapper command for mendingwalld
           command: |
@@ -219,7 +213,7 @@ commands:
       - run:
           name: Install KDE Plasma
           command: |
-            $SUDO apt install --assume-yes kde-standard
+            sudo apt install --assume-yes kde-standard
       - run:
           name: Have KDE apps been tidied?
           command: |
