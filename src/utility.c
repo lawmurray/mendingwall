@@ -26,7 +26,7 @@ void launch_daemon(GApplication* app) {
 
   /* launch daemon; fine if already running, new instance will quit */
   #ifdef ENABLE_SPAWN
-  static const gchar* argv[] = { "mendingwalld", "--watch", NULL };
+  static const gchar* argv[] = { "mendingwalld", NULL };
   g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
   #else
   g_dbus_connection_call(
