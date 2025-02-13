@@ -50,7 +50,7 @@ plugs:
   dconf:
     interface: dbus
     bus: session
-    name: ca.desrt.dconf
+    name: ca.desrt.dconf.Writer
 
 apps:
   mendingwall:
