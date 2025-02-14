@@ -30,6 +30,8 @@ G_DEFINE_TYPE(MendingwallCLIApplication, mendingwall_cli_application, G_TYPE_APP
 static void on_activate(MendingwallCLIApplication* self) {
   g_settings_set_boolean(self->global, "themes", self->themes);
   g_settings_set_boolean(self->global, "menus", self->menus);
+  g_printerr("cli themes: %d\n", (int)self->themes);
+  g_printerr("cli menus: %d\n", (int)self->menus);
   if (self->themes || self->menus) {
     launch_daemon(G_APPLICATION(self));
     install_autostart();
