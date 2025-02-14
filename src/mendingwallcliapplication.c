@@ -18,6 +18,10 @@
 #include <utility.h>
 #include <mendingwallcliapplication.h>
 
+#define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gio.h>
+#include <gio/gsettingsbackend.h>
+
 struct _MendingwallCLIApplication {
   GApplication parent_instance;
 
@@ -32,6 +36,12 @@ static void on_activate(MendingwallCLIApplication* self) {
   g_settings_set_boolean(self->global, "menus", self->menus);
   g_printerr("cli themes: %d\n", (int)self->themes);
   g_printerr("cli menus: %d\n", (int)self->menus);
+
+  GSettingsBackend* backend = NULL;
+  GSettingsBackendClass* klass = G_SETTINGS_BACKEND_GET_CLASS(backend);
+  g_object_get(self->global, "backend", &backend, NULL);
+  klass->sync(backend);
+
   if (self->themes || self->menus) {
     launch_daemon(G_APPLICATION(self));
     install_autostart();
