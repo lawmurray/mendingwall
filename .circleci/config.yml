@@ -159,7 +159,7 @@ commands:
           name: Install GNOME
           command: |
             sudo apt install --assume-yes ubuntu-gnome-desktop
-            
+
       - run:
           name: Is mend themes disabled by default?
           command: |
@@ -189,7 +189,6 @@ commands:
       - run:
           name: Is daemon now running?
           command: |
-            mendingwallcli --enable-themes --enable-menus
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
       - run:
           name: Are autostart files installed?

@@ -302,8 +302,7 @@ static void on_startup(MendingwallDApplication* self) {
 
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
-  self->global = g_settings_new_with_backend("org.indii.mendingwall",
-    g_settings_backend_get_default());
+  self->global = g_settings_new("org.indii.mendingwall");
   self->config_dir = g_file_new_for_path(g_get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
       "/", NULL);

@@ -88,8 +88,7 @@ void mendingwall_application_class_init(MendingwallApplicationClass* klass) {
 }
 
 void mendingwall_application_init(MendingwallApplication* self) {
-  self->global = g_settings_new_with_backend("org.indii.mendingwall",
-    g_settings_backend_get_default());
+  self->global = g_settings_new("org.indii.mendingwall");
   self->window = NULL;
 }
 
