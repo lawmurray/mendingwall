@@ -191,10 +191,11 @@ commands:
           name: Enable tidy menus
           command: |
             mendingwallcli --enable-menus
-            sleep 2
+          background: true
       - run:
           name: Is tidy menus now enabled?
           command: |
+            sleep 2
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
