@@ -163,6 +163,7 @@ commands:
       - run:
           name: Initialize gsettings
           command: |
+            mendingwallcli --enable-themes --enable-menus
             mendingwallcli --disable-themes --disable-menus
 
       - run:
