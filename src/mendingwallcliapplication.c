@@ -38,9 +38,9 @@ static void on_activate(MendingwallCLIApplication* self) {
   g_printerr("cli menus: %d\n", (int)self->menus);
 
   GSettingsBackend* backend = NULL;
-  GSettingsBackendClass* klass = G_SETTINGS_BACKEND_GET_CLASS(backend);
   g_object_get(self->global, "backend", &backend, NULL);
   if (backend) {
+    GSettingsBackendClass* klass = G_SETTINGS_BACKEND_GET_CLASS(backend);
     klass->sync(backend);
   } else {
     g_printerr("no backend\n");
