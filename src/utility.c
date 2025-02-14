@@ -21,8 +21,11 @@
 #include <gio/gsettingsbackend.h>
 
 void launch_daemon(GApplication* app) {
+  GDBusConnection* connection = g_application_get_dbus_connection(app);
+
   /* ensure that current settings will be visible in new processes */
   g_settings_sync();
+  g_dbus_connection_flush_sync(connection, NULL, NULL);
 
   /* launch daemon; fine if already running, new instance will quit */
   #ifdef BUILD_FOR_SNAP
@@ -32,7 +35,7 @@ void launch_daemon(GApplication* app) {
   g_spawn_async(NULL, (gchar**)argv, NULL, G_SPAWN_DEFAULT|G_SPAWN_CHILD_INHERITS_STDOUT|G_SPAWN_CHILD_INHERITS_STDERR, NULL, NULL, NULL, NULL);
   #else
   g_dbus_connection_call(
-      g_application_get_dbus_connection(app),
+      connection,
       "org.indii.mendingwall.watch",
       "/org/indii/mendingwall/watch",
       "org.freedesktop.Application",
