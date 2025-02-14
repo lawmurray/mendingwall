@@ -180,7 +180,7 @@ commands:
       - run:
           name: Is mend themes now enabled?
           command: |
-            sleep 2
+            sleep 5
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
 
       - run:
@@ -195,7 +195,7 @@ commands:
       - run:
           name: Is tidy menus now enabled?
           command: |
-            sleep 2
+            sleep 5
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
