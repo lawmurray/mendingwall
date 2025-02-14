@@ -163,8 +163,7 @@ commands:
       - run:
           name: Initialize gsettings
           command: |
-            gsettings set org.indii.mendingwall themes false
-            gsettings set org.indii.mendingwall menus false
+            mendingwallcli --disable-themes --disable-menus
 
       - run:
           name: Is mend themes disabled by default?
