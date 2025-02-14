@@ -33,7 +33,7 @@ struct _MendingwallCLIApplication {
 G_DEFINE_TYPE(MendingwallCLIApplication, mendingwall_cli_application, G_TYPE_APPLICATION)
 
 static void on_activate(MendingwallCLIApplication* self) {
-  g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
+  GSettings* global = g_settings_new("org.indii.mendingwall");
   gboolean themes = g_settings_get_boolean(global, "themes");
   gboolean menus = g_settings_get_boolean(global, "menus");
 
@@ -54,6 +54,7 @@ static void on_activate(MendingwallCLIApplication* self) {
   g_printerr("cli menus: %d\n", (int)menus);
   g_settings_set_boolean(global, "themes", themes);
   g_settings_set_boolean(global, "menus", menus);
+  g_clear_object(&global);
 
   if (themes || menus) {
     launch_daemon(G_APPLICATION(self));
