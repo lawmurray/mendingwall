@@ -175,7 +175,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwallcli --enable-themes
+            nohup mendingwallcli --enable-themes &
           background: true
       - run:
           name: Is mend themes now enabled?
@@ -190,7 +190,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwallcli --enable-menus
+            nohup mendingwallcli --enable-menus &
           background: true
       - run:
           name: Is tidy menus now enabled?
