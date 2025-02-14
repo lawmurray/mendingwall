@@ -73,7 +73,8 @@ void mendingwall_cli_application_class_init(MendingwallCLIApplicationClass* klas
 }
 
 void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
-  self->global = g_settings_new("org.indii.mendingwall");
+  self->global = g_settings_new_with_backend("org.indii.mendingwall",
+    g_settings_backend_get_default());
   self->themes = g_settings_get_boolean(self->global, "themes");
   self->menus = g_settings_get_boolean(self->global, "menus");
   self->restore = FALSE;

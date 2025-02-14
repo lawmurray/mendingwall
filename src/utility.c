@@ -18,6 +18,7 @@
 #include <utility.h>
 
 #define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
 void launch_daemon(GApplication* app) {

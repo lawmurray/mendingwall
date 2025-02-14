@@ -19,6 +19,10 @@
 #include <resources.h>
 #include <mendingwallapplication.h>
 
+#define G_SETTINGS_ENABLE_BACKEND 1
+#include <gio/gio.h>
+#include <gio/gsettingsbackend.h>
+
 struct _MendingwallApplication {
   AdwApplication parent_instance;
 
@@ -84,7 +88,8 @@ void mendingwall_application_class_init(MendingwallApplicationClass* klass) {
 }
 
 void mendingwall_application_init(MendingwallApplication* self) {
-  self->global = g_settings_new("org.indii.mendingwall");
+  self->global = g_settings_new_with_backend("org.indii.mendingwall",
+    g_settings_backend_get_default());
   self->window = NULL;
 }
 
