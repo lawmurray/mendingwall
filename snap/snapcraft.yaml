@@ -17,23 +17,6 @@ parts:
     source: .
     parse-info:
       - usr/share/metainfo/org.indii.mendingwall.metainfo.xml
-    build-packages:
-      - git
-      - meson
-      - gettext
-      - appstream
-      - desktop-file-utils
-      - libgtk-4-dev
-      - libglib2.0-dev
-      - libglib2.0-bin
-      - libadwaita-1-dev
-      - libportal-dev
-      - libportal-gtk4-dev
-      - libportal-gtk3-dev
-    stage-packages:
-      - libgtk-4-1
-      - libadwaita-1-0
-      - libportal1
 
 slots:
   mendingwall:
@@ -55,7 +38,7 @@ plugs:
   dconf:
     interface: dbus
     bus: session
-    name: ca.desrt.dconf.Writer
+    name: ca.desrt.dconf
 
 apps:
   mendingwall:
@@ -68,8 +51,6 @@ apps:
       - mendingwall
     plugs:
       - dconf
-    environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/gnome-platform/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libproxy
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
@@ -80,8 +61,6 @@ apps:
       - mendingwallcli
     plugs:
       - dconf
-    environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/gnome-platform/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libproxy
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -92,5 +71,3 @@ apps:
       - mendingwalld
     plugs:
       - dconf
-    environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/gnome-platform/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libproxy
