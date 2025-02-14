@@ -74,7 +74,9 @@ static void on_activate(MendingwallApplication* self) {
 
 void mendingwall_application_dispose(GObject* o) {
   MendingwallApplication* self = MENDINGWALL_APPLICATION(o);
-  g_object_unref(self->global);
+  if (self->global) {
+    g_object_unref(self->global);
+  }
   G_OBJECT_CLASS(mendingwall_application_parent_class)->dispose(o);
 }
 

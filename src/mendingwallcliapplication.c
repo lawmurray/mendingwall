@@ -25,19 +25,37 @@
 struct _MendingwallCLIApplication {
   GApplication parent_instance;
 
-  GSettings* global;
-  gboolean themes, menus, restore;
+  gboolean enable_themes, disable_themes;
+  gboolean enable_menus, disable_menus;
+  gboolean restore;
 };
 
 G_DEFINE_TYPE(MendingwallCLIApplication, mendingwall_cli_application, G_TYPE_APPLICATION)
 
 static void on_activate(MendingwallCLIApplication* self) {
-  g_settings_set_boolean(self->global, "themes", self->themes);
-  g_settings_set_boolean(self->global, "menus", self->menus);
-  g_printerr("cli themes: %d\n", (int)self->themes);
-  g_printerr("cli menus: %d\n", (int)self->menus);
+  g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
+  gboolean themes = g_settings_get_boolean(global, "themes");
+  gboolean menus = g_settings_get_boolean(global, "menus");
 
-  if (self->themes || self->menus) {
+  if (self->enable_themes) {
+    themes = TRUE;
+  }
+  if (self->disable_themes) {
+    themes = FALSE;
+  }
+  if (self->enable_menus) {
+    menus = TRUE;
+  }
+  if (self->disable_menus) {
+    menus = FALSE;
+  }
+
+  g_printerr("cli themes: %d\n", (int)themes);
+  g_printerr("cli menus: %d\n", (int)menus);
+  g_settings_set_boolean(global, "themes", themes);
+  g_settings_set_boolean(global, "menus", menus);
+
+  if (themes || menus) {
     launch_daemon(G_APPLICATION(self));
     install_autostart();
   } else {
@@ -49,8 +67,6 @@ static void on_activate(MendingwallCLIApplication* self) {
 }
 
 void mendingwall_cli_application_dispose(GObject* o) {
-  MendingwallCLIApplication* self = MENDINGWALL_CLI_APPLICATION(o);
-  g_object_unref(self->global);
   G_OBJECT_CLASS(mendingwall_cli_application_parent_class)->dispose(o);
 }
 
@@ -64,9 +80,10 @@ void mendingwall_cli_application_class_init(MendingwallCLIApplicationClass* klas
 }
 
 void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
-  self->global = g_settings_new("org.indii.mendingwall");
-  self->themes = g_settings_get_boolean(self->global, "themes");
-  self->menus = g_settings_get_boolean(self->global, "menus");
+  self->enable_themes = FALSE;
+  self->disable_themes = FALSE;
+  self->enable_menus = FALSE;
+  self->disable_menus = FALSE;
   self->restore = FALSE;
 }
 
@@ -80,14 +97,14 @@ MendingwallCLIApplication* mendingwall_cli_application_new(void) {
 
   /* command-line options */
   GOptionEntry option_entries[] = {
-    { "enable-themes", 0, 0, G_OPTION_ARG_NONE, &self->themes,
+    { "enable-themes", 0, 0, G_OPTION_ARG_NONE, &self->enable_themes,
         "Toggle on mend themes feature", NULL },
-    { "disable-themes", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,
-        &self->themes, "Toggle off mend themes feature", NULL },
-    { "enable-menus", 0, 0, G_OPTION_ARG_NONE, &self->menus,
+    { "disable-themes", 0, 0, G_OPTION_ARG_NONE, &self->disable_themes,
+        "Toggle off mend themes feature", NULL },
+    { "enable-menus", 0, 0, G_OPTION_ARG_NONE, &self->enable_menus,
         "Toggle on tidy menus feature", NULL },
-    { "disable-menus", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,
-        &self->menus, "Toggle off tidy menus feature", NULL },
+    { "disable-menus", 0, 0, G_OPTION_ARG_NONE, &self->disable_menus,
+        "Toggle off tidy menus feature", NULL },
     { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore,
       "Restore theme from save", NULL },
       G_OPTION_ENTRY_NULL
