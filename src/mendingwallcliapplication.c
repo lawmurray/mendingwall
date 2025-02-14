@@ -37,14 +37,11 @@ static void on_activate(MendingwallCLIApplication* self) {
   g_printerr("cli themes: %d\n", (int)self->themes);
   g_printerr("cli menus: %d\n", (int)self->menus);
 
-  GSettingsBackend* backend = NULL;
-  g_object_get(self->global, "backend", &backend, NULL);
-  if (backend) {
-    GSettingsBackendClass* klass = G_SETTINGS_BACKEND_GET_CLASS(backend);
-    klass->sync(backend);
-  } else {
-    g_printerr("no backend\n");
-  }
+  /* is closing and reopening the only way to ensure that settings are
+   * actually synced? g_settings_sync() does not seem to work */
+  g_object_unref(self->global);
+  self->global = g_settings_new_with_backend("org.indii.mendingwall",
+  g_settings_backend_get_default());
 
   if (self->themes || self->menus) {
     launch_daemon(G_APPLICATION(self));
@@ -74,7 +71,7 @@ void mendingwall_cli_application_class_init(MendingwallCLIApplicationClass* klas
 
 void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
   self->global = g_settings_new_with_backend("org.indii.mendingwall",
-    g_settings_backend_get_default());
+    g_settings_backend_get_default());    
   self->themes = g_settings_get_boolean(self->global, "themes");
   self->menus = g_settings_get_boolean(self->global, "menus");
   self->restore = FALSE;
