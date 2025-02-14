@@ -176,10 +176,11 @@ commands:
           name: Enable mend themes
           command: |
             mendingwallcli --enable-themes
-            sleep 2
+          background: true
       - run:
           name: Is mend themes now enabled?
           command: |
+            sleep 2
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
 
       - run:
