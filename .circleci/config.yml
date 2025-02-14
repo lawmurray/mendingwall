@@ -144,6 +144,14 @@ commands:
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
       - run:
+           # this is a workaround for a very strange issue where writes to
+           # GSettings can be lost if ~/.config/dconf/user does not yet exist;
+           # creating an empty file seems sufficient to fix it
+           name: Workaround for dconf user database issue
+           command: |
+             mkdir -p $HOME/.config/dconf
+             touch $HOME/.config/dconf/user
+      - run:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/.snap/data/mendingwall/x1/.local/share' >> $BASH_ENV
