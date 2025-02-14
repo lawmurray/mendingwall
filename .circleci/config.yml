@@ -161,6 +161,12 @@ commands:
             sudo apt install --assume-yes ubuntu-gnome-desktop
 
       - run:
+          name: Initialize gsettings
+          command: |
+            gsettings set org.indii.mendingwall themes false
+            gsettings set org.indii.mendingwall menus false
+
+      - run:
           name: Is mend themes disabled by default?
           command: |
             [[ `gsettings get org.indii.mendingwall themes` == false ]] || exit 1
