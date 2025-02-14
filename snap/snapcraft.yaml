@@ -20,7 +20,6 @@ parts:
     build-packages:
       - git
       - meson
-      - blueprint-compiler
       - gettext
       - appstream
       - desktop-file-utils
