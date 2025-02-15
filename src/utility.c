@@ -22,15 +22,14 @@
 #include <gio/gsettingsbackend.h>
 
 void configure_environment(void) {
-  #if defined(BUILD_FOR_FLATPAK) || defined(BUILD_FOR_SNAP)
+  #ifdef BUILD_FOR_FLATPAK
   /*
    * Access is needed to the configuration files of desktop environments for
-   * the purposes of saving and restoring themes. Outside of Flatpak and Snap,
-   * the configuration directory is given by XDG_CONFIG_HOME, or if not set
-   * the default ~/.config. Inside Flatpak this is overridden to a directory
-   * used by the current app only, typically somewhere under ~/.app. Inside
-   * Snap it is something like ~/.snap/data/mendingwall/x1/.config. We need to
-   * get the original back.
+   * the purposes of saving and restoring themes. Outside of Flatpak, the
+   * configuration directory is given by XDG_CONFIG_HOME, or if not set the
+   * default ~/.config. Inside Flatpak this is overridden to a directory used
+   * by the current app only, typically somewhere under ~/.app.We need to get
+   * the original back.
    *
    * Mending Wall does not need any config files of its own in there, as all
    * configuration is kept in GSettings with the dconf backend for storage. So
@@ -38,13 +37,11 @@ void configure_environment(void) {
    * used, and that will be returned by g_get_user_config_dir().
    */
   g_unsetenv("XDG_CONFIG_HOME");
-  #endif
 
-  #ifdef BUILD_FOR_FLATPAK
   /*
    * Access is needed to data directories to see which applications are
-   * installed for the purposes of tidying menus. Outside Flatpak and Snap,
-   * these are given by XDG_DATA_DIRS. Inside of Flatpak and Snap they are
+   * installed for the purposes of tidying menus. Outside Flatpak,
+   * these are given by XDG_DATA_DIRS. Inside of Flatpak they are
    * overridden. Snap still seems to preserve the originals amongst the paths.
    * Flatpak does not. We need to get them back.
    *
@@ -61,14 +58,32 @@ void configure_environment(void) {
    * good reference if this needs to change.
    */
   const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
-  g_autoptr char* value = g_strconcat("/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:", xdg_data_dirs, NULL);
+  g_autofree char* value = g_strconcat("/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:", xdg_data_dirs, NULL);
   g_setenv("XDG_DATA_HOME", value, TRUE);
+  #endif
+
+  #ifdef BUILD_FOR_SNAP
+  /*
+   * Similar to Flatpak, Snap overrides XDG_CONFIG_HOME, in this case to
+   * something like ~/.snap/data/mendingwall/x1/.config, and we need to get
+   * the original back. Snap also overrides HOME though (to something like
+   * ~/.snap/data/mendingwall/x1), and so unlike Flatpak, merely unsetting
+   * XDG_CONFIG_HOME will not work. Instead, it provides a SNAP_REAL_HOME that
+   * can be used to reconstruct it.
+   */
+  const char* snap_real_home = g_getenv("SNAP_REAL_HOME");
+  g_autofree char* value = g_strconcat(snap_real_home, "/.config", NULL);
+  g_setenv("XDG_CONFIG_HOME", value, TRUE);
+
+  /*
+   * Dissimilar to Flatpak, Snap preserves the original directories in
+   * XDG_DATA_DIRS, so no adjustments to it are necessary.
+   */
   #endif
 }
 
-
-void launch_daemon(GApplication* app) {
-  /* ensure that current settings will be visible in new processes */
+void launch_daemon(GApplication* app) { /* ensure that current settings will
+  be visible in new processes */
   g_settings_sync();
 
   /* launch daemon; fine if already running, new instance will quit */
