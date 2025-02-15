@@ -41,6 +41,10 @@ commands:
               libportal-gtk4-dev \
               dbus-x11 \
               dbus-user-session
+      - run:
+          name: Set environment variable for save directory
+          command: |
+            echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
 
   build_source:
     steps:
@@ -55,10 +59,6 @@ commands:
             cd build
             meson compile
             sudo meson install
-      - run:
-          name: Set environment variable for save directory
-          command: |
-            echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
 
   build_flatpak:
     steps:
@@ -96,10 +96,6 @@ commands:
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
-      - run:
-          name: Set environment variable for save directory
-          command: |
-            echo 'export SAVE_DIR=$HOME/.var/app/org.indii.mendingwall/data/mendingwall/save' >> $BASH_ENV
 
   build_snap:
     steps:
@@ -151,10 +147,6 @@ commands:
            command: |
              mkdir -p $HOME/.config/dconf
              touch $HOME/.config/dconf/user
-      - run:
-          name: Set environment variable for save directory
-          command: |
-            echo 'export SAVE_DIR=$HOME/.snap/data/mendingwall/x1/.local/share' >> $BASH_ENV
 
   test:
     steps:
