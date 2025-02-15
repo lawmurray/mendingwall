@@ -175,11 +175,12 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwallcli --enable-themes
-            sleep 2
+            nohup mendingwallcli --enable-themes &
+          background: true
       - run:
           name: Is mend themes now enabled?
           command: |
+            sleep 5
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
 
       - run:
@@ -189,11 +190,12 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwallcli --enable-menus
-            sleep 2
+            nohup mendingwallcli --enable-menus &
+          background: true
       - run:
           name: Is tidy menus now enabled?
           command: |
+            sleep 5
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
