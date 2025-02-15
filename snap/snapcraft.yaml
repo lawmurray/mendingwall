@@ -5,7 +5,7 @@ adopt-info: mendingwall
 
 base: core24
 grade: stable
-confinement: devmode
+confinement: strict
 
 parts:
   mendingwall:
@@ -42,6 +42,43 @@ plugs:
     bus: session
     name: ca.desrt.dconf
 
+  # directories monitored for .desktop files of installed applications
+  system-applications:
+    interface: system-files
+    read:
+      - /var/lib/flatpak/exports/share/applications
+      - /var/lib/snapd/desktop/applications
+      - /usr/local/share/applications
+      - /usr/share/applications
+
+  # directory to which updated .desktop files are written for tidied
+  # applications
+  user-applications:
+    interface: personal-files
+    write:
+      - $HOME/.local/share/applications
+
+  # configuration files for desktop environments that are saved and restored
+  # as part of the mend themes feature
+  user-config:
+    interface: personal-files
+    write:
+      - $HOME/.config/gtk-3.0
+      - $HOME/.config/gtk-4.0
+      - $HOME/.config/gtkrc
+      - $HOME/.config/gtkrc-2.0
+      - $HOME/.config/monitors.xml
+      - $HOME/.config/kcminputrc
+      - $HOME/.config/kdeglobals
+      - $HOME/.config/kglobalshortcutsrc
+      - $HOME/.config/kwinrc
+      - $HOME/.config/kwinoutputconfig.json
+      - $HOME/.config/plasmashellrc
+      - $HOME/.config/plasma-org.kde.plasma.desktop-appletsrc
+      - $HOME/.config/systemsettingsrc
+      - $HOME/.config/Trolltech.conf
+      - $HOME/.config/xsettingsd
+
 apps:
   mendingwall:
     command: usr/bin/mendingwall
@@ -73,3 +110,6 @@ apps:
       - mendingwalld
     plugs:
       - dconf
+      - system-applications
+      - user-applications
+      - user-config
