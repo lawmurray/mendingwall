@@ -28,7 +28,7 @@ void configure_environment(void) {
    * the purposes of saving and restoring themes. Outside of Flatpak, the
    * configuration directory is given by XDG_CONFIG_HOME, or if not set the
    * default ~/.config. Inside Flatpak this is overridden to a directory used
-   * by the current app only, typically somewhere under ~/.app.We need to get
+   * by the current app only, typically somewhere under ~/.app. We need to get
    * the original back.
    *
    * Mending Wall does not need any config files of its own in there, as all
@@ -65,15 +65,18 @@ void configure_environment(void) {
   #ifdef BUILD_FOR_SNAP
   /*
    * Similar to Flatpak, Snap overrides XDG_CONFIG_HOME, in this case to
-   * something like ~/.snap/data/mendingwall/x1/.config, and we need to get
-   * the original back. Snap also overrides HOME though (to something like
-   * ~/.snap/data/mendingwall/x1), and so unlike Flatpak, merely unsetting
-   * XDG_CONFIG_HOME will not work. Instead, it provides a SNAP_REAL_HOME that
-   * can be used to reconstruct it.
+   * something like ~/.snap/data/mendingwall/x1/.config, as well as
+   * XDG_DATA_HOME. We need to get the originals back. Snap also overrides
+   * HOME though (to something like ~/.snap/data/mendingwall/x1), and so
+   * unlike Flatpak, merely unsetting environment variables will not work to
+   * restore the defaults. Instead, it provides a SNAP_REAL_HOME that can be
+   * used to reconstruct these.
    */
   const char* snap_real_home = g_getenv("SNAP_REAL_HOME");
-  g_autofree char* value = g_strconcat(snap_real_home, "/.config", NULL);
-  g_setenv("XDG_CONFIG_HOME", value, TRUE);
+  g_autofree char* xdg_config_home = g_strconcat(snap_real_home, "/.config", NULL);
+  g_autofree char* xdg_data_home = g_strconcat(snap_real_home, "/.local/share", NULL);
+  g_setenv("XDG_CONFIG_HOME", xdg_config_home, TRUE);
+  g_setenv("XDG_DATA_HOME", xdg_data_home, TRUE);
 
   /*
    * Dissimilar to Flatpak, Snap preserves the original directories in
