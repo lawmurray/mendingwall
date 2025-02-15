@@ -39,6 +39,16 @@
     foreach_with_line(value, values, __LINE__)
 
 /**
+ * Configure the environment. For Snap and Flatpak builds, this adjusts
+ * some environment variables back to their standard values outside of Snap
+ * and Flatpak, so that Mending Wall can find what it needs.
+ * 
+ * Because this may change environment variables, it should be called as soon
+ * as possible after program start.
+ */
+void configure_environment(void);
+
+/**
  * Launch the background process.
  */
 void launch_daemon(GApplication* app);

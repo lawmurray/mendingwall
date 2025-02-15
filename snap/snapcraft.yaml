@@ -11,9 +11,9 @@ parts:
   mendingwall:
     plugin: meson
     meson-parameters:
-      - --prefix=/usr
-      - --buildtype=release
-      - -Dc_args=-DBUILD_FOR_SNAP
+      - "--buildtype=release"
+      - "--prefix=/usr"
+      - "-Dc_args=-DBUILD_FOR_SNAP"
     source: .
     parse-info:
       - usr/share/metainfo/org.indii.mendingwall.metainfo.xml

@@ -21,6 +21,52 @@
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
+void configure_environment(void) {
+  #if defined(BUILD_FOR_FLATPAK) || defined(BUILD_FOR_SNAP)
+  /*
+   * Access is needed to the configuration files of desktop environments for
+   * the purposes of saving and restoring themes. Outside of Flatpak and Snap,
+   * the configuration directory is given by XDG_CONFIG_HOME, or if not set
+   * the default ~/.config. Inside Flatpak this is overridden to a directory
+   * used by the current app only, typically somewhere under ~/.app. Inside
+   * Snap it is something like ~/.snap/data/mendingwall/x1/.config. We need to
+   * get the original back.
+   *
+   * Mending Wall does not need any config files of its own in there, as all
+   * configuration is kept in GSettings with the dconf backend for storage. So
+   * we just unset XDG_CONFIG_HOME, which should mean the default ~/.config is
+   * used, and that will be returned by g_get_user_config_dir().
+   */
+  g_unsetenv("XDG_CONFIG_HOME");
+  #endif
+
+  #ifdef BUILD_FOR_FLATPAK
+  /*
+   * Access is needed to data directories to see which applications are
+   * installed for the purposes of tidying menus. Outside Flatpak and Snap,
+   * these are given by XDG_DATA_DIRS. Inside of Flatpak and Snap they are
+   * overridden. Snap still seems to preserve the originals amongst the paths.
+   * Flatpak does not. We need to get them back.
+   *
+   * There are a couple of ways to achieve this:
+   *
+   *   1. They can be hard-coded.
+   *   2. With Flatpak they can be acquired with `flatpak-spawn --host`, but
+   *      this requires the --talk-name=org.freedesktop.Flatpak sandbox
+   *      permission, which is very broad, and results in a Flathub warning
+   *      about the app's ability to acquire arbitrary permissions.
+   *
+   * The former is chosen here to keep sandbox permissions tight. The latter
+   * is chosen by other apps such as dconf-editor and Refine, which offer a
+   * good reference if this needs to change.
+   */
+  const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
+  g_autoptr char* value = g_strconcat("/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:", xdg_data_dirs, NULL);
+  g_setenv("XDG_DATA_HOME", value, TRUE);
+  #endif
+}
+
+
 void launch_daemon(GApplication* app) {
   /* ensure that current settings will be visible in new processes */
   g_settings_sync();
