@@ -1,6 +1,6 @@
 id: org.indii.mendingwall
 runtime: org.gnome.Platform
-runtime-version: '47'
+runtime-version: 47
 sdk: org.gnome.Sdk
 command: mendingwall
 
@@ -23,9 +23,15 @@ finish-args:
   - --env=GSETTINGS_BACKEND=dconf
 
   # config files for desktop environments, so can save and restore themes;
-  # write access is needed to xdg-config itself to restore config files that
-  # may exist in one desktop environment that do not exist in another
+  # read access is needed to xdg-config in order to establish file monitors
+  # for the creation and modification of files at the top level; write access
+  # is needed restore config files at the top level an autostart
   - --filesystem=xdg-config:rw
+
+  # for good measure, these are the actual files that will be saved and
+  # restored for each desktop environment, if present; these are copied from
+  # data/themes.conf, and the list will need to be maintained alongside that
+  # configuration
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
   - --filesystem=xdg-config/gtkrc
