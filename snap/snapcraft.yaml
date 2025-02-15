@@ -37,10 +37,15 @@ slots:
     name: org.indii.mendingwall.watch
 
 plugs:
-  dconf:
+  dconf-dbus:
     interface: dbus
     bus: session
     name: ca.desrt.dconf
+
+  dbus-db:
+    interface: personal-files
+    write:
+      - $HOME/.config/dconf/user
 
   # directories monitored for .desktop files of installed applications
   system-applications:
@@ -89,7 +94,8 @@ apps:
     slots:
       - mendingwall
     plugs:
-      - dconf
+      - dconf-dbus
+      - dconf-db
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
@@ -99,7 +105,8 @@ apps:
     slots:
       - mendingwallcli
     plugs:
-      - dconf
+      - dconf-dbus
+      - dconf-db
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -109,7 +116,8 @@ apps:
     slots:
       - mendingwalld
     plugs:
-      - dconf
+      - dconf-dbus
+      - dconf-db
       - system-applications
       - user-applications
       - user-config
