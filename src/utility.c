@@ -59,7 +59,7 @@ void configure_environment(void) {
    */
   const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
   g_autofree char* value = g_strconcat("/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:", xdg_data_dirs, NULL);
-  g_setenv("XDG_DATA_HOME", value, TRUE);
+  g_setenv("XDG_DATA_DIRS", value, TRUE);
   #endif
 
   #ifdef BUILD_FOR_SNAP
