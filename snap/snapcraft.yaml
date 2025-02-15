@@ -42,7 +42,7 @@ plugs:
     bus: session
     name: ca.desrt.dconf
 
-  dbus-db:
+  dconf-db:
     interface: personal-files
     write:
       - $HOME/.config/dconf/user
