@@ -5,7 +5,7 @@ adopt-info: mendingwall
 
 base: core24
 grade: stable
-confinement: strict
+confinement: classic
 
 parts:
   mendingwall:
@@ -50,16 +50,16 @@ plugs:
   user-schemas:
     interface: personal-files
     read:
-      - $HOME/.local/share/glib-2.0/schemas
-      - $HOME/.local/share/flatpak/exports/share
+      - $HOME/.local/share/glib-2.0/schemas/gschemas.compiled
+      - $HOME/.local/share/flatpak/exports/share/glib-2.0/schemas/gschemas.compiled
 
   system-schemas:
     interface: system-files
     read:
-      - /usr/local/share/glib-2.0/schemas
-      - /usr/share/glib-2.0/schemas
-      - /var/lib/flatpak/exports/share/glib-2.0/schemas
-      - /var/lib/snapd/desktop/glib-2.0/schemas
+      - /usr/local/share/glib-2.0/schemas/gschemas.compiled
+      - /usr/share/glib-2.0/schemas/gschemas.compiled
+      - /var/lib/flatpak/exports/share/glib-2.0/schemas/gschemas.compiled
+      - /var/lib/snapd/desktop/glib-2.0/schemas/gschemas.compiled
 
   # directories monitored for .desktop files of installed applications
   system-applications:
