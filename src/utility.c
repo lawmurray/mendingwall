@@ -37,6 +37,7 @@ void configure_environment(void) {
    * used, and that will be returned by g_get_user_config_dir().
    */
   g_unsetenv("XDG_CONFIG_HOME");
+  g_unsetenv("XDG_DATA_HOME");
 
   /*
    * Access is needed to data directories to see which applications are
@@ -58,7 +59,16 @@ void configure_environment(void) {
    * good reference if this needs to change.
    */
   const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
-  g_autofree char* value = g_strconcat("/var/lib/flatpak/exports/share:/var/lib/snapd/desktop:/run/host/usr/local/share:/run/host/usr/share:", xdg_data_dirs, NULL);
+  g_autofree char* value = g_strconcat(
+      "/var/lib/flatpak/exports/share",
+      ":",
+      "/var/lib/snapd/desktop",
+      ":",
+      "/run/host/usr/local/share",
+      ":",
+      "/run/host/usr/share",
+      ":",
+      xdg_data_dirs, NULL);
   g_setenv("XDG_DATA_DIRS", value, TRUE);
   #endif
 
@@ -79,9 +89,21 @@ void configure_environment(void) {
   g_setenv("XDG_DATA_HOME", xdg_data_home, TRUE);
 
   /*
-   * Dissimilar to Flatpak, Snap preserves the original directories in
-   * XDG_DATA_DIRS, so no adjustments to it are necessary.
+   * Similarly for XDG_DATA_DIRS.
    */
+  const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
+  g_autofree char* value = g_strconcat(
+      "/var/lib/snapd/hostfs/var/lib/flatpak/exports/share",
+      ":",
+      "/var/lib/snapd/hostfs/var/lib/snapd/desktop",
+      ":",
+      "/var/lib/snapd/hostfs/usr/local/share",
+      ":",
+      "/var/lib/snapd/hostfs/usr/share",
+      ":",
+      xdg_data_dirs, NULL);
+  g_setenv("XDG_DATA_DIRS", value, TRUE);
+
   #endif
 }
 
