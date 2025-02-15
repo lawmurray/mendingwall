@@ -21,31 +21,31 @@ parts:
       - git
 
 slots:
-  mendingwall:
+  dbus-mendingwall:
     interface: dbus
     bus: session
     name: org.indii.mendingwall
 
-  mendingwallcli:
+  dbus-mendingwallcli:
     interface: dbus
     bus: session
     name: org.indii.mendingwall.cli
 
-  mendingwalld:
+  dbus-mendingwalld:
     interface: dbus
     bus: session
     name: org.indii.mendingwall.watch
 
 plugs:
-  dconf-dbus:
-    interface: dbus
-    bus: session
-    name: ca.desrt.dconf
+  # dconf-dbus:
+  #   interface: dbus
+  #   bus: session
+  #   name: ca.desrt.dconf
 
-  dconf-db:
-    interface: personal-files
-    write:
-      - $HOME/.config/dconf/user
+  # dconf-db:
+  #   interface: personal-files
+  #   write:
+  #     - $HOME/.config/dconf/user
 
   # directories monitored for .desktop files of installed applications
   system-applications:
@@ -92,10 +92,15 @@ apps:
     extensions:
       - gnome
     slots:
-      - mendingwall
+      - dbus-mendingwall
     plugs:
-      - dconf-dbus
-      - dconf-db
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - gsettings
+    #   - dconf-dbus
+    #   - dconf-db
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
@@ -103,10 +108,13 @@ apps:
     extensions:
       - gnome
     slots:
-      - mendingwallcli
+      - dbus-mendingwallcli
     plugs:
-      - dconf-dbus
-      - dconf-db
+      - desktop
+      - desktop-legacy
+      - gsettings
+    #   - dconf-dbus
+    #   - dconf-db
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -114,10 +122,13 @@ apps:
     extensions:
       - gnome
     slots:
-      - mendingwalld
+      - dbus-mendingwalld
     plugs:
-      - dconf-dbus
-      - dconf-db
+      # - dconf-dbus
+      # - dconf-db
+      - desktop
+      - desktop-legacy
+      - gsettings
       - system-applications
       - user-applications
       - user-config
