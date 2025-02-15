@@ -37,15 +37,29 @@ slots:
     name: org.indii.mendingwall.watch
 
 plugs:
-  # dconf-dbus:
-  #   interface: dbus
-  #   bus: session
-  #   name: ca.desrt.dconf
+  dconf-dbus:
+    interface: dbus
+    bus: session
+    name: ca.desrt.dconf
 
-  # dconf-db:
-  #   interface: personal-files
-  #   write:
-  #     - $HOME/.config/dconf/user
+  dconf-db:
+    interface: personal-files
+    write:
+      - $HOME/.config/dconf/user
+
+  user-schemas:
+    interface: personal-files
+    read:
+      - $HOME/.local/share/glib-2.0/schemas
+      - $HOME/.local/share/flatpak/exports/share
+
+  system-schemas:
+    interface: system-files
+    read:
+      - /usr/local/share/glib-2.0/schemas
+      - /usr/share/glib-2.0/schemas
+      - /var/lib/flatpak/exports/share/glib-2.0/schemas
+      - /var/lib/snapd/desktop/glib-2.0/schemas
 
   # directories monitored for .desktop files of installed applications
   system-applications:
@@ -84,6 +98,13 @@ plugs:
       - $HOME/.config/Trolltech.conf
       - $HOME/.config/xsettingsd
 
+  # autostart files
+  user-autostart:
+    interface: personal-files
+    write:
+      - $HOME/.config/autostart
+      - $HOME/.config/plasma-workspace/env
+
 apps:
   mendingwall:
     command: usr/bin/mendingwall
@@ -96,11 +117,14 @@ apps:
     plugs:
       - desktop
       - desktop-legacy
+      - gsettings
+      - dconf-dbus
+      - dconf-db
+      - user-autostart
+      - user-schemas
+      - system-schemas
       - wayland
       - x11
-      - gsettings
-    #   - dconf-dbus
-    #   - dconf-db
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
@@ -113,8 +137,11 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-    #   - dconf-dbus
-    #   - dconf-db
+      - dconf-dbus
+      - dconf-db
+      - user-autostart
+      - user-schemas
+      - system-schemas
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -124,11 +151,13 @@ apps:
     slots:
       - dbus-mendingwalld
     plugs:
-      # - dconf-dbus
-      # - dconf-db
       - desktop
       - desktop-legacy
       - gsettings
+      - dconf-dbus
+      - dconf-db
       - system-applications
       - user-applications
       - user-config
+      - user-schemas
+      - system-schemas
