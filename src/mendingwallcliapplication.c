@@ -50,8 +50,6 @@ static void on_activate(MendingwallCLIApplication* self) {
     menus = FALSE;
   }
 
-  g_printerr("cli themes: %d\n", (int)themes);
-  g_printerr("cli menus: %d\n", (int)menus);
   g_settings_set_boolean(global, "themes", themes);
   g_settings_set_boolean(global, "menus", menus);
 

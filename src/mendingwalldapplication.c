@@ -363,8 +363,6 @@ static void on_startup(MendingwallDApplication* self) {
   /* start */
   gboolean themes = g_settings_get_boolean(self->global, "themes");
   gboolean menus = g_settings_get_boolean(self->global, "menus");
-  g_printerr("themes: %d\n", (int)themes);
-  g_printerr("menus: %d\n", (int)menus);
 
   if (themes) {
     watch_themes(self);
