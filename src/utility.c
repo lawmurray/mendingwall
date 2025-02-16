@@ -104,7 +104,7 @@ void configure_environment(void) {
     data_dirs[i] = g_strdup(host_system_data_dirs[j]);
   }
   for (guint j = 0; i < 63 && system_data_dirs[j]; ++i, ++j) {
-    data_dirs[i] = g_strdup(system_data_dirs[i]);
+    data_dirs[i] = g_strdup(system_data_dirs[j]);
   }
   for (; i < 64; ++i) {
     data_dirs[i] = NULL;
