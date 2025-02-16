@@ -125,6 +125,10 @@ commands:
             sudo iptables  -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
             sudo ip6tables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
       - run:
+          name: Restart snapd
+          command: |
+            sudo systemctl restart snapd
+      - run:
           name: Install snapcraft
           command: |
             sudo snap install --classic snapcraft
