@@ -40,18 +40,14 @@ void configure_environment(void) {
   #if defined(BUILD_FOR_FLATPAK)
   /* Flatpak overrides XDG_CONFIG_HOME and XDG_DATA_HOME, and unsets HOME. The
    * best way to get the originals back is to temporarily unset them and let
-   * g_get_user_config_dir() and g_get_user_data_dir() reconstruct defaults */
-  app_config_dir = g_strdup(g_get_user_config_dir());
-  g_unsetenv("XDG_CONFIG_HOME");
-  user_config_dir = g_strdup(g_get_user_config_dir());
-
-  /* set XDG_CONFIG_HOME so that GSettings finds dconf database on host */
-  g_setenv("XDG_CONFIG_HOME", user_config_dir, TRUE);
-
-  app_data_dir = g_strdup(g_get_user_data_dir());
-  g_unsetenv("XDG_DATA_HOME");
-  user_data_dir = g_strdup(g_get_user_data_dir());
-  g_setenv("XDG_DATA_HOME", app_data_dir, TRUE);
+   * g_get_user_config_dir() and g_get_user_data_dir() reconstruct defaults;
+   * don't call them until XDG_CONFIG_HOME and XDG_DATA_HOME are unset though,
+   * otherwise value is fixed */
+  const char* home = g_getenv("HOME");
+  app_config_dir = g_strdup(g_getenv("XDG_CONFIG_HOME"));
+  user_config_dir = g_strconcat(home, "/.config", NULL);
+  app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
+  user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
   /* Hard-code host data directories where applications may be installed. An
    * alternative is to use `flatpak-spawn --host`, but this requires the
@@ -67,21 +63,15 @@ void configure_environment(void) {
     "/var/lib/snapd/desktop",
     NULL
   };
-
-  g_printerr("app_config_dir: %s\n", app_config_dir);
-  g_printerr("user_config_dir: %s\n", user_config_dir);
-  g_printerr("app_data_dir: %s\n", app_data_dir);
-  g_printerr("user_data_dir: %s\n", user_data_dir);
-
   #elif defined(BUILD_FOR_SNAP)
   /* Snap overrides XDG_CONFIG_HOME, XDG_DATA_HOME, and HOME, but sets a new
    * variable SNAP_REAL_HOME to what HOME used to be, which can be used to
    * reconstruct. */
-  const char* snap_real_home = g_getenv("SNAP_REAL_HOME");
+  const char* home = g_getenv("SNAP_REAL_HOME");
   app_config_dir = g_strdup(g_getenv("XDG_CONFIG_HOME"));
-  user_config_dir = g_strconcat(snap_real_home, "/.config", NULL);
+  user_config_dir = g_strconcat(home, "/.config", NULL);
   app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
-  user_data_dir = g_strconcat(snap_real_home, "/.local/share", NULL);
+  user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
   /* set XDG_CONFIG_HOME so that GSettings finds dconf database on host */
   g_setenv("XDG_CONFIG_HOME", user_config_dir, TRUE);
@@ -119,6 +109,14 @@ void configure_environment(void) {
   }
   for (; i < 64; ++i) {
     data_dirs[i] = NULL;
+  }
+
+  g_printerr("app_config_dir: %s\n", app_config_dir);
+  g_printerr("user_config_dir: %s\n", user_config_dir);
+  g_printerr("app_data_dir: %s\n", app_data_dir);
+  g_printerr("user_data_dir: %s\n", user_data_dir);
+  for (guint i = 0; data_dirs[i]; ++i) {
+    g_printerr("data_dirs[%u]: %s\n", i, data_dirs[i]);
   }
 }
 
