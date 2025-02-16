@@ -215,6 +215,11 @@ commands:
                -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
                -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
             ]] || exit 1
+      - run:
+          name: Is the KDE startup script executable?
+          command: |
+            [[ -x ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
           name: Sleep, in case daemon is just waiting for activate signal
@@ -240,8 +245,19 @@ commands:
       - run:
           name: Has config file been saved?
           command: |
-            sleep 2
+            sleep 5
             [[ -f $SAVE_DIR/GNOME/kwinrc ]] || exit 1
+
+      - run:
+          name: Touch config file in subdirectory
+          command: |
+            mkdir ~/.config/gtk-4.0
+            touch ~/.config/gtk-4.0/colors.css
+      - run:
+          name: Has config file in subdirectory been saved?
+          command: |
+            sleep 5
+            [[ -f $SAVE_DIR/GNOME/gtk-4.0/colors.css ]] || exit 1
 
       - run:
           name: Install KDE Plasma
@@ -250,7 +266,7 @@ commands:
       - run:
           name: Have KDE apps been tidied?
           command: |
-            sleep 2
+            sleep 5
             [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]] || exit 1
 
       - run:
@@ -261,7 +277,7 @@ commands:
       - run:
           name: Is GNOME saved icon theme Breeze?
           command: |
-            sleep 2
+            sleep 5
             [[ `grep icon-theme $SAVE_DIR/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
 
       - run:
@@ -275,7 +291,7 @@ commands:
       - run:
           name: Is daemon still running?
           command: |
-            sleep 2
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
 
       - run:
@@ -289,7 +305,7 @@ commands:
       - run:
           name: Is daemon now terminated?
           command: |
-            sleep 2
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 0 ]] || exit 1
 
       - run:
@@ -304,6 +320,10 @@ commands:
           name: Does config file now exist?
           command: |
             [[ -f ~/.config/kwinrc ]] || exit 1
+      - run:
+          name: Does config file in subdirectory now exist?
+          command: |
+            [[ -f ~/.config/gtk-4.0/colors.css ]] || exit 1
 
 jobs:
 
