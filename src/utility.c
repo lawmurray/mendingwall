@@ -115,8 +115,8 @@ void configure_environment(void) {
   g_printerr("user_config_dir: %s\n", user_config_dir);
   g_printerr("app_data_dir: %s\n", app_data_dir);
   g_printerr("user_data_dir: %s\n", user_data_dir);
-  for (guint i = 0; data_dirs[i]; ++i) {
-    g_printerr("data_dirs[%u]: %s\n", i, data_dirs[i]);
+  for (guint k = 0; data_dirs[k]; ++k) {
+    g_printerr("data_dirs[%u]: %s\n", k, data_dirs[k]);
   }
 }
 
