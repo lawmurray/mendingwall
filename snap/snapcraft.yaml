@@ -5,7 +5,7 @@ adopt-info: mendingwall
 
 base: core24
 grade: stable
-confinement: strict
+confinement: devmode
 
 parts:
   mendingwall:
