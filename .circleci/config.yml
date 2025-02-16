@@ -161,7 +161,7 @@ commands:
       - run:
           name: Set environment variable for save directory
           command: |
-            echo 'export SAVE_DIR=$HOME/snap/data/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
+            echo 'export SAVE_DIR=$HOME/snap/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
 
   test:
     steps:
