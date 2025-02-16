@@ -65,11 +65,14 @@ plugs:
     interface: system-files
     read:
       # access to system application directories from which to read .desktop
-      # files of installed applications
-      - /var/lib/snapd/hostfs/var/lib/flatpak/exports/share/applications
-      - /var/lib/snapd/hostfs/var/lib/snapd/desktop/applications
+      # files of installed applications; for the first, we want access to
+      # /var/lib/snapd/hostfs/var/lib/flatpak/exports/share/applications, but
+      # this is a directory of symlinks to other directories under
+      # /var/lib/snapd/hostfs/var/lib/flatpak, so we request access to that
+      - /var/lib/snapd/hostfs/var/lib/flatpak
       - /var/lib/snapd/hostfs/usr/local/share/applications
       - /var/lib/snapd/hostfs/usr/share/applications
+      - /var/lib/snapd/hostfs/var/lib/snapd/desktop/applications
 
 # plugs are the same for all apps, as mendingwall and mendingwallcli may
 # launch mendingwalld, and if so it will inherit their configuration
@@ -87,6 +90,9 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
+      - opengl
+      - wayland
+      - x11
       - dconf-dbus
       - dconf-db
       - user-config
