@@ -20,22 +20,6 @@ parts:
     build-packages:
       - git
 
-slots:
-  dbus-mendingwall:
-    interface: dbus
-    bus: session
-    name: org.indii.mendingwall
-
-  dbus-mendingwallcli:
-    interface: dbus
-    bus: session
-    name: org.indii.mendingwall.cli
-
-  dbus-mendingwalld:
-    interface: dbus
-    bus: session
-    name: org.indii.mendingwall.watch
-
 plugs:
 
   user-config:
@@ -74,10 +58,6 @@ apps:
     common-id: org.indii.mendingwall
     extensions:
       - gnome
-    slots:
-      - dbus-mendingwall
-      - dbus-mendingwallcli
-      - dbus-mendingwalld
     plugs:
       - desktop
       - desktop-legacy
@@ -94,10 +74,6 @@ apps:
     common-id: org.indii.mendingwall.cli
     extensions:
       - gnome
-    slots:
-      - dbus-mendingwall
-      - dbus-mendingwallcli
-      - dbus-mendingwalld
     plugs:
       - desktop
       - desktop-legacy
@@ -111,10 +87,6 @@ apps:
     common-id: org.indii.mendingwall.watch
     extensions:
       - gnome
-    slots:
-      - dbus-mendingwall
-      - dbus-mendingwallcli
-      - dbus-mendingwalld
     plugs:
       - desktop
       - desktop-legacy
