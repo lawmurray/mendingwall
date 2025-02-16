@@ -396,7 +396,7 @@ static void on_startup(MendingwallDApplication* self) {
   }
 }
 
-static void on_activate(MendingwallDApplication* self) {
+static void on_activate(MendingwallDApplication*) {
   //
 }
 
