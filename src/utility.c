@@ -67,6 +67,12 @@ void configure_environment(void) {
     "/var/lib/snapd/desktop",
     NULL
   };
+
+  g_printerr("app_config_dir: %s\n", app_config_dir);
+  g_printerr("user_config_dir: %s\n", user_config_dir);
+  g_printerr("app_data_dir: %s\n", app_data_dir);
+  g_printerr("user_data_dir: %s\n", user_data_dir);
+
   #elif defined(BUILD_FOR_SNAP)
   /* Snap overrides XDG_CONFIG_HOME, XDG_DATA_HOME, and HOME, but sets a new
    * variable SNAP_REAL_HOME to what HOME used to be, which can be used to

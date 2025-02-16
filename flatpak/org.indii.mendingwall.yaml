@@ -55,11 +55,6 @@ finish-args:
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
 
-  # own usual data directory for saving files; using this rather than the
-  # Flatpak override saves some confusion over XDG_DATA_HOME, which is also
-  # needed for writing tidied applications
-  - --filesystem=xdg-data/mendingwall:create
-
 cleanup:
   - /include
   - /lib/pkgconfig
