@@ -251,7 +251,7 @@ commands:
       - run:
           name: Touch config file in subdirectory
           command: |
-            mkdir ~/.config/gtk-4.0
+            mkdir -p ~/.config/gtk-4.0
             touch ~/.config/gtk-4.0/colors.css
       - run:
           name: Has config file in subdirectory been saved?
