@@ -107,14 +107,6 @@ void configure_environment(void) {
   for (; i < 64; ++i) {
     data_dirs[i] = NULL;
   }
-
-  g_printerr("app_config_dir: %s\n", app_config_dir);
-  g_printerr("user_config_dir: %s\n", user_config_dir);
-  g_printerr("app_data_dir: %s\n", app_data_dir);
-  g_printerr("user_data_dir: %s\n", user_data_dir);
-  for (guint k = 0; data_dirs[k]; ++k) {
-    g_printerr("data_dirs[%u]: %s\n", k, data_dirs[k]);
-  }
 }
 
 const char* get_app_config_dir(void) {
