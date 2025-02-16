@@ -3,7 +3,7 @@ title: Mending Wall
 version: git
 adopt-info: mendingwall
 
-base: core22
+base: core24
 grade: stable
 confinement: strict
 

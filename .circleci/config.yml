@@ -131,14 +131,9 @@ commands:
           command: |
             sudo snap install --classic snapcraft
       - run:
-          name: Install LXD
-          command: |
-            sudo snap install lxd
-            sudo lxd init --auto
-      - run:
           name: Build Snap
           command: |
-            snapcraft --quiet
+            snapcraft
       - run:
           name: Install Snap
           command: |
