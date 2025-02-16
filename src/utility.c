@@ -73,9 +73,6 @@ void configure_environment(void) {
   app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
   user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
-  /* set XDG_CONFIG_HOME so that GSettings finds dconf database on host */
-  g_setenv("XDG_CONFIG_HOME", user_config_dir, TRUE);
-
   /* Similar to Flatpak, hard code, but locations are different. */
   const char* host_system_data_dirs[] = {
     "/var/lib/snapd/hostfs/var/lib/flatpak/exports/share",
