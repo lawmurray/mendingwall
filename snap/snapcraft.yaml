@@ -37,16 +37,6 @@ slots:
     name: org.indii.mendingwall.watch
 
 plugs:
-  dconf-dbus:
-    interface: dbus
-    bus: session
-    name: ca.desrt.dconf
-
-  dconf-db:
-    interface: personal-files
-    write:
-      - $HOME/.config/dconf/user
-
   user-config:
     interface: personal-files
     write:
@@ -94,8 +84,6 @@ apps:
       - opengl
       - wayland
       - x11
-      - dconf-dbus
-      - dconf-db
       - user-config
       - user-share
       - system-share
@@ -113,8 +101,6 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-      - dconf-dbus
-      - dconf-db
       - user-config
       - user-share
       - system-share
@@ -132,8 +118,6 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-      - dconf-dbus
-      - dconf-db
       - user-config
       - user-share
       - system-share
