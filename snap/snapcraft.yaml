@@ -61,10 +61,10 @@ apps:
     plugs:
       - desktop
       - desktop-legacy
-      - gsettings
       - opengl
       - wayland
       - x11
+      - gsettings
       - user-config
       - user-share
       - system-share
@@ -75,8 +75,6 @@ apps:
     extensions:
       - gnome
     plugs:
-      - desktop
-      - desktop-legacy
       - gsettings
       - user-config
       - user-share
@@ -88,8 +86,6 @@ apps:
     extensions:
       - gnome
     plugs:
-      - desktop
-      - desktop-legacy
       - gsettings
       - user-config
       - user-share
