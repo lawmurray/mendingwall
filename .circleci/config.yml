@@ -114,7 +114,7 @@ commands:
       - run:
           name: Start DBus
           command: |
-            sudo systemctl restart dbus.service
+            systemctl --user restart dbus.service
             dbus-launch --auto-syntax >> $BASH_ENV
       - run:
           # docker interferes with lxd, see
