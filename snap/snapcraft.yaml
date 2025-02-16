@@ -5,7 +5,7 @@ adopt-info: mendingwall
 
 base: core24
 grade: stable
-confinement: strict
+confinement: devmode
 
 parts:
   mendingwall:
@@ -37,10 +37,6 @@ slots:
     name: org.indii.mendingwall.watch
 
 plugs:
-  dbus-ca-desrt-dconf:
-    interface: dbus
-    bus: session
-    name: ca.desrt.dconf
 
   user-config:
     interface: personal-files
@@ -86,7 +82,6 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-      - dbus-ca-desrt-dconf
       - opengl
       - wayland
       - x11
@@ -107,7 +102,6 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-      - dbus-ca-desrt-dconf
       - user-config
       - user-share
       - system-share
@@ -125,7 +119,6 @@ apps:
       - desktop
       - desktop-legacy
       - gsettings
-      - dbus-ca-desrt-dconf
       - user-config
       - user-share
       - system-share
