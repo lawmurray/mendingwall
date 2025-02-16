@@ -100,10 +100,10 @@ void configure_environment(void) {
   guint i = 0;
   data_dirs[i] = g_strdup(get_app_data_dir());
   ++i;
-  for (; i < 63 && host_system_data_dirs[i]; ++i) {
-    data_dirs[i] = g_strdup(host_system_data_dirs[i]);
+  for (guint j = 0; i < 63 && host_system_data_dirs[j]; ++i, ++j) {
+    data_dirs[i] = g_strdup(host_system_data_dirs[j]);
   }
-  for (; i < 63 && system_data_dirs[i]; ++i) {
+  for (guint j = 0; i < 63 && system_data_dirs[j]; ++i, ++j) {
     data_dirs[i] = g_strdup(system_data_dirs[i]);
   }
   for (; i < 64; ++i) {
