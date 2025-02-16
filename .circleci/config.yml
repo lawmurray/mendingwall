@@ -136,6 +136,7 @@ commands:
             sudo snap connect mendingwall:user-config
             sudo snap connect mendingwall:user-share
             sudo snap connect mendingwall:system-share
+            sudo snap connect mendingwall:gsettings
       - run:
           name: Create wrapper script for mendingwallcli
           command: |
