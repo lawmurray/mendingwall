@@ -8,6 +8,7 @@ executors:
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
+      NEEDRESTART_MODE: a
       XDG_CURRENT_DESKTOP: GNOME
 
 commands:
@@ -18,6 +19,7 @@ commands:
           name: Install dependencies
           command: |
             sudo apt update --assume-yes
+            sudo apt upgrade --assume-yes
             sudo apt install --assume-yes \
               ca-certificates \
               curl \
