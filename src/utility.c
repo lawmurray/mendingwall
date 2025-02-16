@@ -21,90 +21,118 @@
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
+static const char* app_config_dir = NULL;
+static const char* user_config_dir = NULL;
+static const char* app_data_dir = NULL;
+static const char* user_data_dir = NULL;
+static const char* data_dirs[64];
+
 void configure_environment(void) {
-  #ifdef BUILD_FOR_FLATPAK
-  /*
-   * Access is needed to the configuration files of desktop environments for
-   * the purposes of saving and restoring themes. Outside of Flatpak, the
-   * configuration directory is given by XDG_CONFIG_HOME, or if not set the
-   * default ~/.config. Inside Flatpak this is overridden to a directory used
-   * by the current app only, typically somewhere under ~/.app. We need to get
-   * the original back.
-   *
-   * Mending Wall does not need any config files of its own in there, as all
-   * configuration is kept in GSettings with the dconf backend for storage. So
-   * we just unset XDG_CONFIG_HOME, which should mean the default ~/.config is
-   * used, and that will be returned by g_get_user_config_dir().
-   */
+  /* The purpose of this function is to determine the user config dir, user
+   * data dir, and system data dirs of the host and set the above variables
+   * accordingly. It is needed because both Flatpak and Snap manipulate
+   * environment variables for application isolation, and Mending Wall is not
+   * an application that is meant to exist in isolation. It needs access to
+   * the user config dir to save and restore desktop environment
+   * configuration, and to system and user data directories where .desktop
+   * files are installed. */
+
+  #if defined(BUILD_FOR_FLATPAK)
+  /* Flatpak overrides XDG_CONFIG_HOME and XDG_DATA_HOME, and unsets HOME. The
+   * best way to get the originals back is to temporarily unset them and let
+   * g_get_user_config_dir() and g_get_user_data_dir() reconstruct defaults */
+  app_config_dir = g_strdup(g_get_user_config_dir());
   g_unsetenv("XDG_CONFIG_HOME");
+  user_config_dir = g_strdup(g_get_user_config_dir());
+  g_setenv("XDG_CONFIG_HOME", app_config_dir, TRUE);
+
+  app_data_dir = g_strdup(g_get_user_data_dir());
   g_unsetenv("XDG_DATA_HOME");
+  user_data_dir = g_strdup(g_get_user_data_dir());
+  g_setenv("XDG_DATA_HOME", app_data_dir, TRUE);
 
-  /*
-   * Access is needed to data directories to see which applications are
-   * installed for the purposes of tidying menus. Outside Flatpak,
-   * these are given by XDG_DATA_DIRS. Inside of Flatpak they are
-   * overridden. Snap still seems to preserve the originals amongst the paths.
-   * Flatpak does not. We need to get them back.
-   *
-   * There are a couple of ways to achieve this:
-   *
-   *   1. They can be hard-coded.
-   *   2. With Flatpak they can be acquired with `flatpak-spawn --host`, but
-   *      this requires the --talk-name=org.freedesktop.Flatpak sandbox
-   *      permission, which is very broad, and results in a Flathub warning
-   *      about the app's ability to acquire arbitrary permissions.
-   *
-   * The former is chosen here to keep sandbox permissions tight. The latter
-   * is chosen by other apps such as dconf-editor and Refine, which offer a
-   * good reference if this needs to change.
-   */
-  const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
-  g_autofree char* value = g_strconcat(
-      "/var/lib/flatpak/exports/share",
-      ":",
-      "/var/lib/snapd/desktop",
-      ":",
-      "/run/host/usr/local/share",
-      ":",
-      "/run/host/usr/share",
-      ":",
-      xdg_data_dirs, NULL);
-  g_setenv("XDG_DATA_DIRS", value, TRUE);
-  #endif
-
-  #ifdef BUILD_FOR_SNAP
-  /*
-   * Similar to Flatpak, Snap overrides XDG_CONFIG_HOME, in this case to
-   * something like ~/.snap/data/mendingwall/x1/.config, as well as
-   * XDG_DATA_HOME. We need to get the originals back. Snap also overrides
-   * HOME though (to something like ~/.snap/data/mendingwall/x1), and so
-   * unlike Flatpak, merely unsetting environment variables will not work to
-   * restore the defaults. Instead, it provides a SNAP_REAL_HOME that can be
-   * used to reconstruct these.
-   */
+  /* Hard-code host data directories where applications may be installed. An
+   * alternative is to use `flatpak-spawn --host`, but this requires the
+   * `--talk-name=org.freedesktop.Flatpak` sandbox permission, which is very
+   * broad, and results in a Flathub warning about the app's ability to
+   * acquire arbitrary permissions. That alternative approach is used by other
+   * apps such as dconf-editor and Refine, however, which offer a good
+   * reference if this needs to change. */
+  const char* host_system_data_dirs[] = {
+    "/var/lib/flatpak/exports/share",
+    "/run/host/usr/local/share",
+    "/run/host/usr/share",
+    "/var/lib/snapd/desktop",
+    NULL
+  };
+  #elif defined(BUILD_FOR_SNAP)
+  /* Snap overrides XDG_CONFIG_HOME, XDG_DATA_HOME, and HOME, but sets a new
+   * variable SNAP_REAL_HOME to what HOME used to be, which can be used to
+   * reconstruct. */
   const char* snap_real_home = g_getenv("SNAP_REAL_HOME");
-  g_autofree char* xdg_config_home = g_strconcat(snap_real_home, "/.config", NULL);
-  g_autofree char* xdg_data_home = g_strconcat(snap_real_home, "/.local/share", NULL);
-  g_setenv("XDG_CONFIG_HOME", xdg_config_home, TRUE);
-  g_setenv("XDG_DATA_HOME", xdg_data_home, TRUE);
+  app_config_dir = g_strdup(g_getenv("XDG_CONFIG_HOME"));
+  user_config_dir = g_strconcat(snap_real_home, "/.config", NULL);
+  app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
+  user_data_dir = g_strconcat(snap_real_home, "/.local/share", NULL);
 
-  /*
-   * Similarly for XDG_DATA_DIRS.
-   */
-  const char* xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
-  g_autofree char* value = g_strconcat(
-      "/var/lib/snapd/hostfs/var/lib/flatpak/exports/share",
-      ":",
-      "/var/lib/snapd/hostfs/var/lib/snapd/desktop",
-      ":",
-      "/var/lib/snapd/hostfs/usr/local/share",
-      ":",
-      "/var/lib/snapd/hostfs/usr/share",
-      ":",
-      xdg_data_dirs, NULL);
-  g_setenv("XDG_DATA_DIRS", value, TRUE);
+  /* Similar to Flatpak, hard code, but locations are different. */
+  const char* host_system_data_dirs[] = {
+    "/var/lib/snapd/hostfs/var/lib/flatpak/exports/share",
+    "/var/lib/snapd/hostfs/usr/local/share",
+    "/var/lib/snapd/hostfs/usr/share",
+    "/var/lib/snapd/hostfs/var/lib/snapd/desktop",
+    NULL
+  };
+  #else
+  /* Everything as normal here. */
+  app_config_dir = g_strdup(g_get_user_config_dir());
+  user_config_dir = g_strdup(g_get_user_config_dir());
+  app_data_dir = g_strdup(g_get_user_data_dir());
+  user_data_dir = g_strdup(g_get_user_data_dir());
 
+  const char* host_system_data_dirs[] = {
+    NULL
+  };
   #endif
+
+  /* construct data_dirs */
+  const char** system_data_dirs = (const char**)g_get_system_data_dirs();
+  guint i = 0;
+  data_dirs[i] = g_strdup(get_app_data_dir());
+  ++i;
+  for (; i < 63 && host_system_data_dirs[i]; ++i) {
+    data_dirs[i] = g_strdup(host_system_data_dirs[i]);
+  }
+  for (; i < 63 && system_data_dirs[i]; ++i) {
+    data_dirs[i] = g_strdup(system_data_dirs[i]);
+  }
+  for (; i < 64; ++i) {
+    data_dirs[i] = NULL;
+  }
+}
+
+const char* get_app_config_dir(void) {
+  return app_config_dir;
+}
+
+const char* get_user_config_dir(void) {
+  return user_config_dir;
+}
+
+const char* get_app_data_dir(void) {
+  return app_data_dir;
+}
+
+const char* get_user_data_dir(void) {
+  return user_data_dir;
+}
+
+const char** get_data_dirs(void) {
+  return data_dirs;
+}
+
+const char** get_system_data_dirs(void) {
+  return data_dirs + 1;
 }
 
 void launch_daemon(GApplication* app) { /* ensure that current settings will
@@ -138,8 +166,8 @@ void launch_daemon(GApplication* app) { /* ensure that current settings will
 }
 
 void install_autostart(void) {
-  g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
+  g_autofree gchar* autostart_path = g_build_filename(get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* kde_env_path = g_build_filename(get_user_config_dir(), "plasma-workspace", "env", NULL);
   g_autofree gchar* watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
   g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
   g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
@@ -153,23 +181,27 @@ void install_autostart(void) {
 
   /* install watch autostart */
   g_autoptr(GKeyFile) watch_autostart = g_key_file_new();
-  if (g_key_file_load_from_data_dirs(watch_autostart, "mendingwall/org.indii.mendingwall.watch.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+  if (g_key_file_load_from_dirs(watch_autostart,
+      "mendingwall/org.indii.mendingwall.watch.desktop", get_data_dirs(),
+      NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     g_key_file_save_to_file(watch_autostart, watch_path, NULL);
   }
 
   /* install restore autostart (used for everything but KDE) */
   g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
-  if (g_key_file_load_from_data_dirs(restore_autostart, "mendingwall/org.indii.mendingwall.restore.desktop", NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+  if (g_key_file_load_from_dirs(restore_autostart,
+        "mendingwall/org.indii.mendingwall.restore.desktop", get_data_dirs(),
+        NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     g_key_file_save_to_file(restore_autostart, restore_path, NULL);
   }
 
   /* install restore pre-start script (used for KDE only); there is no nice
-    * load_from_data_dirs() type function except for keyfiles, so enumerate
-    * search */
-  g_autoptr(GFile) kde_from = g_file_new_build_filename(
-      g_get_user_data_dir(), "mendingwall", "org.indii.mendingwall.restore.sh", NULL);
+   * load_from_data_dirs() type function except for keyfiles, so enumerate
+   * search */
+  g_autoptr(GFile) kde_from = g_file_new_build_filename(get_app_data_dir(),
+      "mendingwall", "org.indii.mendingwall.restore.sh", NULL);
   if (!g_file_query_exists(kde_from, NULL)) {
-    foreach (dir, (const gchar**)g_get_system_data_dirs()) {
+    foreach (dir, get_data_dirs()) {
       kde_from = g_file_new_build_filename(dir, "mendingwall",
           "org.indii.mendingwall.restore.sh", NULL);
       if (g_file_query_exists(kde_from, NULL)) {
@@ -189,8 +221,8 @@ void install_autostart(void) {
 }
 
 void uninstall_autostart(void) {
-  g_autofree gchar* autostart_path = g_build_filename(g_get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* kde_env_path = g_build_filename(g_get_user_config_dir(), "plasma-workspace", "env", NULL);
+  g_autofree gchar* autostart_path = g_build_filename(get_user_config_dir(), "autostart", NULL);
+  g_autofree gchar* kde_env_path = g_build_filename(get_user_config_dir(), "plasma-workspace", "env", NULL);
   g_autofree gchar* watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
   g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
   g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
@@ -212,7 +244,7 @@ static void restore_settings(const char* desktop, GSettings* settings) {
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
   
   /* path to save settings */
-  g_autofree char* settings_save_path = g_strconcat(g_get_user_data_dir(),
+  g_autofree char* settings_save_path = g_strconcat(get_app_data_dir(),
   "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* restore settings from file backend; if there are no saved settings this
@@ -233,9 +265,9 @@ static void restore_settings(const char* desktop, GSettings* settings) {
 }
 
 static void restore_file(const char* desktop, GFile* file) {
-  g_autoptr(GFile) config_dir = g_file_new_for_path(g_get_user_config_dir());
+  g_autoptr(GFile) config_dir = g_file_new_for_path(get_user_config_dir());
   g_autofree char* rel = g_file_get_relative_path(config_dir, file);
-  g_autofree char* save_path = g_strconcat(g_get_user_data_dir(), "/",
+  g_autofree char* save_path = g_strconcat(get_app_data_dir(), "/",
       "mendingwall", "/", "save", "/", desktop, NULL);
   g_autoptr(GFile) saved = g_file_new_build_filename(save_path, rel, NULL);
 
@@ -286,7 +318,7 @@ void restore_themes(void) {
   g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
       "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
-    g_autoptr(GFile) file = g_file_new_build_filename(g_get_user_config_dir(),
+    g_autoptr(GFile) file = g_file_new_build_filename(get_user_config_dir(),
         path, NULL);
     restore_file(desktop, file);
   }

@@ -47,64 +47,32 @@ plugs:
     write:
       - $HOME/.config/dconf/user
 
-  user-schemas:
-    interface: personal-files
-    read:
-      - $HOME/.local/share/glib-2.0/schemas/gschemas.compiled
-      - $HOME/.local/share/flatpak/exports/share/glib-2.0/schemas/gschemas.compiled
-
-  system-schemas:
-    interface: system-files
-    read:
-      - /usr/local/share/glib-2.0/schemas/gschemas.compiled
-      - /usr/share/glib-2.0/schemas/gschemas.compiled
-      - /var/lib/flatpak/exports/share/glib-2.0/schemas/gschemas.compiled
-      - /var/lib/snapd/desktop/glib-2.0/schemas/gschemas.compiled
-
-  # directories monitored for .desktop files of installed applications
-  system-applications:
-    interface: system-files
-    read:
-      - /var/lib/flatpak/exports/share/applications
-      - /var/lib/snapd/desktop/applications
-      - /usr/local/share/applications
-      - /usr/share/applications
-
-  # directory to which updated .desktop files are written for tidied
-  # applications
-  user-applications:
-    interface: personal-files
-    write:
-      - $HOME/.local/share/applications
-
-  # configuration files for desktop environments that are saved and restored
-  # as part of the mend themes feature
   user-config:
     interface: personal-files
     write:
-      - $HOME/.config/gtk-3.0
-      - $HOME/.config/gtk-4.0
-      - $HOME/.config/gtkrc
-      - $HOME/.config/gtkrc-2.0
-      - $HOME/.config/monitors.xml
-      - $HOME/.config/kcminputrc
-      - $HOME/.config/kdeglobals
-      - $HOME/.config/kglobalshortcutsrc
-      - $HOME/.config/kwinrc
-      - $HOME/.config/kwinoutputconfig.json
-      - $HOME/.config/plasmashellrc
-      - $HOME/.config/plasma-org.kde.plasma.desktop-appletsrc
-      - $HOME/.config/systemsettingsrc
-      - $HOME/.config/Trolltech.conf
-      - $HOME/.config/xsettingsd
+      # access to user configuration files of desktop environments that are
+      # saved and restored, as well as installation of autostart files
+      - $HOME/.config
 
-  # autostart files
-  user-autostart:
+  user-share:
     interface: personal-files
     write:
-      - $HOME/.config/autostart
-      - $HOME/.config/plasma-workspace/env
+      # access to user application directory to which to write updated
+      # .desktop files
+      - $HOME/.local/share/applications
 
+  system-share:
+    interface: system-files
+    read:
+      # access to system application directories from which to read .desktop
+      # files of installed applications
+      - /var/lib/snapd/hostfs/var/lib/flatpak/exports/share/applications
+      - /var/lib/snapd/hostfs/var/lib/snapd/desktop/applications
+      - /var/lib/snapd/hostfs/usr/local/share/applications
+      - /var/lib/snapd/hostfs/usr/share/applications
+
+# plugs are the same for all apps, as mendingwall and mendingwallcli may
+# launch mendingwalld, and if so it will inherit their configuration
 apps:
   mendingwall:
     command: usr/bin/mendingwall
@@ -114,17 +82,16 @@ apps:
       - gnome
     slots:
       - dbus-mendingwall
+      - dbus-mendingwalld
     plugs:
       - desktop
       - desktop-legacy
       - gsettings
       - dconf-dbus
       - dconf-db
-      - user-autostart
-      - user-schemas
-      - system-schemas
-      - wayland
-      - x11
+      - user-config
+      - user-share
+      - system-share
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
@@ -133,15 +100,16 @@ apps:
       - gnome
     slots:
       - dbus-mendingwallcli
+      - dbus-mendingwalld
     plugs:
       - desktop
       - desktop-legacy
       - gsettings
       - dconf-dbus
       - dconf-db
-      - user-autostart
-      - user-schemas
-      - system-schemas
+      - user-config
+      - user-share
+      - system-share
 
   mendingwalld:
     command: usr/bin/mendingwalld
@@ -156,8 +124,6 @@ apps:
       - gsettings
       - dconf-dbus
       - dconf-db
-      - system-applications
-      - user-applications
       - user-config
-      - user-schemas
-      - system-schemas
+      - user-share
+      - system-share

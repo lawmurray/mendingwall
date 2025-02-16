@@ -28,7 +28,7 @@ struct _MendingwallDApplication {
 
   XdpPortal* portal;
   GSettings* global;
-  GFile* config_dir;
+  GFile* user_config_dir;
   GSettingsBackend* settings_backend;
   char* save_path;
 
@@ -74,7 +74,7 @@ static void save_settings(MendingwallDApplication* self, GSettings* settings) {
 }
 
 static void save_file(MendingwallDApplication* self, GFile* file) {
-  g_autofree char* rel = g_file_get_relative_path(self->config_dir, file);
+  g_autofree char* rel = g_file_get_relative_path(self->user_config_dir, file);
   g_autoptr(GFile) saved = g_file_new_build_filename(self->save_path, rel, NULL);
   if (g_file_query_exists(file, NULL)) {
     /* save file */
@@ -118,17 +118,18 @@ static void tidy_app(MendingwallDApplication* self, const char* basename) {
   /* load desktop entry file, if it exists */
   g_autofree char* app_path = g_build_filename("applications", basename, NULL);
   g_autoptr(GKeyFile) app_file = g_key_file_new();
-  if (g_key_file_load_from_data_dirs(app_file, app_path, NULL,
-      G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+  if (g_key_file_load_from_dirs(app_file, app_path, get_system_data_dirs(),
+      NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     /* update app file */
     if (update_app(self, basename, app_file)) {
-      /* save to user's data directory, if it does not already exist there */
-      g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
+      /* save to user's applications directory, if it does not already exist
+       * there */
+      g_autofree gchar* to_path = g_build_filename(get_user_data_dir(),
           "applications", basename, NULL);
       g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
       if (!g_file_query_exists(to_file, NULL)) {
         g_autoptr(GFile) to_dir = g_file_new_build_filename(
-            g_get_user_data_dir(), "applications", NULL);
+            get_user_data_dir(), "applications", NULL);
         g_file_make_directory_with_parents(to_dir, NULL, NULL);
         g_key_file_save_to_file(app_file, to_path, NULL);
       }
@@ -140,14 +141,15 @@ static void untidy_app(MendingwallDApplication* self, const char* basename) {
   /* load desktop entry file, if it exists */
   g_autofree char* app_path = g_build_filename("applications", basename, NULL);
   g_autoptr(GKeyFile) app_file = g_key_file_new();
-  if (g_key_file_load_from_data_dirs(app_file, app_path, NULL,
-      G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+  if (g_key_file_load_from_dirs(app_file, app_path, get_system_data_dirs(),
+      NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
     /* update app file */
     if (update_app(self, basename, app_file)) {
-      /* check if a matching desktop entry file exists in the user's data
-      * directory; if so and its contents match what would be written, delete
-      * it, otherwise custom changes have been made so leave it */
-      g_autofree gchar* to_path = g_build_filename(g_get_user_data_dir(),
+      /* check if a matching desktop entry file exists in the user's
+       * applications directory; if so and its contents match what would be
+       * written, delete it, otherwise custom changes have been made so leave
+       * it */
+      g_autofree gchar* to_path = g_build_filename(get_user_data_dir(),
           app_path, NULL);
       g_autoptr(GFile) to_file = g_file_new_for_path(to_path);
       if (g_file_query_exists(to_file, NULL)) {
@@ -297,16 +299,16 @@ static void on_startup(MendingwallDApplication* self) {
   }
 
   /* path to save settings */
-  g_autofree char* settings_save_path = g_strconcat(g_get_user_data_dir(),
+  g_autofree char* settings_save_path = g_strconcat(get_app_data_dir(),
       "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
-  self->config_dir = g_file_new_for_path(g_get_user_config_dir());
+  self->user_config_dir = g_file_new_for_path(get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
       "/", NULL);
-  self->save_path = g_strconcat(g_get_user_data_dir(), "/", "mendingwall",
+  self->save_path = g_strconcat(get_app_data_dir(), "/", "mendingwall",
       "/", "save", "/", desktop, NULL);
 
   const guint reserved = 8;
@@ -319,8 +321,8 @@ static void on_startup(MendingwallDApplication* self) {
 
   /* load themes config file */
   g_autoptr(GKeyFile) themes_config = g_key_file_new();
-  if (!g_key_file_load_from_data_dirs(themes_config,
-      "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+  if (!g_key_file_load_from_dirs(themes_config, "mendingwall/themes.conf",
+    get_data_dirs(), NULL, G_KEY_FILE_NONE, NULL)) {
     g_printerr("Cannot find config file mendingwall/themes.conf\n");
     exit(1);
   }
@@ -341,22 +343,21 @@ static void on_startup(MendingwallDApplication* self) {
   g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
       "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
-    GFile* file = g_file_new_build_filename(g_get_user_config_dir(), path,
+    GFile* file = g_file_new_build_filename(get_user_config_dir(), path,
         NULL);
     g_ptr_array_add(self->theme_files, file);
   }
 
   /* load menus config file */
-  if (!g_key_file_load_from_data_dirs(self->menus_config,
-      "mendingwall/menus.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+  if (!g_key_file_load_from_dirs(self->menus_config, "mendingwall/menus.conf",
+      get_data_dirs(), NULL, G_KEY_FILE_NONE, NULL)) {
     g_printerr("Cannot find config file mendingwall/menus.conf\n");
     exit(1);
   }
 
-  /* populate directories with application desktop entries */
-  foreach(path, (const gchar**)g_get_system_data_dirs()) {
-    GFile* dir = g_file_new_build_filename(path, "applications",
-        NULL);
+  /* populate system directories with application desktop entries */
+  foreach(path, get_system_data_dirs()) {
+    GFile* dir = g_file_new_build_filename(path, "applications", NULL);
     g_ptr_array_add(self->menu_dirs, dir);
   }
 
@@ -408,8 +409,8 @@ void mendingwall_d_application_dispose(GObject* o) {
   if (self->global) {
     g_clear_object(&self->global);
   }
-  if (self->config_dir) {
-    g_clear_object(&self->config_dir);
+  if (self->user_config_dir) {
+    g_clear_object(&self->user_config_dir);
   }
   if (self->settings_backend) {
     g_clear_object(&self->settings_backend);
@@ -458,7 +459,7 @@ void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
 void mendingwall_d_application_init(MendingwallDApplication* self) {
   self->portal = NULL;
   self->global = NULL;
-  self->config_dir = NULL;
+  self->user_config_dir = NULL;
   self->settings_backend = NULL;
   self->save_path = NULL;
   self->theme_settings = NULL;
