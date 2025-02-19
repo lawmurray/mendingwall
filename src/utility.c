@@ -118,12 +118,14 @@ void configure_environment(void) {
     data_dirs[i] = NULL;
   }
 
-  /* construct save paths */
+  /* desktop environment */
   desktop = g_getenv("XDG_CURRENT_DESKTOP");
   if (!desktop) {
     g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
     exit(1);
   }
+
+  /* construct save paths */
   g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
   save_settings_path = g_build_filename(app_data_dir, "mendingwall", "save",
       filename, NULL);
@@ -139,6 +141,10 @@ void configure_environment(void) {
   watch_path = "org.indii.mendingwall.watch.desktop";
   restore_path = "org.indii.mendingwall.restore.desktop";
   kde_path = "org.indii.mendingwall.restore.sh";
+}
+
+const char* get_desktop(void) {
+  return desktop;
 }
 
 GFile* get_app_config_dir(void) {
@@ -163,10 +169,6 @@ const char** get_data_dirs(void) {
 
 const char** get_system_data_dirs(void) {
   return data_dirs + 1;
-}
-
-static const char* get_desktop(void) {
-  return desktop;
 }
 
 static const char* get_save_settings_path(void) {
@@ -393,6 +395,102 @@ void restore_themes(void) {
       get_desktop(), "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
     restore_file(path);
+  }
+}
+
+static GKeyFile* update_app(GKeyFile* menus_config, const char* basename) {
+  /* OnlyShowIn and NotShowIn updates for this application */
+  g_auto(GStrv) only_show_in = g_key_file_get_string_list(menus_config,
+      basename, "OnlyShowIn", NULL, NULL);
+  g_auto(GStrv) not_show_in = g_key_file_get_string_list(menus_config,
+      basename, "NotShowIn", NULL, NULL);
+
+  GKeyFile* app_file = NULL;
+  if (only_show_in || not_show_in) {
+    app_file = g_key_file_new();
+    g_autofree char* app_path = g_build_filename("applications", basename,
+        NULL);
+    if (g_key_file_load_from_dirs(app_file, app_path, get_system_data_dirs(),
+        NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
+      if (only_show_in) {
+        g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn",
+            (const gchar* const*)only_show_in, g_strv_length(only_show_in));
+      }
+      if (not_show_in) {
+        g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn",
+            (const gchar* const*)not_show_in, g_strv_length(not_show_in));
+      }
+
+      /* an extra marker entry ensures that, in the case of untidy_app(),
+       * menu entries are not removed if the user has coincidentally made the
+       * same changes that Mending Wall would have */
+      g_key_file_set_boolean(app_file, "Desktop Entry", "X-MendingWall-Tidy",
+          TRUE);
+    } else {
+      g_clear_object(&app_file);
+    }
+  }
+  return app_file;
+}
+
+static void tidy_app(GKeyFile* menus_config, const char* basename) {
+  /* load desktop entry file, if it exists */
+  g_autoptr(GKeyFile) app_file = update_app(menus_config, basename);
+  if (app_file) {
+    /* save to user's applications directory, if it does not already exist
+     * there */
+    g_autoptr(GFile) to_dir = g_file_new_build_filename(get_user_data_dir(),
+        "applications", NULL);
+    g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, basename);
+    if (!g_file_query_exists(to_file, NULL)) {
+      g_file_make_directory_with_parents(to_dir, NULL, NULL);
+      g_autofree char* to_path = g_file_get_path(to_file);
+      g_key_file_save_to_file(app_file, to_path, NULL);
+    }
+  }
+}
+
+static void untidy_app(GKeyFile* menus_config, const char* basename) {
+  /* load desktop entry file, if it exists */
+  g_autoptr(GKeyFile) app_file = update_app(menus_config, basename);
+  if (app_file) {
+    /* check if a matching desktop entry file exists in the user's
+     * applications directory; if so and its contents match what would be
+     * written, delete it, otherwise custom changes have been made so leave
+     * it; the match includes the extra marker entry X-MendingWall-Tidy, so
+     * that the files will not match merely by coincidence */
+    g_autoptr(GFile) to_dir = g_file_new_build_filename(get_user_data_dir(),
+        "applications", NULL);
+    g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, basename);
+    if (g_file_query_exists(to_file, NULL)) {
+      g_autofree gchar* app_data = g_key_file_to_data(app_file, NULL, NULL);
+      g_autofree gchar* to_data = NULL;
+      g_file_load_contents(to_file, NULL, &to_data, NULL, NULL, NULL);
+      if (g_str_equal(app_data, to_data)) {
+        g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+      }
+    }
+  }
+}
+
+void tidy_menu(const char* basename) {
+  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
+  tidy_app(menus_config, basename);
+}
+
+void tidy_menus(void) {
+  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
+  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
+  foreach(basename, basenames) {
+    tidy_app(menus_config, basename);
+  }
+}
+
+void untidy_menus(void) {
+  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
+  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
+  foreach(basename, basenames) {
+    untidy_app(menus_config, basename);
   }
 }
 

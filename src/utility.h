@@ -48,6 +48,11 @@
 void configure_environment(void);
 
 /**
+ * Get current desktop environment.
+ */
+const char* get_desktop(void);
+
+/**
  * Get app config directory.
  *
  * This is given by the environment variable XDG_CONFIG_HOME or GLib
@@ -142,3 +147,19 @@ void save_themes(void);
  * Restore themes.
  */
 void restore_themes(void);
+
+/**
+ * Tidy single app.
+ */
+void tidy_menu(const char* basename);
+
+/**
+ * Tidy all apps.
+ */
+void tidy_menus(void);
+
+/**
+ * Untidy all apps.
+ */
+void untidy_menus(void);
+
