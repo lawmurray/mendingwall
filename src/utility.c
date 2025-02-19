@@ -206,11 +206,12 @@ void launch_daemon(GApplication* app) {
 }
 
 static void install(const char* path, GFile* to_dir) {
+  g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, path);
   foreach (dir, get_data_dirs()) {
     g_autoptr(GFile) file = g_file_new_build_filename(dir, path, NULL);
     if (g_file_query_exists(file, NULL)) {
       g_file_make_directory_with_parents(to_dir, NULL, NULL);
-      g_file_copy_async(file, to_dir,
+      g_file_copy_async(file, to_file,
           G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
           G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
       break;
@@ -219,8 +220,8 @@ static void install(const char* path, GFile* to_dir) {
 }
 
 static void uninstall(const char* path, GFile* to_dir) {
-  g_autoptr(GFile) file = g_file_resolve_relative_path(to_dir, path);
-  g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+  g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, path);
+  g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
 }
 
 void install_autostart(void) {
