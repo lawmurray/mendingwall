@@ -81,9 +81,16 @@ commands:
           command: |
             flatpak install -y flathub org.flatpak.Builder
       - run:
-          name: Build Flatpak
+          name: Build and install Flatpak
           command: |
             flatpak run org.flatpak.Builder --force-clean --user --install --install-deps-from=flathub --ccache --mirror-screenshots-url=https://dl.flathub.org/media/ --repo=repo builddir flatpak/org.indii.mendingwall.yaml
+      - run:
+          name: Build single-file bundle
+          command: |
+            flatpak build-bundle repo mendingwall.flatpak org.indii.mendingwall
+      - store_artifacts:
+          name: Store single-file bundle
+          path: mendingwall.flatpak
       - run:
           name: Create wrapper script for mendingwallcli
           command: |
