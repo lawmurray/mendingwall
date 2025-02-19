@@ -427,7 +427,8 @@ static GKeyFile* update_app(GKeyFile* menus_config, const char* basename) {
       g_key_file_set_boolean(app_file, "Desktop Entry", "X-MendingWall-Tidy",
           TRUE);
     } else {
-      g_clear_object(&app_file);
+      g_key_file_free(app_file);
+      app_file = NULL;
     }
   }
   return app_file;
