@@ -26,6 +26,9 @@ static const char* user_config_dir = NULL;
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
 static const char* data_dirs[64];
+static const char* desktop;
+static const char* save_settings_path;
+static const char* save_files_path;
 
 void configure_environment(void) {
   /* The purpose of this function is to determine the user config dir, user
@@ -107,6 +110,18 @@ void configure_environment(void) {
   for (; i < 64; ++i) {
     data_dirs[i] = NULL;
   }
+
+  /* construct save paths */
+  desktop = g_getenv("XDG_CURRENT_DESKTOP");
+  if (!desktop) {
+    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
+    exit(1);
+  }
+  g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
+  save_settings_path = g_build_filename(app_data_dir, "mendingwall", "save",
+      filename, NULL);
+  save_files_path = g_build_filename(app_data_dir, "mendingwall", "save",
+      desktop, NULL);
 }
 
 const char* get_app_config_dir(void) {
@@ -133,8 +148,20 @@ const char** get_system_data_dirs(void) {
   return data_dirs + 1;
 }
 
-void launch_daemon(GApplication* app) { /* ensure that current settings will
-  be visible in new processes */
+static const char* get_desktop(void) {
+  return desktop;
+}
+
+static const char* get_save_settings_path(void) {
+  return save_settings_path;
+}
+
+static const char* get_save_files_path(void) {
+  return save_files_path;
+}
+
+void launch_daemon(GApplication* app) {
+  /* ensure that current settings will be visible in new processes */
   g_settings_sync();
 
   /* launch daemon; fine if already running, new instance will quit */
@@ -234,16 +261,12 @@ void uninstall_autostart(void) {
   g_file_delete_async(kde_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
 }
 
-static void restore_settings(const char* desktop, GSettings* settings) {
+static void restore_settings(GSettings* settings) {
   /* get settings schema */
   g_autoptr(GSettingsSchema) schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
   const gchar* schema_id = g_settings_schema_get_id(schema);
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
-  
-  /* path to save settings */
-  g_autofree char* settings_save_path = g_strconcat(get_app_data_dir(),
-  "/", "mendingwall", "/", "save", "/", desktop, ".gsettings", NULL);
 
   /* restore settings from file backend; if there are no saved settings this
    * will restore defaults; this is deliberate, it means that when starting a
@@ -252,7 +275,7 @@ static void restore_settings(const char* desktop, GSettings* settings) {
    * look pristine, and the new desktop environment performs its default
    * initial setup */
   g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(
-      settings_save_path, "/", NULL);
+      get_save_settings_path(), "/", NULL);
   g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id, backend);
   g_settings_delay(settings);
   foreach(key, keys) {
@@ -262,12 +285,11 @@ static void restore_settings(const char* desktop, GSettings* settings) {
   g_settings_apply(settings);
 }
 
-static void restore_file(const char* desktop, GFile* file) {
+static void restore_file(GFile* file) {
   g_autoptr(GFile) config_dir = g_file_new_for_path(get_user_config_dir());
   g_autofree char* rel = g_file_get_relative_path(config_dir, file);
-  g_autofree char* save_path = g_strconcat(get_app_data_dir(), "/",
-      "mendingwall", "/", "save", "/", desktop, NULL);
-  g_autoptr(GFile) saved = g_file_new_build_filename(save_path, rel, NULL);
+  g_autoptr(GFile) saved = g_file_new_build_filename(get_save_files_path(),
+      rel, NULL);
 
   if (g_file_query_exists(saved, NULL)) {
     /* restore file */
@@ -285,13 +307,6 @@ static void restore_file(const char* desktop, GFile* file) {
 }
 
 void restore_themes(void) {
-  /* current desktop */
-  const char* desktop = g_getenv("XDG_CURRENT_DESKTOP");
-  if (!desktop) {
-    g_printerr("Environment variable XDG_CURRENT_DESKTOP is not set\n");
-    exit(1);
-  }
-
   /* load themes config file */
   g_autoptr(GKeyFile) themes_config = g_key_file_new();
   if (!g_key_file_load_from_data_dirs(themes_config,
@@ -299,25 +314,25 @@ void restore_themes(void) {
     g_printerr("Cannot find config file mendingwall/themes.conf\n");
     exit(1);
   }
-  if (!g_key_file_has_group(themes_config, desktop)) {
-    g_printerr("Desktop environment %s is not supported\n", desktop);
+  if (!g_key_file_has_group(themes_config, get_desktop())) {
+    g_printerr("Desktop environment %s is not supported\n", get_desktop());
     exit(1);
   }
 
   /* restore settings */
   g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
-      desktop, "GSettings", NULL, NULL);
+      get_desktop(), "GSettings", NULL, NULL);
   foreach(schema_id, schema_ids) {
     g_autoptr(GSettings) settings = g_settings_new(schema_id);
-    restore_settings(desktop, settings);
+    restore_settings(settings);
   }
 
   /* restore config files */
-  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
-      "ConfigFiles", NULL, NULL);
+  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
+      get_desktop(), "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
     g_autoptr(GFile) file = g_file_new_build_filename(get_user_config_dir(),
         path, NULL);
-    restore_file(desktop, file);
+    restore_file(file);
   }
 }
