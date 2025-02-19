@@ -138,11 +138,11 @@ commands:
           name: Install snapcraft
           command: |
             sudo snap install --classic snapcraft
-            mv *.snap mendingwall.snap
       - run:
           name: Build Snap
           command: |
             snapcraft
+            mv *.snap mendingwall.snap
       - store_artifacts:
           name: Store snap as artifact
           path: mendingwall.snap
