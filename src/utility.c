@@ -31,8 +31,8 @@ static const char* desktop;
 static const char* save_settings_path;
 static const char* save_files_path;
 
-static const char* autostart_path;
-static const char* kde_env_path;
+static GFile* autostart_dir;
+static GFile* kde_env_dir;
 static const char* watch_path;
 static const char* restore_path;
 static const char* kde_path;
@@ -131,11 +131,12 @@ void configure_environment(void) {
       desktop, NULL);
 
   /* autostart paths */
-  autostart_path = g_build_filename(user_config_dir, "autostart", NULL);
-  kde_env_path = g_build_filename(user_config_dir, "plasma-workspace", "env", NULL);
-  watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
-  restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
-  kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
+  autostart_dir = g_file_new_build_filename(user_config_dir, "autostart", NULL);
+  kde_env_dir = g_file_new_build_filename(user_config_dir, "plasma-workspace", "env", NULL);
+
+  watch_path = "org.indii.mendingwall.watch.desktop";
+  restore_path = "org.indii.mendingwall.restore.desktop";
+  kde_path = "org.indii.mendingwall.restore.sh";
 }
 
 const char* get_app_config_dir(void) {
@@ -204,63 +205,34 @@ void launch_daemon(GApplication* app) {
   #endif
 }
 
-void install_autostart(void) {
-  /* make autostart directories in case they do not exist */
-  g_autoptr(GFile) autostart_dir = g_file_new_for_path(autostart_path);
-  g_autoptr(GFile) kde_env_dir = g_file_new_for_path(kde_env_path);
-
-  g_file_make_directory_with_parents(autostart_dir, NULL, NULL);
-  g_file_make_directory_with_parents(kde_env_dir, NULL, NULL);
-
-  /* install watch autostart */
-  g_autoptr(GKeyFile) watch_autostart = g_key_file_new();
-  if (g_key_file_load_from_dirs(watch_autostart,
-      "mendingwall/org.indii.mendingwall.watch.desktop", get_data_dirs(),
-      NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-    g_key_file_save_to_file(watch_autostart, watch_path, NULL);
-  }
-
-  /* install restore autostart (used for everything but KDE) */
-  g_autoptr(GKeyFile) restore_autostart = g_key_file_new();
-  if (g_key_file_load_from_dirs(restore_autostart,
-        "mendingwall/org.indii.mendingwall.restore.desktop", get_data_dirs(),
-        NULL, G_KEY_FILE_KEEP_COMMENTS|G_KEY_FILE_KEEP_TRANSLATIONS, NULL)) {
-    g_key_file_save_to_file(restore_autostart, restore_path, NULL);
-  }
-
-  /* install restore pre-start script (used for KDE only); there is no nice
-   * load_from_data_dirs() type function except for keyfiles, so enumerate
-   * search */
-  g_autoptr(GFile) kde_from = g_file_new_build_filename(get_app_data_dir(),
-      "mendingwall", "org.indii.mendingwall.restore.sh", NULL);
-  if (!g_file_query_exists(kde_from, NULL)) {
-    foreach (dir, get_data_dirs()) {
-      kde_from = g_file_new_build_filename(dir, "mendingwall",
-          "org.indii.mendingwall.restore.sh", NULL);
-      if (g_file_query_exists(kde_from, NULL)) {
-        break;
-      }
+static void install(const char* path, GFile* to_dir) {
+  foreach (dir, get_data_dirs()) {
+    g_autoptr(GFile) file = g_file_new_build_filename(dir, path, NULL);
+    if (g_file_query_exists(file, NULL)) {
+      g_file_make_directory_with_parents(to_dir, NULL, NULL);
+      g_file_copy_async(file, to_dir,
+          G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
+          G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
+      break;
     }
-  }
-  if (g_file_query_exists(kde_from, NULL)) {
-    g_autoptr(GFile) kde_to = g_file_new_for_path(kde_path);
-    g_file_copy(kde_from, kde_to, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
-        NULL, NULL, NULL, NULL);
-    guint32 value = 0700;
-    g_file_set_attribute(kde_to, G_FILE_ATTRIBUTE_UNIX_MODE,
-        G_FILE_ATTRIBUTE_TYPE_UINT32, &value, G_FILE_QUERY_INFO_NONE, NULL,
-        NULL);
   }
 }
 
-void uninstall_autostart(void) {
-  g_autoptr(GFile) watch_file = g_file_new_for_path(watch_path);
-  g_autoptr(GFile) restore_file = g_file_new_for_path(restore_path);
-  g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
+static void uninstall(const char* path, GFile* to_dir) {
+  g_autoptr(GFile) file = g_file_resolve_relative_path(to_dir, path);
+  g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+}
 
-  g_file_delete_async(watch_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
-  g_file_delete_async(restore_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
-  g_file_delete_async(kde_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+void install_autostart(void) {
+  install(watch_path, autostart_dir);
+  install(restore_path, autostart_dir);
+  install(kde_path, kde_env_dir);
+}
+
+void uninstall_autostart(void) {
+  uninstall(watch_path, autostart_dir);
+  uninstall(restore_path, autostart_dir);
+  uninstall(kde_path, kde_env_dir);
 }
 
 static void restore_settings(GSettings* settings) {

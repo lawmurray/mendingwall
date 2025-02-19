@@ -305,6 +305,13 @@ commands:
           command: |
             sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+      - run:
+          name: Are autostart files still installed?
+          command: |
+            [[ -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
           name: Disable tidy menus
@@ -319,6 +326,13 @@ commands:
           command: |
             sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 0 ]] || exit 1
+      - run:
+          name: Are autostart files uninstalled?
+          command: |
+            [[ ! -f ~/.config/autostart/org.indii.mendingwall.restore.desktop && \
+               ! -f ~/.config/autostart/org.indii.mendingwall.watch.desktop && \
+               ! -f ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
+            ]] || exit 1
 
       - run:
           name: Delete config file
