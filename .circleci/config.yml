@@ -89,7 +89,7 @@ commands:
           command: |
             flatpak build-bundle repo mendingwall.flatpak org.indii.mendingwall
       - store_artifacts:
-          name: Store single-file bundle
+          name: Store single-file bundle as artifact
           path: mendingwall.flatpak
       - run:
           name: Create wrapper script for mendingwallcli
@@ -138,14 +138,18 @@ commands:
           name: Install snapcraft
           command: |
             sudo snap install --classic snapcraft
+            mv *.snap mendingwall.snap
       - run:
           name: Build Snap
           command: |
             snapcraft
+      - store_artifacts:
+          name: Store snap as artifact
+          path: mendingwall.snap
       - run:
           name: Install Snap
           command: |
-            sudo snap install --dangerous *.snap
+            sudo snap install --dangerous mendingwall.snap
       - run:
           name: Connect Snap interfaces
           command: |
