@@ -342,9 +342,9 @@ static void restore_file(const char* path) {
 
 static GKeyFile* load_config(const char* path) {
   GKeyFile* config = g_key_file_new();
-  if (!g_key_file_load_from_dirs(config, "mendingwall/themes.conf",
-      get_data_dirs(), NULL, G_KEY_FILE_NONE, NULL)) {
-    g_printerr("Cannot find config file mendingwall/themes.conf\n");
+  if (!g_key_file_load_from_dirs(config, path, get_data_dirs(), NULL,
+      G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file %s\n", path);
     exit(1);
   }
   return config;
