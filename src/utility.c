@@ -21,15 +21,15 @@
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
-static const char* app_config_dir = NULL;
-static const char* user_config_dir = NULL;
+static GFile* app_config_dir = NULL;
+static GFile* user_config_dir = NULL;
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
 static const char* data_dirs[64];
 
 static const char* desktop;
 static const char* save_settings_path;
-static const char* save_files_path;
+static GFile* save_files_dir;
 
 static GFile* autostart_dir;
 static GFile* kde_env_dir;
@@ -54,8 +54,8 @@ void configure_environment(void) {
    * don't call them until XDG_CONFIG_HOME and XDG_DATA_HOME are unset though,
    * otherwise value is fixed */
   const char* home = g_getenv("HOME");
-  app_config_dir = g_strdup(g_getenv("XDG_CONFIG_HOME"));
-  user_config_dir = g_strconcat(home, "/.config", NULL);
+  app_config_dir = g_file_new_for_path(g_getenv("XDG_CONFIG_HOME"));
+  user_config_dir = g_file_new_build_filename(home, ".config", NULL);
   app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
   user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
@@ -78,8 +78,8 @@ void configure_environment(void) {
    * variable SNAP_REAL_HOME to what HOME used to be, which can be used to
    * reconstruct. */
   const char* home = g_getenv("SNAP_REAL_HOME");
-  app_config_dir = g_strdup(g_getenv("XDG_CONFIG_HOME"));
-  user_config_dir = g_strconcat(home, "/.config", NULL);
+  app_config_dir = g_file_new_for_path(g_getenv("XDG_CONFIG_HOME"));
+  user_config_dir = g_file_new_build_filename(home, ".config", NULL);
   app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
   user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
@@ -93,8 +93,8 @@ void configure_environment(void) {
   };
   #else
   /* Everything as normal here. */
-  app_config_dir = g_strdup(g_get_user_config_dir());
-  user_config_dir = g_strdup(g_get_user_config_dir());
+  app_config_dir = g_file_new_for_path(g_get_user_config_dir());
+  user_config_dir = g_file_new_for_path(g_get_user_config_dir());
   app_data_dir = g_strdup(g_get_user_data_dir());
   user_data_dir = g_strdup(g_get_user_data_dir());
 
@@ -127,23 +127,25 @@ void configure_environment(void) {
   g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
   save_settings_path = g_build_filename(app_data_dir, "mendingwall", "save",
       filename, NULL);
-  save_files_path = g_build_filename(app_data_dir, "mendingwall", "save",
-      desktop, NULL);
+  save_files_dir = g_file_new_build_filename(app_data_dir, "mendingwall",
+      "save", desktop, NULL);
 
   /* autostart paths */
-  autostart_dir = g_file_new_build_filename(user_config_dir, "autostart", NULL);
-  kde_env_dir = g_file_new_build_filename(user_config_dir, "plasma-workspace", "env", NULL);
+  autostart_dir = g_file_resolve_relative_path(user_config_dir,
+      "autostart");
+  kde_env_dir = g_file_resolve_relative_path(user_config_dir,
+      "plasma-workspace/env");
 
   watch_path = "org.indii.mendingwall.watch.desktop";
   restore_path = "org.indii.mendingwall.restore.desktop";
   kde_path = "org.indii.mendingwall.restore.sh";
 }
 
-const char* get_app_config_dir(void) {
+GFile* get_app_config_dir(void) {
   return app_config_dir;
 }
 
-const char* get_user_config_dir(void) {
+GFile* get_user_config_dir(void) {
   return user_config_dir;
 }
 
@@ -171,8 +173,8 @@ static const char* get_save_settings_path(void) {
   return save_settings_path;
 }
 
-static const char* get_save_files_path(void) {
-  return save_files_path;
+static GFile* get_save_files_dir(void) {
+  return save_files_dir;
 }
 
 void launch_daemon(GApplication* app) {
@@ -284,16 +286,17 @@ static void restore_settings(GSettings* settings) {
   g_settings_apply(settings);
 }
 
-static void restore_file(GFile* file) {
-  g_autoptr(GFile) config_dir = g_file_new_for_path(get_user_config_dir());
-  g_autofree char* rel = g_file_get_relative_path(config_dir, file);
-  g_autoptr(GFile) saved = g_file_new_build_filename(get_save_files_path(),
-      rel, NULL);
+static void restore_file(const char* path) {
+  g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
+      path);
+  g_autoptr(GFile) saved = g_file_resolve_relative_path(get_save_files_dir(),
+      path);
 
   if (g_file_query_exists(saved, NULL)) {
     /* restore file */
-    g_file_copy_async(saved, file, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
-        G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
+    g_file_copy_async(saved, file,
+        G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, G_PRIORITY_DEFAULT,
+        NULL, NULL, NULL, NULL, NULL);
   } else {
     /* delete file; it does not exist in the desired configuraiton; this
      * happens either because the file is not part of the save, or there is no
@@ -330,8 +333,6 @@ void restore_themes(void) {
   g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
       get_desktop(), "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
-    g_autoptr(GFile) file = g_file_new_build_filename(get_user_config_dir(),
-        path, NULL);
-    restore_file(file);
+    restore_file(path);
   }
 }

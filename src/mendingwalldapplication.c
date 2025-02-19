@@ -287,7 +287,6 @@ static void on_startup(MendingwallDApplication* self) {
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
-  self->user_config_dir = g_file_new_for_path(get_user_config_dir());
   self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
       "/", NULL);
   self->save_path = g_strconcat(get_app_data_dir(), "/", "mendingwall",
@@ -325,8 +324,7 @@ static void on_startup(MendingwallDApplication* self) {
   g_auto(GStrv) paths = g_key_file_get_string_list(themes_config, desktop,
       "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
-    GFile* file = g_file_new_build_filename(get_user_config_dir(), path,
-        NULL);
+    GFile* file = g_file_resolve_relative_path(get_user_config_dir(), path);
     g_ptr_array_add(self->theme_files, file);
   }
 
