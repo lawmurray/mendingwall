@@ -134,9 +134,9 @@ void configure_environment(void) {
   autostart_dir = g_file_new_build_filename(user_config_dir, "autostart", NULL);
   kde_env_dir = g_file_new_build_filename(user_config_dir, "plasma-workspace", "env", NULL);
 
-  watch_path = "org.indii.mendingwall.watch.desktop";
-  restore_path = "org.indii.mendingwall.restore.desktop";
-  kde_path = "org.indii.mendingwall.restore.sh";
+  watch_path = "mendingwall/org.indii.mendingwall.watch.desktop";
+  restore_path = "mendingwall/org.indii.mendingwall.restore.desktop";
+  kde_path = "mendingwall/org.indii.mendingwall.restore.sh";
 }
 
 const char* get_app_config_dir(void) {
