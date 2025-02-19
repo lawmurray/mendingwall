@@ -127,11 +127,6 @@ void uninstall_autostart(void);
 void save_setting(GSettings* settings, gchar* key);
 
 /**
- * Save settings.
- */
-void save_settings(GSettings* settings);
-
-/**
  * Save file.
  *
  * @param Path of file, relative to the user config directory.

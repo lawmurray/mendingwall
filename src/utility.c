@@ -269,7 +269,7 @@ void save_setting(GSettings* settings, gchar* key) {
   g_settings_set_value(saved, key, value);
 }
 
-void save_settings(GSettings* settings) {
+static void save_settings(GSettings* settings) {
   g_autoptr(GSettingsSchema) schema = get_settings_schema(settings);
   g_autoptr(GSettingsBackend) backend = get_settings_backend(settings);
   g_autoptr(GSettings) saved = g_settings_new_with_backend(
