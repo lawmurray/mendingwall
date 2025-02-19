@@ -237,12 +237,37 @@ void uninstall_autostart(void) {
   uninstall(kde_path, kde_env_dir);
 }
 
-static void restore_settings(GSettings* settings) {
-  /* get settings schema */
-  g_autoptr(GSettingsSchema) schema = NULL;
+static GSettingsSchema* get_settings_schema(GSettings* settings) {
+  GSettingsSchema* schema = NULL;
   g_object_get(settings, "settings-schema", &schema, NULL);
-  const gchar* schema_id = g_settings_schema_get_id(schema);
+  return schema;
+}
+
+static GSettingsBackend* get_settings_backend(GSettings* settings) {
+  return g_keyfile_settings_backend_new(get_save_settings_path(), "/", NULL);
+}
+
+void save_settings(GSettings* settings) {
+  g_autoptr(GSettingsSchema) schema = get_settings_schema(settings);
+  g_autoptr(GSettingsBackend) backend = get_settings_backend(settings);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(
+      g_settings_schema_get_id(schema), backend);
+
+  /* save settings */
+  g_settings_delay(saved);
   g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
+  foreach(key, keys) {
+    g_autoptr(GVariant) value = g_settings_get_value(settings, key);
+    g_settings_set_value(saved, key, value);
+  }
+  g_settings_apply(saved);
+}
+
+static void restore_settings(GSettings* settings) {
+  g_autoptr(GSettingsSchema) schema = get_settings_schema(settings);
+  g_autoptr(GSettingsBackend) backend = get_settings_backend(settings);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(
+      g_settings_schema_get_id(schema), backend);
 
   /* restore settings from file backend; if there are no saved settings this
    * will restore defaults; this is deliberate, it means that when starting a
@@ -250,10 +275,8 @@ static void restore_settings(GSettings* settings) {
    * desktop environment, existing settings are reset, the user's settings
    * look pristine, and the new desktop environment performs its default
    * initial setup */
-  g_autoptr(GSettingsBackend) backend = g_keyfile_settings_backend_new(
-      get_save_settings_path(), "/", NULL);
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id, backend);
   g_settings_delay(settings);
+  g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
   foreach(key, keys) {
     g_autoptr(GVariant) value = g_settings_get_value(saved, key);
     g_settings_set_value(settings, key, value);

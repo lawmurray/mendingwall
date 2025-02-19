@@ -55,24 +55,6 @@ static void save_setting(MendingwallDApplication* self, GSettings* settings,
   g_settings_set_value(saved, key, value);
 }
 
-static void save_settings(MendingwallDApplication* self, GSettings* settings) {
-  /* get settings schema */
-  g_autoptr(GSettingsSchema) schema = NULL;
-  g_object_get(settings, "settings-schema", &schema, NULL);
-  const gchar* schema_id = g_settings_schema_get_id(schema);
-  g_auto(GStrv) keys = g_settings_schema_list_keys(schema);
-
-  /* save settings to file backend */
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
-      self->settings_backend);
-  g_settings_delay(saved);
-  foreach(key, keys) {
-    g_autoptr(GVariant) value = g_settings_get_value(settings, key);
-    g_settings_set_value(saved, key, value);
-  }
-  g_settings_apply(saved);
-}
-
 static void save_file(MendingwallDApplication* self, GFile* file) {
   g_autofree char* rel = g_file_get_relative_path(self->user_config_dir, file);
   g_autoptr(GFile) saved = g_file_new_build_filename(self->save_path, rel, NULL);
@@ -184,7 +166,7 @@ static void on_changed_app(gpointer user_data, GFile* app_file) {
 static void save_themes(MendingwallDApplication* self) {
   /* save settings */
   foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    save_settings(self, settings);
+    save_settings(settings);
   }
 
   /* save config files */

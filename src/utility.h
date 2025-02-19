@@ -117,6 +117,11 @@ void install_autostart(void);
 void uninstall_autostart(void);
 
 /**
+ * Save settings.
+ */
+void save_settings(GSettings* settings);
+
+/**
  * Restore themes.
  */
 void restore_themes(void);
