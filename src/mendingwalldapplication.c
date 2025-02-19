@@ -28,8 +28,6 @@ struct _MendingwallDApplication {
 
   XdpPortal* portal;
   GSettings* global;
-  GFile* user_config_dir;
-  GSettingsBackend* settings_backend;
   char* save_path;
 
   GPtrArray* theme_settings;
@@ -42,18 +40,6 @@ struct _MendingwallDApplication {
 };
 
 G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, G_TYPE_APPLICATION)
-
-static void save_setting(MendingwallDApplication* self, GSettings* settings,
-    gchar* key) {
-  /* get settings schema */
-  g_autoptr(GSettingsSchema) schema = NULL;
-  g_object_get(settings, "settings-schema", &schema, NULL);
-  const gchar* schema_id = g_settings_schema_get_id(schema);
-  g_autoptr(GSettings) saved = g_settings_new_with_backend(schema_id,
-      self->settings_backend);
-  g_autoptr(GVariant) value = g_settings_get_value(settings, key);
-  g_settings_set_value(saved, key, value);
-}
 
 static gboolean update_app(MendingwallDApplication* self,
     const char* basename, GKeyFile* app_file) {
@@ -130,10 +116,8 @@ static void untidy_app(MendingwallDApplication* self, const char* basename) {
   }
 }
 
-static void on_changed_setting(gpointer user_data, gchar* key,
-    GSettings* settings) {
-  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
-  save_setting(self, settings, key);
+static void on_changed_setting(GSettings* settings, gchar* key) {
+  save_setting(settings, key);
 }
 
 static void on_changed_file(GFileMonitor* monitor, GFile* file) {
@@ -179,8 +163,8 @@ static void untidy_menus(MendingwallDApplication* self) {
 static void watch_themes(MendingwallDApplication* self) {
   /* watch settings */
   foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    g_signal_connect_swapped(settings, "changed",
-        G_CALLBACK(on_changed_setting), self);
+    g_signal_connect(settings, "changed", G_CALLBACK(on_changed_setting),
+        NULL);
   }
 
   /* watch config files */
@@ -273,10 +257,6 @@ static void on_startup(MendingwallDApplication* self) {
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
-  self->settings_backend = g_keyfile_settings_backend_new(settings_save_path,
-      "/", NULL);
-  self->save_path = g_strconcat(get_app_data_dir(), "/", "mendingwall",
-      "/", "save", "/", desktop, NULL);
 
   const guint reserved = 8;
   self->theme_settings = g_ptr_array_new_null_terminated(reserved, g_object_unref, TRUE);
@@ -375,16 +355,6 @@ void mendingwall_d_application_dispose(GObject* o) {
   if (self->global) {
     g_clear_object(&self->global);
   }
-  if (self->user_config_dir) {
-    g_clear_object(&self->user_config_dir);
-  }
-  if (self->settings_backend) {
-    g_clear_object(&self->settings_backend);
-  }
-  if (self->save_path) {
-    g_free(self->save_path);
-    self->save_path = NULL;
-  }
   if (self->theme_settings) {
     g_ptr_array_free(self->theme_settings, TRUE);
     self->theme_settings = NULL;
@@ -425,9 +395,6 @@ void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
 void mendingwall_d_application_init(MendingwallDApplication* self) {
   self->portal = NULL;
   self->global = NULL;
-  self->user_config_dir = NULL;
-  self->settings_backend = NULL;
-  self->save_path = NULL;
   self->theme_settings = NULL;
   self->theme_files = NULL;
   self->theme_monitors = NULL;

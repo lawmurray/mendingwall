@@ -258,6 +258,15 @@ static GSettingsBackend* get_settings_backend(GSettings* settings) {
   return g_keyfile_settings_backend_new(get_save_settings_path(), "/", NULL);
 }
 
+void save_setting(GSettings* settings, gchar* key) {
+  g_autoptr(GSettingsSchema) schema = get_settings_schema(settings);
+  g_autoptr(GSettingsBackend) backend = get_settings_backend(settings);
+  g_autoptr(GSettings) saved = g_settings_new_with_backend(
+      g_settings_schema_get_id(schema), backend);
+  g_autoptr(GVariant) value = g_settings_get_value(settings, key);
+  g_settings_set_value(saved, key, value);
+}
+
 void save_settings(GSettings* settings) {
   g_autoptr(GSettingsSchema) schema = get_settings_schema(settings);
   g_autoptr(GSettingsBackend) backend = get_settings_backend(settings);

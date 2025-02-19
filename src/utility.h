@@ -117,6 +117,11 @@ void install_autostart(void);
 void uninstall_autostart(void);
 
 /**
+ * Save single setting.
+ */
+void save_setting(GSettings* settings, gchar* key);
+
+/**
  * Save settings.
  */
 void save_settings(GSettings* settings);
