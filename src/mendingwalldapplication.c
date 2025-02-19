@@ -55,22 +55,6 @@ static void save_setting(MendingwallDApplication* self, GSettings* settings,
   g_settings_set_value(saved, key, value);
 }
 
-static void save_file(MendingwallDApplication* self, GFile* file) {
-  g_autofree char* rel = g_file_get_relative_path(self->user_config_dir, file);
-  g_autoptr(GFile) saved = g_file_new_build_filename(self->save_path, rel, NULL);
-  if (g_file_query_exists(file, NULL)) {
-    /* save file */
-    g_autoptr(GFile) parent = g_file_get_parent(saved);
-    g_file_make_directory_with_parents(parent, NULL, NULL);
-    g_file_copy_async(file, saved, G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
-        G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
-  } else {
-    /* delete any existing saved file; it does not exist in the current
-     * configuration */
-    g_file_delete_async(saved, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
-  }
-}
-
 static gboolean update_app(MendingwallDApplication* self,
     const char* basename, GKeyFile* app_file) {
   /* update OnlyShowIn */
@@ -152,9 +136,10 @@ static void on_changed_setting(gpointer user_data, gchar* key,
   save_setting(self, settings, key);
 }
 
-static void on_changed_file(gpointer user_data, GFile* file) {
-  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
-  save_file(self, file);
+static void on_changed_file(GFileMonitor* monitor, GFile* file) {
+  g_autofree char* path = g_file_get_relative_path(get_user_config_dir(),
+      file);
+  save_file(path);
 }
 
 static void on_changed_app(gpointer user_data, GFile* app_file) {
@@ -171,7 +156,9 @@ static void save_themes(MendingwallDApplication* self) {
 
   /* save config files */
   foreach(file, (GFile**)self->theme_files->pdata) {
-    save_file(self, file);
+    g_autofree char* path = g_file_get_relative_path(get_user_config_dir(),
+        file);
+    save_file(path);
   }
 }
 
@@ -200,8 +187,7 @@ static void watch_themes(MendingwallDApplication* self) {
   foreach (file, (GFile**)self->theme_files->pdata) {
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE,
         NULL, NULL);
-    g_signal_connect_swapped(monitor, "changed", G_CALLBACK(on_changed_file),
-        self);
+    g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_file), NULL);
     g_ptr_array_add(self->theme_monitors, monitor);
   }
 }

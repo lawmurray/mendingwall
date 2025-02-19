@@ -122,6 +122,13 @@ void uninstall_autostart(void);
 void save_settings(GSettings* settings);
 
 /**
+ * Save file.
+ *
+ * @param Path of file, relative to the user config directory.
+ */
+void save_file(const char* path);
+
+/**
  * Restore themes.
  */
 void restore_themes(void);

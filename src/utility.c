@@ -207,16 +207,25 @@ void launch_daemon(GApplication* app) {
   #endif
 }
 
+static void copy(GFile* from_file, GFile* to_file) {
+  g_autoptr(GFile) to_dir = g_file_get_parent(to_file);
+  g_file_make_directory_with_parents(to_dir, NULL, NULL);
+  g_file_copy_async(from_file, to_file,
+      G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, G_PRIORITY_DEFAULT,
+      NULL, NULL, NULL, NULL, NULL);
+}
+
+static void remove(GFile* file) {
+  g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+}
+
 static void install(const char* path, GFile* to_dir) {
   g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, path);
   foreach (dir, get_data_dirs()) {
     g_autoptr(GFile) file = g_file_new_build_filename(dir, "mendingwall",
          path, NULL);
     if (g_file_query_exists(file, NULL)) {
-      g_file_make_directory_with_parents(to_dir, NULL, NULL);
-      g_file_copy_async(file, to_file,
-          G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA,
-          G_PRIORITY_DEFAULT, NULL, NULL, NULL, NULL, NULL);
+      copy(file, to_file);
       break;
     }
   }
@@ -286,17 +295,29 @@ static void restore_settings(GSettings* settings) {
   g_settings_apply(settings);
 }
 
+void save_file(const char* path) {
+  g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
+      path);
+  g_autoptr(GFile) save = g_file_resolve_relative_path(get_save_files_dir(),
+      path);
+
+  if (g_file_query_exists(file, NULL)) {
+    copy(file, save);
+  } else {
+    /* delete any existing saved file; it does not exist in the current
+     * configuration */
+    remove(save);
+  }
+}
+
 static void restore_file(const char* path) {
   g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
       path);
-  g_autoptr(GFile) saved = g_file_resolve_relative_path(get_save_files_dir(),
+  g_autoptr(GFile) save = g_file_resolve_relative_path(get_save_files_dir(),
       path);
 
-  if (g_file_query_exists(saved, NULL)) {
-    /* restore file */
-    g_file_copy_async(saved, file,
-        G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, G_PRIORITY_DEFAULT,
-        NULL, NULL, NULL, NULL, NULL);
+  if (g_file_query_exists(save, NULL)) {
+    copy(save, file);
   } else {
     /* delete file; it does not exist in the desired configuraiton; this
      * happens either because the file is not part of the save, or there is no
@@ -304,7 +325,7 @@ static void restore_file(const char* path) {
      * first time after running some other desktop environment, and by
      * deleting all config files, the user's home directory looks pristine,
      * and the new desktop environment performs its default initial setup */
-    g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    remove(file);
   }
 }
 
