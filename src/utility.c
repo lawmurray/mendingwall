@@ -26,9 +26,16 @@ static const char* user_config_dir = NULL;
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
 static const char* data_dirs[64];
+
 static const char* desktop;
 static const char* save_settings_path;
 static const char* save_files_path;
+
+static const char* autostart_path;
+static const char* kde_env_path;
+static const char* watch_path;
+static const char* restore_path;
+static const char* kde_path;
 
 void configure_environment(void) {
   /* The purpose of this function is to determine the user config dir, user
@@ -122,6 +129,13 @@ void configure_environment(void) {
       filename, NULL);
   save_files_path = g_build_filename(app_data_dir, "mendingwall", "save",
       desktop, NULL);
+
+  /* autostart paths */
+  autostart_path = g_build_filename(user_config_dir, "autostart", NULL);
+  kde_env_path = g_build_filename(user_config_dir, "plasma-workspace", "env", NULL);
+  watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
+  restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
+  kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
 }
 
 const char* get_app_config_dir(void) {
@@ -191,12 +205,6 @@ void launch_daemon(GApplication* app) {
 }
 
 void install_autostart(void) {
-  g_autofree gchar* autostart_path = g_build_filename(get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* kde_env_path = g_build_filename(get_user_config_dir(), "plasma-workspace", "env", NULL);
-  g_autofree gchar* watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
-  g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
-  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
-
   /* make autostart directories in case they do not exist */
   g_autoptr(GFile) autostart_dir = g_file_new_for_path(autostart_path);
   g_autoptr(GFile) kde_env_dir = g_file_new_for_path(kde_env_path);
@@ -246,12 +254,6 @@ void install_autostart(void) {
 }
 
 void uninstall_autostart(void) {
-  g_autofree gchar* autostart_path = g_build_filename(get_user_config_dir(), "autostart", NULL);
-  g_autofree gchar* kde_env_path = g_build_filename(get_user_config_dir(), "plasma-workspace", "env", NULL);
-  g_autofree gchar* watch_path = g_build_filename(autostart_path, "org.indii.mendingwall.watch.desktop", NULL);
-  g_autofree gchar* restore_path = g_build_filename(autostart_path, "org.indii.mendingwall.restore.desktop", NULL);
-  g_autofree gchar* kde_path = g_build_filename(kde_env_path, "org.indii.mendingwall.restore.sh", NULL);
-
   g_autoptr(GFile) watch_file = g_file_new_for_path(watch_path);
   g_autoptr(GFile) restore_file = g_file_new_for_path(restore_path);
   g_autoptr(GFile) kde_file = g_file_new_for_path(kde_path);
