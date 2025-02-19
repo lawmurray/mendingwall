@@ -116,6 +116,20 @@ static void untidy_app(MendingwallDApplication* self, const char* basename) {
   }
 }
 
+static void tidy_apps(MendingwallDApplication* self) {
+  g_auto(GStrv) basenames = g_key_file_get_groups(self->menus_config, NULL);
+  foreach(basename, basenames) {
+    tidy_app(self, basename);
+  }
+}
+
+static void untidy_apps(MendingwallDApplication* self) {
+  g_auto(GStrv) basenames = g_key_file_get_groups(self->menus_config, NULL);
+  foreach(basename, basenames) {
+    untidy_app(self, basename);
+  }
+}
+
 static void on_changed_setting(GSettings* settings, gchar* key) {
   save_setting(settings, key);
 }
@@ -130,34 +144,6 @@ static void on_changed_app(gpointer user_data, GFile* app_file) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
   g_autofree char* basename = g_file_get_basename(app_file);
   tidy_app(self, basename);
-}
-
-static void save_themes(MendingwallDApplication* self) {
-  /* save settings */
-  foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    save_settings(settings);
-  }
-
-  /* save config files */
-  foreach(file, (GFile**)self->theme_files->pdata) {
-    g_autofree char* path = g_file_get_relative_path(get_user_config_dir(),
-        file);
-    save_file(path);
-  }
-}
-
-static void tidy_menus(MendingwallDApplication* self) {
-  g_auto(GStrv) basenames = g_key_file_get_groups(self->menus_config, NULL);
-  foreach(basename, basenames) {
-    tidy_app(self, basename);
-  }
-}
-
-static void untidy_menus(MendingwallDApplication* self) {
-  g_auto(GStrv) basenames = g_key_file_get_groups(self->menus_config, NULL);
-  foreach(basename, basenames) {
-    untidy_app(self, basename);
-  }
 }
 
 static void watch_themes(MendingwallDApplication* self) {
@@ -208,7 +194,7 @@ static void on_changed_themes(gpointer user_data) {
   gboolean menus = g_settings_get_boolean(self->global, "menus");
   if (themes) {
     watch_themes(self);
-    save_themes(self);
+    save_themes();
   } else {
     unwatch_themes(self);
   }
@@ -223,10 +209,10 @@ static void on_changed_menus(gpointer user_data) {
   gboolean menus = g_settings_get_boolean(self->global, "menus");
   if (menus) {
     watch_menus(self);
-    tidy_menus(self);
+    tidy_apps(self);
   } else {
     unwatch_menus(self);
-    untidy_menus(self);
+    untidy_apps(self);
   }
   if (!themes && !menus) {
     g_application_quit(G_APPLICATION(self));
@@ -313,11 +299,11 @@ static void on_startup(MendingwallDApplication* self) {
 
   if (themes) {
     watch_themes(self);
-    save_themes(self);
+    save_themes();
   }
   if (menus) {
     watch_menus(self);
-    tidy_menus(self);
+    tidy_apps(self);
   }
   if (themes || menus) {
     /* keep running as background process */
@@ -426,3 +412,4 @@ MendingwallDApplication* mendingwall_d_application_new(void) {
 
   return self;
 }
+

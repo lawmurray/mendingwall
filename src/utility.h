@@ -134,6 +134,11 @@ void save_settings(GSettings* settings);
 void save_file(const char* path);
 
 /**
+ * Save themes.
+ */
+void save_themes(void);
+
+/**
  * Restore themes.
  */
 void restore_themes(void);

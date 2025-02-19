@@ -338,14 +338,43 @@ static void restore_file(const char* path) {
   }
 }
 
-void restore_themes(void) {
-  /* load themes config file */
-  g_autoptr(GKeyFile) themes_config = g_key_file_new();
-  if (!g_key_file_load_from_data_dirs(themes_config,
-      "mendingwall/themes.conf", NULL, G_KEY_FILE_NONE, NULL)) {
+static GKeyFile* load_config(const char* path) {
+  GKeyFile* config = g_key_file_new();
+  if (!g_key_file_load_from_dirs(config, "mendingwall/themes.conf",
+      get_data_dirs(), NULL, G_KEY_FILE_NONE, NULL)) {
     g_printerr("Cannot find config file mendingwall/themes.conf\n");
     exit(1);
   }
+  return config;
+}
+
+void save_themes(void) {
+  /* load themes.conf */
+  g_autoptr(GKeyFile) themes_config = load_config("mendingwall/themes.conf");
+  if (!g_key_file_has_group(themes_config, get_desktop())) {
+    g_printerr("Desktop environment %s is not supported\n", get_desktop());
+    exit(1);
+  }
+
+  /* save settings */
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
+      get_desktop(), "GSettings", NULL, NULL);
+  foreach(schema_id, schema_ids) {
+    g_autoptr(GSettings) settings = g_settings_new(schema_id);
+    save_settings(settings);
+  }
+
+  /* save config files */
+  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
+      get_desktop(), "ConfigFiles", NULL, NULL);
+  foreach(path, paths) {
+    save_file(path);
+  }
+}
+
+void restore_themes(void) {
+  /* load themes.conf */
+  g_autoptr(GKeyFile) themes_config = load_config("mendingwall/themes.conf");
   if (!g_key_file_has_group(themes_config, get_desktop())) {
     g_printerr("Desktop environment %s is not supported\n", get_desktop());
     exit(1);
@@ -366,3 +395,4 @@ void restore_themes(void) {
     restore_file(path);
   }
 }
+
