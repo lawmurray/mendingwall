@@ -101,4 +101,4 @@ modules:
       - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
 
       # ...and calls to mendingwalld with flatpak-spawn
-      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command="flatpak-spawn --host /app/bin/mendingwallcli" org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh
+      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command='flatpak-spawn --host /app/bin/mendingwallcli' org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh

@@ -107,7 +107,7 @@ commands:
           name: Set environment variables for commands
           command: |
             echo "export MENDINGWALLCLI='flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall'" >> $BASH_ENV
-            echo "export MENDINGWALLCLI_RESTORE='flatpak run --command="flatpak-spawn --host /app/bin/mendingwallcli" org.indii.mendingwall'" >> $BASH_ENV
+            echo "export MENDINGWALLCLI_RESTORE='flatpak run --command=\"flatpak-spawn --host /app/bin/mendingwallcli\" org.indii.mendingwall'" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
