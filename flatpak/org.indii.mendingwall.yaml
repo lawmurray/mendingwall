@@ -27,7 +27,7 @@ finish-args:
 
   # when restoring a theme, write access is needed to xdg-config to create,
   # modify and potentially remove config files, but this is not permitted;
-  # flatpak spawn is used for restore script only, in order to run outside
+  # flatpak-spawn is used for restore script only, in order to run outside
   # of the sandbox to achieve this
   - --talk-name=org.freedesktop.Flatpak
 
@@ -100,5 +100,5 @@ modules:
       # calls to mendingwalld with flatpak run...
       - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
 
-      # ...and calls to mendingwalld with flatpak spawn
-      - sed -i -E "s,/app/bin/mendingwallcli,flatpak spawn --host --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwallcli org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh
+      # ...and calls to mendingwalld with flatpak-spawn
+      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command="flatpak-spawn --host /app/bin/mendingwallcli" org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh
