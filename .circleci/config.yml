@@ -359,7 +359,7 @@ commands:
       - run:
           name: Delete config files from save
           command: |
-            rm $SAVE_DIR/kwinrc $SAVE_DIR/gtk-4.0/colors.css
+            rm $SAVE_DIR/GNOME/kwinrc $SAVE_DIR/GNOME/gtk-4.0/colors.css
       - run:
           name: Restore theme
           command: |
