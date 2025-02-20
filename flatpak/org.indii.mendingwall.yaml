@@ -22,31 +22,14 @@ finish-args:
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  # config files for desktop environments, so can save and restore themes;
-  # read access is needed to xdg-config in order to establish file monitors
-  # for the creation and modification of files at the top level; write access
-  # is needed restore config files at the top level an autostart
-  - --filesystem=xdg-config:rw
+  # read access to config files of desktop environments to save
+  - --filesystem=xdg-config:ro
 
-  # for good measure, these are the actual files that will be saved and
-  # restored for each desktop environment, if present; these are copied from
-  # data/themes.conf, and the list will need to be maintained alongside that
-  # configuration
-  - --filesystem=xdg-config/gtk-3.0:create
-  - --filesystem=xdg-config/gtk-4.0:create
-  #- --filesystem=xdg-config/gtkrc
-  #- --filesystem=xdg-config/gtkrc-2.0
-  #- --filesystem=xdg-config/monitors.xml
-  #- --filesystem=xdg-config/kcminputrc
-  #- --filesystem=xdg-config/kdeglobals
-  #- --filesystem=xdg-config/kglobalshortcutsrc
-  #- --filesystem=xdg-config/kwinrc
-  #- --filesystem=xdg-config/kwinoutputconfig.json
-  #- --filesystem=xdg-config/plasmashellrc
-  #- --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
-  #- --filesystem=xdg-config/systemsettingsrc
-  #- --filesystem=xdg-config/Trolltech.conf
-  - --filesystem=xdg-config/xsettingsd:create
+  # when restoring a theme, write access is needed to xdg-config to create,
+  # modify and potentially remove config files, but this is not permitted;
+  # flatpak spawn is used for restore script only, in order to run outside
+  # of the sandbox to achieve this
+  - --talk-name=org.freedesktop.Flatpak
 
   # application directories, so can tidy menus
   - --filesystem=xdg-data/applications:create
@@ -114,5 +97,8 @@ modules:
         path: ../
     post-install:
       # for autostart files, which will launch from outside flatpak, wrap
-      # calls to mendingwalld with flatpak run
-      - sed -i -E "s,/app/bin/mendingwall([a-z]*),flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwall\\1 org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall*.desktop /app/share/mendingwall/org.indii.mendingwall*.sh
+      # calls to mendingwalld with flatpak run...
+      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
+
+      # ...and calls to mendingwalld with flatpak spawn
+      - sed -i -E "s,/app/bin/mendingwallcli,flatpak spawn --host --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwallcli org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh

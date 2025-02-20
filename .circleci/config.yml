@@ -57,6 +57,11 @@ commands:
             meson compile
             sudo meson install
       - run:
+          name: Set environment variables for commands
+          command: |
+            echo "export MENDINGWALLCLI=mendingwallcli" >> $BASH_ENV
+            echo "export MENDINGWALLCLI_RESTORE=mendingwallcli" >> $BASH_ENV
+      - run:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/.local/share/mendingwall/save' >> $BASH_ENV
@@ -92,18 +97,17 @@ commands:
           name: Store single-file bundle as artifact
           path: mendingwall.flatpak
       - run:
-          name: Create wrapper script for mendingwallcli
-          command: |
-            mkdir -p ~/bin
-            printf '#!/bin/sh\n\nexec flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall $@\n' > ~/bin/mendingwallcli
-            chmod +x ~/bin/mendingwallcli
-      - run:
           name: Install GSettings schema to host
           command: |
             SCHEMAS_DIR=$HOME/.local/share/glib-2.0/schemas
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Set environment variables for commands
+          command: |
+            echo "export MENDINGWALLCLI='flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall'" >> $BASH_ENV
+            echo "export MENDINGWALLCLI_RESTORE='flatpak spawn --host --command=/app/bin/mendingwallcli org.indii.mendingwall'" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
@@ -157,18 +161,17 @@ commands:
             sudo snap connect mendingwall:user-share
             sudo snap connect mendingwall:system-share
       - run:
-          name: Create wrapper script for mendingwallcli
-          command: |
-            mkdir -p ~/bin
-            printf '#!/bin/sh\n\nexec mendingwall.mendingwallcli $@\n' > ~/bin/mendingwallcli
-            chmod +x ~/bin/mendingwallcli
-      - run:
           name: Install GSettings schema to host
           command: |
             SCHEMAS_DIR=$HOME/.local/share/glib-2.0/schemas
             mkdir -p $SCHEMAS_DIR
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
+      - run:
+          name: Set environment variables for commands
+          command: |
+            echo "export MENDINGWALLCLI=mendingwall.mendingwallcli" >> $BASH_ENV
+            echo "export MENDINGWALLCLI_RESTORE=mendingwall.mendingwallcli" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
@@ -179,7 +182,7 @@ commands:
       - run:
           name: Does help work?
           command: |
-            mendingwallcli -h
+            $MENDINGWALLCLI -h
 
       - run:
           name: Install GNOME
@@ -193,7 +196,7 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            mendingwallcli --enable-themes
+            $MENDINGWALLCLI --enable-themes
       - run:
           name: Is mend themes now enabled?
           command: |
@@ -206,7 +209,7 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            mendingwallcli --enable-menus
+            $MENDINGWALLCLI --enable-menus
       - run:
           name: Is tidy menus now enabled?
           command: |
@@ -215,7 +218,7 @@ commands:
       - run:
           name: Start daemon
           command: |
-            mendingwallcli --watch
+            $MENDINGWALLCLI --watch
       - run:
           name: Is daemon now running?
           command: |
@@ -232,7 +235,7 @@ commands:
       - run:
           name: Install autostart
           command: |
-            mendingwallcli --install
+            $MENDINGWALLCLI --install
       - run:
           name: Are autostart files installed?
           command: |
@@ -300,7 +303,7 @@ commands:
       - run:
           name: Disable mend themes
           command: |
-            mendingwallcli --disable-themes --install
+            $MENDINGWALLCLI --disable-themes --install
       - run:
           name: Is mend themes now disabled?
           command: |
@@ -321,7 +324,7 @@ commands:
       - run:
           name: Disable tidy menus
           command: |
-            mendingwallcli --disable-menus --install
+            $MENDINGWALLCLI --disable-menus --install
       - run:
           name: Is tidy menus now disabled?
           command: |
@@ -346,7 +349,7 @@ commands:
       - run:
           name: Restore theme
           command: |
-            mendingwallcli --enable-themes --restore
+            $MENDINGWALLCLI_RESTORE --enable-themes --restore
       - run:
           name: Does config file now exist?
           command: |
@@ -363,7 +366,7 @@ commands:
       - run:
           name: Restore theme
           command: |
-            mendingwallcli --enable-themes --restore
+            $MENDINGWALLCLI_RESTORE --enable-themes --restore
       - run:
           name: Does config file no longer exist?
           command: |
