@@ -57,10 +57,9 @@ commands:
             meson compile
             sudo meson install
       - run:
-          name: Set environment variables for commands
+          name: Set environment variable for command
           command: |
             echo "export MENDINGWALLCLI=mendingwallcli" >> $BASH_ENV
-            echo "export MENDINGWALLCLI_RESTORE=mendingwallcli" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
@@ -104,10 +103,9 @@ commands:
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
       - run:
-          name: Set environment variables for commands
+          name: Set environment variable for command
           command: |
             echo "export MENDINGWALLCLI='flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall'" >> $BASH_ENV
-            echo "export MENDINGWALLCLI_RESTORE='flatpak run --command=flatpak-spawn org.indii.mendingwall --host /app/bin/mendingwallcli'" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
@@ -168,10 +166,9 @@ commands:
             cp data/org.indii.mendingwall.gschema.xml $SCHEMAS_DIR
             glib-compile-schemas $SCHEMAS_DIR
       - run:
-          name: Set environment variables for commands
+          name: Set environment variable for command
           command: |
             echo "export MENDINGWALLCLI=mendingwall.mendingwallcli" >> $BASH_ENV
-            echo "export MENDINGWALLCLI_RESTORE=mendingwall.mendingwallcli" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
@@ -349,7 +346,7 @@ commands:
       - run:
           name: Restore theme
           command: |
-            $MENDINGWALLCLI_RESTORE --enable-themes --restore
+            $MENDINGWALLCLI --enable-themes --restore
       - run:
           name: Does config file now exist?
           command: |
@@ -366,7 +363,7 @@ commands:
       - run:
           name: Restore theme
           command: |
-            $MENDINGWALLCLI_RESTORE --enable-themes --restore
+            $MENDINGWALLCLI --enable-themes --restore
       - run:
           name: Does config file no longer exist?
           command: |

@@ -22,14 +22,9 @@ finish-args:
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  # read access to config files of desktop environments to save
-  - --filesystem=xdg-config:ro
-
-  # when restoring a theme, write access is needed to xdg-config to create,
-  # modify and potentially remove config files, but this is not permitted;
-  # flatpak-spawn is used for restore script only, in order to run outside
-  # of the sandbox to achieve this
-  - --talk-name=org.freedesktop.Flatpak
+  # read and write access to config files of desktop environments to save and
+  # restore
+  - --filesystem=xdg-config:rw
 
   # application directories, so can tidy menus
   - --filesystem=xdg-data/applications:create
@@ -100,5 +95,5 @@ modules:
       # calls to mendingwalld with flatpak run...
       - sed -i -E "s,/app/bin/mendingwalld,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
 
-      # ...and calls to mendingwallcli with flatpak-spawn
-      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=flatpak-spawn org.indii.mendingwall --host /app/bin/mendingwallcli,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh
+      # ...and calls to mendingwallcli
+      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --branch=master --arch=$FLATPAK_ARCH --command=/app/bin/mendingwallcli org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh
