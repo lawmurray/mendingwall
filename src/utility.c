@@ -212,13 +212,12 @@ void launch_daemon(GApplication* app) {
 static void copy(GFile* from_file, GFile* to_file) {
   g_autoptr(GFile) to_dir = g_file_get_parent(to_file);
   g_file_make_directory_with_parents(to_dir, NULL, NULL);
-  g_file_copy_async(from_file, to_file,
-      G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, G_PRIORITY_DEFAULT,
-      NULL, NULL, NULL, NULL, NULL);
+  g_file_copy(from_file, to_file,
+      G_FILE_COPY_OVERWRITE|G_FILE_COPY_ALL_METADATA, NULL, NULL, NULL, NULL);
 }
 
 static void remove(GFile* file) {
-  g_file_delete_async(file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+  g_file_delete(file, NULL, NULL);
 }
 
 static void install(const char* path, GFile* to_dir) {
@@ -304,6 +303,7 @@ static void restore_settings(GSettings* settings) {
     g_settings_set_value(settings, key, value);
   }
   g_settings_apply(settings);
+  g_settings_sync();
 }
 
 void save_file(const char* path) {

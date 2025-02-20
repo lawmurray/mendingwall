@@ -27,16 +27,16 @@ struct _MendingwallCLIApplication {
 
   gboolean enable_themes, disable_themes;
   gboolean enable_menus, disable_menus;
-  gboolean restore;
+  gboolean restore, install, watch;
 };
 
 G_DEFINE_TYPE(MendingwallCLIApplication, mendingwall_cli_application, G_TYPE_APPLICATION)
 
 static void on_activate(MendingwallCLIApplication* self) {
+  /* update configuration */
   g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
   gboolean themes = g_settings_get_boolean(global, "themes");
   gboolean menus = g_settings_get_boolean(global, "menus");
-
   if (self->enable_themes) {
     themes = TRUE;
   }
@@ -49,18 +49,26 @@ static void on_activate(MendingwallCLIApplication* self) {
   if (self->disable_menus) {
     menus = FALSE;
   }
-
   g_settings_set_boolean(global, "themes", themes);
   g_settings_set_boolean(global, "menus", menus);
 
-  if (themes || menus) {
-    launch_daemon(G_APPLICATION(self));
-    install_autostart();
-  } else {
-    uninstall_autostart();
-  }
-  if (self->restore) {
+  /* restore themes if requested */
+  if (self->restore && themes) {
     restore_themes();
+  }
+
+  /* start background process if requested */
+  if (self->watch && (themes || menus)) {
+    launch_daemon(G_APPLICATION(self));
+  }
+
+  /* install (or uninstall) autostart files if requested */
+  if (self->install) {
+    if (themes || menus) {
+      install_autostart();
+    } else {
+      uninstall_autostart();
+    }
   }
 }
 
@@ -83,6 +91,8 @@ void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
   self->enable_menus = FALSE;
   self->disable_menus = FALSE;
   self->restore = FALSE;
+  self->install = FALSE;
+  self->watch = FALSE;
 }
 
 MendingwallCLIApplication* mendingwall_cli_application_new(void) {
@@ -105,7 +115,11 @@ MendingwallCLIApplication* mendingwall_cli_application_new(void) {
         "Toggle off tidy menus feature", NULL },
     { "restore", 0, 0, G_OPTION_ARG_NONE, &self->restore,
       "Restore theme from save", NULL },
-      G_OPTION_ENTRY_NULL
+    { "install", 0, 0, G_OPTION_ARG_NONE, &self->install,
+      "Install autostart files if features enabled (uninstall if no features enabled)", NULL },
+    { "watch", 0, 0, G_OPTION_ARG_NONE, &self->watch,
+      "Start background process if features enabled", NULL },
+    G_OPTION_ENTRY_NULL
   };
   g_application_set_option_context_summary(G_APPLICATION(self),
       "- mend themes and tidy menus");

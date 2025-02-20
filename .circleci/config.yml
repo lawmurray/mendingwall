@@ -193,12 +193,10 @@ commands:
       - run:
           name: Enable mend themes
           command: |
-            nohup mendingwallcli --enable-themes &
-          background: true
+            mendingwallcli --enable-themes
       - run:
           name: Is mend themes now enabled?
           command: |
-            sleep 5
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
 
       - run:
@@ -208,18 +206,33 @@ commands:
       - run:
           name: Enable tidy menus
           command: |
-            nohup mendingwallcli --enable-menus &
-          background: true
+            mendingwallcli --enable-menus
       - run:
           name: Is tidy menus now enabled?
           command: |
-            sleep 5
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
+          name: Start daemon
+          command: |
+            mendingwallcli --watch
+      - run:
           name: Is daemon now running?
           command: |
+            sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+      - run:
+          name: Sleep, in case daemon is just waiting for activate signal
+          command: sleep 10
+      - run:
+          name: Is daemon still running?
+          command: |
+            [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
+
+      - run:
+          name: Install autostart
+          command: |
+            mendingwallcli --install
       - run:
           name: Are autostart files installed?
           command: |
@@ -232,14 +245,6 @@ commands:
           command: |
             [[ -x ~/.config/plasma-workspace/env/org.indii.mendingwall.restore.sh
             ]] || exit 1
-
-      - run:
-          name: Sleep, in case daemon is just waiting for activate signal
-          command: sleep 10
-      - run:
-          name: Is daemon still running?
-          command: |
-            [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
 
       - run:
           name: Have GNOME apps been tidied?
@@ -321,6 +326,7 @@ commands:
           name: Is tidy menus now disabled?
           command: |
             [[ `gsettings get org.indii.mendingwall menus` == false ]] || exit 1
+
       - run:
           name: Is daemon now terminated?
           command: |
