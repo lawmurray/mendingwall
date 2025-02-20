@@ -340,9 +340,9 @@ commands:
             ]] || exit 1
 
       - run:
-          name: Delete config file
+          name: Delete config files
           command: |
-            rm ~/.config/kwinrc
+            rm ~/.config/kwinrc ~/.config/gtk-4.0/colors.css
       - run:
           name: Restore theme
           command: |
@@ -355,6 +355,23 @@ commands:
           name: Does config file in subdirectory now exist?
           command: |
             [[ -f ~/.config/gtk-4.0/colors.css ]] || exit 1
+
+      - run:
+          name: Delete config files from save
+          command: |
+            rm $SAVE_DIR/kwinrc $SAVE_DIR/gtk-4.0/colors.css
+      - run:
+          name: Restore theme
+          command: |
+            mendingwallcli --enable-themes --restore
+      - run:
+          name: Does config file no longer exist?
+          command: |
+            [[ ! -f ~/.config/kwinrc ]] || exit 1
+      - run:
+          name: Does config file in subdirectory no longer exist?
+          command: |
+            [[ ! -f ~/.config/gtk-4.0/colors.css ]] || exit 1
 
 jobs:
 
