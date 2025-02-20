@@ -300,7 +300,7 @@ commands:
       - run:
           name: Disable mend themes
           command: |
-            mendingwallcli --disable-themes
+            mendingwallcli --disable-themes --install
       - run:
           name: Is mend themes now disabled?
           command: |
@@ -321,12 +321,11 @@ commands:
       - run:
           name: Disable tidy menus
           command: |
-            mendingwallcli --disable-menus
+            mendingwallcli --disable-menus --install
       - run:
           name: Is tidy menus now disabled?
           command: |
             [[ `gsettings get org.indii.mendingwall menus` == false ]] || exit 1
-
       - run:
           name: Is daemon now terminated?
           command: |
