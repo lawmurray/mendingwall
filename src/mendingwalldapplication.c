@@ -28,12 +28,8 @@ struct _MendingwallDApplication {
 
   XdpPortal* portal;
   GSettings* global;
-
   GPtrArray* theme_settings;
-  GPtrArray* theme_files;
   GPtrArray* theme_monitors;
-
-  GPtrArray* menu_dirs;
   GPtrArray* menu_monitors;
 };
 
@@ -51,18 +47,26 @@ static void on_changed_file(GFileMonitor* monitor, GFile* file) {
 
 static void on_changed_app(GFileMonitor* monitor, GFile* file) {
   g_autofree char* basename = g_file_get_basename(file);
-  tidy_menu(basename);
+  tidy_app(basename);
 }
 
 static void watch_themes(MendingwallDApplication* self) {
   /* watch settings */
-  foreach (settings, (GSettings**)self->theme_settings->pdata) {
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(get_themes_config(),
+      get_desktop(), "GSettings", NULL, NULL);
+  foreach(schema_id, schema_ids) {
+    GSettings* settings = g_settings_new(schema_id);
     g_signal_connect(settings, "changed", G_CALLBACK(on_changed_setting),
         NULL);
+    g_ptr_array_add(self->theme_settings, settings);
   }
 
   /* watch config files */
-  foreach (file, (GFile**)self->theme_files->pdata) {
+  g_auto(GStrv) paths = g_key_file_get_string_list(get_themes_config(),
+      get_desktop(), "ConfigFiles", NULL, NULL);
+  foreach(path, paths) {
+    g_autoptr(GFile) file = g_file_resolve_relative_path(
+        get_user_config_dir(), path);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE,
         NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_file), NULL);
@@ -71,18 +75,14 @@ static void watch_themes(MendingwallDApplication* self) {
 }
 
 static void unwatch_themes(MendingwallDApplication* self) {
-  /* unwatch settings */
-  foreach (settings, (GSettings**)self->theme_settings->pdata) {
-    g_signal_handlers_disconnect_by_data(settings, self);
-  }
-
-  /* unwatch config files */
   g_ptr_array_set_size(self->theme_monitors, 0);
+  g_ptr_array_set_size(self->theme_settings, 0);
 }
 
 static void watch_menus(MendingwallDApplication* self) {
   /* watch application directories */
-  foreach (dir, (GFile**)self->menu_dirs->pdata) {
+  foreach(path, get_system_data_dirs()) {
+    g_autoptr(GFile) dir = g_file_new_build_filename(path, "applications", NULL);
     GFileMonitor* monitor = g_file_monitor_directory(dir, G_FILE_MONITOR_NONE,
         NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_app), self);
@@ -91,7 +91,6 @@ static void watch_menus(MendingwallDApplication* self) {
 }
 
 static void unwatch_menus(MendingwallDApplication* self) {
-  /* unwatch application directories */
   g_ptr_array_set_size(self->menu_monitors, 0);
 }
 
@@ -139,46 +138,6 @@ static void on_startup(MendingwallDApplication* self) {
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
-
-  self->theme_settings = g_ptr_array_new_null_terminated(4, g_object_unref, TRUE);
-  self->theme_files = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);
-  self->theme_monitors = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);
-  self->menu_dirs = g_ptr_array_new_null_terminated(8, g_object_unref, TRUE);
-  self->menu_monitors = g_ptr_array_new_null_terminated(8, g_object_unref, TRUE);
-
-  /* load themes config file */
-  g_autoptr(GKeyFile) themes_config = g_key_file_new();
-  if (!g_key_file_load_from_dirs(themes_config, "mendingwall/themes.conf",
-    get_data_dirs(), NULL, G_KEY_FILE_NONE, NULL)) {
-    g_printerr("Cannot find config file mendingwall/themes.conf\n");
-    exit(1);
-  }
-  if (!g_key_file_has_group(themes_config, get_desktop())) {
-    g_printerr("Desktop environment %s is not supported\n", get_desktop());
-    exit(1);
-  }
-
-  /* populate settings to save */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
-      get_desktop(), "GSettings", NULL, NULL);
-  foreach(schema_id, schema_ids) {
-    GSettings* settings = g_settings_new(schema_id);
-    g_ptr_array_add(self->theme_settings, settings);
-  }
-
-  /* populate config files to save */
-  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
-      get_desktop(), "ConfigFiles", NULL, NULL);
-  foreach(path, paths) {
-    GFile* file = g_file_resolve_relative_path(get_user_config_dir(), path);
-    g_ptr_array_add(self->theme_files, file);
-  }
-
-  /* populate system directories with application desktop entries */
-  foreach(path, get_system_data_dirs()) {
-    GFile* dir = g_file_new_build_filename(path, "applications", NULL);
-    g_ptr_array_add(self->menu_dirs, dir);
-  }
 
   /* start */
   gboolean themes = g_settings_get_boolean(self->global, "themes");
@@ -232,17 +191,9 @@ void mendingwall_d_application_dispose(GObject* o) {
     g_ptr_array_free(self->theme_settings, TRUE);
     self->theme_settings = NULL;
   }
-  if (self->theme_files) {
-    g_ptr_array_free(self->theme_files, TRUE);
-    self->theme_files = NULL;
-  }
   if (self->theme_monitors) {
     g_ptr_array_free(self->theme_monitors, TRUE);
     self->theme_monitors = NULL;
-  }
-  if (self->menu_dirs) {
-    g_ptr_array_free(self->menu_dirs, TRUE);
-    self->menu_dirs = NULL;
   }
   if (self->menu_monitors) {
     g_ptr_array_free(self->menu_monitors, TRUE);
@@ -264,11 +215,9 @@ void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
 void mendingwall_d_application_init(MendingwallDApplication* self) {
   self->portal = NULL;
   self->global = NULL;
-  self->theme_settings = NULL;
-  self->theme_files = NULL;
-  self->theme_monitors = NULL;
-  self->menu_dirs = NULL;
-  self->menu_monitors = NULL;
+  self->theme_settings = g_ptr_array_new_null_terminated(4, g_object_unref, TRUE);
+  self->theme_monitors = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);
+  self->menu_monitors = g_ptr_array_new_null_terminated(8, g_object_unref, TRUE);
 }
 
 MendingwallDApplication* mendingwall_d_application_new(void) {

@@ -37,6 +37,19 @@ static const char* watch_path;
 static const char* restore_path;
 static const char* kde_path;
 
+static GKeyFile* themes_config;
+static GKeyFile* menus_config;
+
+static GKeyFile* load_config(const char* path) {
+  GKeyFile* config = g_key_file_new();
+  if (!g_key_file_load_from_dirs(config, path, get_data_dirs(), NULL,
+      G_KEY_FILE_NONE, NULL)) {
+    g_printerr("Cannot find config file %s\n", path);
+    exit(1);
+  }
+  return config;
+}
+
 void configure_environment(void) {
   /* The purpose of this function is to determine the user config dir, user
    * data dir, and system data dirs of the host and set the above variables
@@ -125,7 +138,7 @@ void configure_environment(void) {
     exit(1);
   }
 
-  /* construct save paths */
+  /* save paths */
   g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
   save_settings_path = g_build_filename(app_data_dir, "mendingwall", "save",
       filename, NULL);
@@ -137,14 +150,25 @@ void configure_environment(void) {
       "autostart");
   kde_env_dir = g_file_resolve_relative_path(user_config_dir,
       "plasma-workspace/env");
-
   watch_path = "org.indii.mendingwall.watch.desktop";
   restore_path = "org.indii.mendingwall.restore.desktop";
   kde_path = "org.indii.mendingwall.restore.sh";
+
+  /* config files */
+  themes_config = load_config("mendingwall/themes.conf");
+  menus_config = load_config("mendingwall/menus.conf");
 }
 
 const char* get_desktop(void) {
   return desktop;
+}
+
+GKeyFile* get_themes_config(void) {
+  return themes_config;
+}
+
+GKeyFile* get_menus_config(void) {
+  return menus_config;
 }
 
 GFile* get_app_config_dir(void) {
@@ -340,26 +364,9 @@ static void restore_file(const char* path) {
   }
 }
 
-static GKeyFile* load_config(const char* path) {
-  GKeyFile* config = g_key_file_new();
-  if (!g_key_file_load_from_dirs(config, path, get_data_dirs(), NULL,
-      G_KEY_FILE_NONE, NULL)) {
-    g_printerr("Cannot find config file %s\n", path);
-    exit(1);
-  }
-  return config;
-}
-
 void save_themes(void) {
-  /* load themes.conf */
-  g_autoptr(GKeyFile) themes_config = load_config("mendingwall/themes.conf");
-  if (!g_key_file_has_group(themes_config, get_desktop())) {
-    g_printerr("Desktop environment %s is not supported\n", get_desktop());
-    exit(1);
-  }
-
   /* save settings */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(get_themes_config(),
       get_desktop(), "GSettings", NULL, NULL);
   foreach(schema_id, schema_ids) {
     g_autoptr(GSettings) settings = g_settings_new(schema_id);
@@ -367,7 +374,7 @@ void save_themes(void) {
   }
 
   /* save config files */
-  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
+  g_auto(GStrv) paths = g_key_file_get_string_list(get_themes_config(),
       get_desktop(), "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
     save_file(path);
@@ -375,15 +382,8 @@ void save_themes(void) {
 }
 
 void restore_themes(void) {
-  /* load themes.conf */
-  g_autoptr(GKeyFile) themes_config = load_config("mendingwall/themes.conf");
-  if (!g_key_file_has_group(themes_config, get_desktop())) {
-    g_printerr("Desktop environment %s is not supported\n", get_desktop());
-    exit(1);
-  }
-
   /* restore settings */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(themes_config,
+  g_auto(GStrv) schema_ids = g_key_file_get_string_list(get_themes_config(),
       get_desktop(), "GSettings", NULL, NULL);
   foreach(schema_id, schema_ids) {
     g_autoptr(GSettings) settings = g_settings_new(schema_id);
@@ -391,18 +391,18 @@ void restore_themes(void) {
   }
 
   /* restore config files */
-  g_auto(GStrv) paths = g_key_file_get_string_list(themes_config,
+  g_auto(GStrv) paths = g_key_file_get_string_list(get_themes_config(),
       get_desktop(), "ConfigFiles", NULL, NULL);
   foreach(path, paths) {
     restore_file(path);
   }
 }
 
-static GKeyFile* update_app(GKeyFile* menus_config, const char* basename) {
+static GKeyFile* update_app(const char* basename) {
   /* OnlyShowIn and NotShowIn updates for this application */
-  g_auto(GStrv) only_show_in = g_key_file_get_string_list(menus_config,
+  g_auto(GStrv) only_show_in = g_key_file_get_string_list(get_menus_config(),
       basename, "OnlyShowIn", NULL, NULL);
-  g_auto(GStrv) not_show_in = g_key_file_get_string_list(menus_config,
+  g_auto(GStrv) not_show_in = g_key_file_get_string_list(get_menus_config(),
       basename, "NotShowIn", NULL, NULL);
 
   GKeyFile* app_file = NULL;
@@ -434,9 +434,9 @@ static GKeyFile* update_app(GKeyFile* menus_config, const char* basename) {
   return app_file;
 }
 
-static void tidy_app(GKeyFile* menus_config, const char* basename) {
+void tidy_app(const char* basename) {
   /* load desktop entry file, if it exists */
-  g_autoptr(GKeyFile) app_file = update_app(menus_config, basename);
+  g_autoptr(GKeyFile) app_file = update_app(basename);
   if (app_file) {
     /* save to user's applications directory, if it does not already exist
      * there */
@@ -451,9 +451,9 @@ static void tidy_app(GKeyFile* menus_config, const char* basename) {
   }
 }
 
-static void untidy_app(GKeyFile* menus_config, const char* basename) {
+static void untidy_app(const char* basename) {
   /* load desktop entry file, if it exists */
-  g_autoptr(GKeyFile) app_file = update_app(menus_config, basename);
+  g_autoptr(GKeyFile) app_file = update_app(basename);
   if (app_file) {
     /* check if a matching desktop entry file exists in the user's
      * applications directory; if so and its contents match what would be
@@ -474,24 +474,17 @@ static void untidy_app(GKeyFile* menus_config, const char* basename) {
   }
 }
 
-void tidy_menu(const char* basename) {
-  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
-  tidy_app(menus_config, basename);
-}
-
 void tidy_menus(void) {
-  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
-  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
+  g_auto(GStrv) basenames = g_key_file_get_groups(get_menus_config(), NULL);
   foreach(basename, basenames) {
-    tidy_app(menus_config, basename);
+    tidy_app(basename);
   }
 }
 
 void untidy_menus(void) {
-  g_autoptr(GKeyFile) menus_config = load_config("mendingwall/menus.conf");
-  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
+  g_auto(GStrv) basenames = g_key_file_get_groups(get_menus_config(), NULL);
   foreach(basename, basenames) {
-    untidy_app(menus_config, basename);
+    untidy_app(basename);
   }
 }
 

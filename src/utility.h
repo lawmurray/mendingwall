@@ -53,6 +53,16 @@ void configure_environment(void);
 const char* get_desktop(void);
 
 /**
+ * Get themes.conf file.
+ */
+GKeyFile* get_themes_config(void);
+
+/**
+ * Get menus.conf file.
+ */
+GKeyFile* get_menus_config(void);
+
+/**
  * Get app config directory.
  *
  * This is given by the environment variable XDG_CONFIG_HOME or GLib
@@ -146,7 +156,7 @@ void restore_themes(void);
 /**
  * Tidy single app.
  */
-void tidy_menu(const char* basename);
+void tidy_app(const char* basename);
 
 /**
  * Tidy all apps.
