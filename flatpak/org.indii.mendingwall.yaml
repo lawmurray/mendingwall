@@ -34,18 +34,18 @@ finish-args:
   # configuration
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
-  - --filesystem=xdg-config/gtkrc
-  - --filesystem=xdg-config/gtkrc-2.0
-  - --filesystem=xdg-config/monitors.xml
-  - --filesystem=xdg-config/kcminputrc
-  - --filesystem=xdg-config/kdeglobals
-  - --filesystem=xdg-config/kglobalshortcutsrc
-  - --filesystem=xdg-config/kwinrc
-  - --filesystem=xdg-config/kwinoutputconfig.json
-  - --filesystem=xdg-config/plasmashellrc
-  - --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
-  - --filesystem=xdg-config/systemsettingsrc
-  - --filesystem=xdg-config/Trolltech.conf
+  #- --filesystem=xdg-config/gtkrc
+  #- --filesystem=xdg-config/gtkrc-2.0
+  #- --filesystem=xdg-config/monitors.xml
+  #- --filesystem=xdg-config/kcminputrc
+  #- --filesystem=xdg-config/kdeglobals
+  #- --filesystem=xdg-config/kglobalshortcutsrc
+  #- --filesystem=xdg-config/kwinrc
+  #- --filesystem=xdg-config/kwinoutputconfig.json
+  #- --filesystem=xdg-config/plasmashellrc
+  #- --filesystem=xdg-config/plasma-org.kde.plasma.desktop-appletsrc
+  #- --filesystem=xdg-config/systemsettingsrc
+  #- --filesystem=xdg-config/Trolltech.conf
   - --filesystem=xdg-config/xsettingsd:create
 
   # application directories, so can tidy menus
