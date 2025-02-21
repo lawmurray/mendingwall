@@ -112,6 +112,16 @@ GStrv get_themes_schema_ids(void);
 GStrv get_themes_files(void);
 
 /**
+ * Get OnlyShowIn for application.
+ */
+GStrv get_menus_only_show_in(const char* basename);
+
+/**
+ * Get NotShowIn for application.
+ */
+GStrv get_menus_not_show_in(const char* basename);
+
+/**
  * Launch the background process.
  */
 void launch_daemon(GApplication* app);

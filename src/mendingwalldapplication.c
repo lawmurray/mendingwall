@@ -52,7 +52,8 @@ static void on_changed_app(GFileMonitor* monitor, GFile* file) {
 
 static void watch_themes(MendingwallDApplication* self) {
   /* watch settings */
-  foreach(schema_id, get_themes_schema_ids()) {
+  g_auto(GStrv) schema_ids = get_themes_schema_ids();
+  foreach(schema_id, schema_ids) {
     GSettings* settings = g_settings_new(schema_id);
     g_signal_connect(settings, "changed", G_CALLBACK(on_changed_setting),
         NULL);
@@ -60,7 +61,8 @@ static void watch_themes(MendingwallDApplication* self) {
   }
 
   /* watch config files */
-  foreach(path, get_themes_files()) {
+  g_auto(GStrv) paths = get_themes_files();
+  foreach(path, paths) {
     g_autoptr(GFile) file = g_file_resolve_relative_path(
         get_user_config_dir(), path);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE,

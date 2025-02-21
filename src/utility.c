@@ -40,9 +40,6 @@ static const char* kde_path;
 static GKeyFile* themes_config;
 static GKeyFile* menus_config;
 
-static GStrv themes_schema_ids;
-static GStrv themes_files;
-
 static GKeyFile* load_config(const char* path) {
   GKeyFile* config = g_key_file_new();
   if (!g_key_file_load_from_dirs(config, path, get_data_dirs(), NULL,
@@ -160,11 +157,6 @@ void configure_environment(void) {
   /* config files */
   themes_config = load_config("mendingwall/themes.conf");
   menus_config = load_config("mendingwall/menus.conf");
-
-  themes_schema_ids = g_key_file_get_string_list(themes_config, desktop,
-      "GSettings", NULL, NULL);
-  themes_files = g_key_file_get_string_list(themes_config, desktop,
-      "ConfigFiles", NULL, NULL);
 }
 
 GFile* get_app_config_dir(void) {
@@ -212,11 +204,23 @@ static const char* get_desktop(void) {
 }
 
 GStrv get_themes_schema_ids(void) {
-  return themes_schema_ids;
+  return g_key_file_get_string_list(themes_config, desktop, "GSettings",
+      NULL, NULL);
 }
 
 GStrv get_themes_files(void) {
-  return themes_files;
+  return g_key_file_get_string_list(themes_config, desktop, "ConfigFiles",
+      NULL, NULL);
+}
+
+GStrv get_menus_only_show_in(const char* basename) {
+  return g_key_file_get_string_list(get_menus_config(), basename,
+      "OnlyShowIn", NULL, NULL);
+}
+
+GStrv get_menus_not_show_in(const char* basename) {
+  return g_key_file_get_string_list(get_menus_config(), basename,
+      "NotShowIn", NULL, NULL);
 }
 
 void launch_daemon(GApplication* app) {
@@ -416,10 +420,8 @@ void restore_themes(void) {
 
 static GKeyFile* update_app(const char* basename) {
   /* OnlyShowIn and NotShowIn updates for this application */
-  g_auto(GStrv) only_show_in = g_key_file_get_string_list(get_menus_config(),
-      basename, "OnlyShowIn", NULL, NULL);
-  g_auto(GStrv) not_show_in = g_key_file_get_string_list(get_menus_config(),
-      basename, "NotShowIn", NULL, NULL);
+  g_auto(GStrv) only_show_in = get_menus_only_show_in(basename);
+  g_auto(GStrv) not_show_in = get_menus_not_show_in(basename);
 
   GKeyFile* app_file = NULL;
   if (only_show_in || not_show_in) {
