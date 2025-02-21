@@ -184,7 +184,7 @@ commands:
       - run:
           name: Install GNOME
           command: |
-            sudo apt install --assume-yes ubuntu-gnome-desktop
+            sudo apt install --assume-yes vanilla-gnome-desktop
 
       - run:
           name: Is mend themes disabled by default?
@@ -279,7 +279,7 @@ commands:
       - run:
           name: Install KDE Plasma
           command: |
-            sudo apt install --assume-yes kde-standard
+            sudo apt install --assume-yes kde-plasma-desktop
       - run:
           name: Have KDE apps been tidied?
           command: |
