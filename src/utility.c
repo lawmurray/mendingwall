@@ -183,26 +183,6 @@ const char** get_system_data_dirs(void) {
   return data_dirs + 1;
 }
 
-static const char* get_save_settings_path(void) {
-  return save_settings_path;
-}
-
-static GFile* get_save_files_dir(void) {
-  return save_files_dir;
-}
-
-static GKeyFile* get_themes_config(void) {
-  return themes_config;
-}
-
-static GKeyFile* get_menus_config(void) {
-  return menus_config;
-}
-
-static const char* get_desktop(void) {
-  return desktop;
-}
-
 GStrv get_themes_schema_ids(void) {
   return g_key_file_get_string_list(themes_config, desktop, "GSettings",
       NULL, NULL);
@@ -214,13 +194,13 @@ GStrv get_themes_files(void) {
 }
 
 GStrv get_menus_only_show_in(const char* basename) {
-  return g_key_file_get_string_list(get_menus_config(), basename,
-      "OnlyShowIn", NULL, NULL);
+  return g_key_file_get_string_list(menus_config, basename, "OnlyShowIn",
+      NULL, NULL);
 }
 
 GStrv get_menus_not_show_in(const char* basename) {
-  return g_key_file_get_string_list(get_menus_config(), basename,
-      "NotShowIn", NULL, NULL);
+  return g_key_file_get_string_list(menus_config, basename, "NotShowIn",
+      NULL, NULL);
 }
 
 void launch_daemon(GApplication* app) {
@@ -300,7 +280,7 @@ static GSettingsSchema* get_settings_schema(GSettings* settings) {
 }
 
 static GSettingsBackend* get_settings_backend(GSettings* settings) {
-  return g_keyfile_settings_backend_new(get_save_settings_path(), "/", NULL);
+  return g_keyfile_settings_backend_new(save_settings_path, "/", NULL);
 }
 
 void save_setting(GSettings* settings, gchar* key) {
@@ -353,8 +333,7 @@ static void restore_settings(GSettings* settings) {
 void save_file(const char* path) {
   g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
       path);
-  g_autoptr(GFile) save = g_file_resolve_relative_path(get_save_files_dir(),
-      path);
+  g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
 
   if (g_file_query_exists(file, NULL)) {
     copy(file, save);
@@ -368,8 +347,7 @@ void save_file(const char* path) {
 static void restore_file(const char* path) {
   g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
       path);
-  g_autoptr(GFile) save = g_file_resolve_relative_path(get_save_files_dir(),
-      path);
+  g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
 
   if (g_file_query_exists(save, NULL)) {
     copy(save, file);
@@ -386,16 +364,14 @@ static void restore_file(const char* path) {
 
 void save_themes(void) {
   /* save settings */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(get_themes_config(),
-      get_desktop(), "GSettings", NULL, NULL);
+  g_auto(GStrv) schema_ids = get_themes_schema_ids();
   foreach(schema_id, schema_ids) {
     g_autoptr(GSettings) settings = g_settings_new(schema_id);
     save_settings(settings);
   }
 
   /* save config files */
-  g_auto(GStrv) paths = g_key_file_get_string_list(get_themes_config(),
-      get_desktop(), "ConfigFiles", NULL, NULL);
+  g_auto(GStrv) paths = get_themes_files();
   foreach(path, paths) {
     save_file(path);
   }
@@ -403,16 +379,14 @@ void save_themes(void) {
 
 void restore_themes(void) {
   /* restore settings */
-  g_auto(GStrv) schema_ids = g_key_file_get_string_list(get_themes_config(),
-      get_desktop(), "GSettings", NULL, NULL);
+  g_auto(GStrv) schema_ids = get_themes_schema_ids();
   foreach(schema_id, schema_ids) {
     g_autoptr(GSettings) settings = g_settings_new(schema_id);
     restore_settings(settings);
   }
 
   /* restore config files */
-  g_auto(GStrv) paths = g_key_file_get_string_list(get_themes_config(),
-      get_desktop(), "ConfigFiles", NULL, NULL);
+  g_auto(GStrv) paths = get_themes_files();
   foreach(path, paths) {
     restore_file(path);
   }
@@ -493,14 +467,14 @@ static void untidy_app(const char* basename) {
 }
 
 void tidy_menus(void) {
-  g_auto(GStrv) basenames = g_key_file_get_groups(get_menus_config(), NULL);
+  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
   foreach(basename, basenames) {
     tidy_app(basename);
   }
 }
 
 void untidy_menus(void) {
-  g_auto(GStrv) basenames = g_key_file_get_groups(get_menus_config(), NULL);
+  g_auto(GStrv) basenames = g_key_file_get_groups(menus_config, NULL);
   foreach(basename, basenames) {
     untidy_app(basename);
   }
