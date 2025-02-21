@@ -40,6 +40,9 @@ static const char* kde_path;
 static GKeyFile* themes_config;
 static GKeyFile* menus_config;
 
+static GStrv themes_schema_ids;
+static GStrv themes_files;
+
 static GKeyFile* load_config(const char* path) {
   GKeyFile* config = g_key_file_new();
   if (!g_key_file_load_from_dirs(config, path, get_data_dirs(), NULL,
@@ -157,18 +160,11 @@ void configure_environment(void) {
   /* config files */
   themes_config = load_config("mendingwall/themes.conf");
   menus_config = load_config("mendingwall/menus.conf");
-}
 
-const char* get_desktop(void) {
-  return desktop;
-}
-
-GKeyFile* get_themes_config(void) {
-  return themes_config;
-}
-
-GKeyFile* get_menus_config(void) {
-  return menus_config;
+  themes_schema_ids = g_key_file_get_string_list(themes_config, desktop,
+      "GSettings", NULL, NULL);
+  themes_files = g_key_file_get_string_list(themes_config, desktop,
+      "ConfigFiles", NULL, NULL);
 }
 
 GFile* get_app_config_dir(void) {
@@ -201,6 +197,26 @@ static const char* get_save_settings_path(void) {
 
 static GFile* get_save_files_dir(void) {
   return save_files_dir;
+}
+
+static GKeyFile* get_themes_config(void) {
+  return themes_config;
+}
+
+static GKeyFile* get_menus_config(void) {
+  return menus_config;
+}
+
+static const char* get_desktop(void) {
+  return desktop;
+}
+
+GStrv get_themes_schema_ids(void) {
+  return themes_schema_ids;
+}
+
+GStrv get_themes_files(void) {
+  return themes_files;
 }
 
 void launch_daemon(GApplication* app) {

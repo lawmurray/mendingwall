@@ -48,21 +48,6 @@
 void configure_environment(void);
 
 /**
- * Get current desktop environment.
- */
-const char* get_desktop(void);
-
-/**
- * Get themes.conf file.
- */
-GKeyFile* get_themes_config(void);
-
-/**
- * Get menus.conf file.
- */
-GKeyFile* get_menus_config(void);
-
-/**
  * Get app config directory.
  *
  * This is given by the environment variable XDG_CONFIG_HOME or GLib
@@ -115,6 +100,16 @@ const char** get_data_dirs(void);
  * appending the manipulated values from Flatpak and Snap.
  */
 const char** get_system_data_dirs(void);
+
+/**
+ * Get schema ids to save.
+ */
+GStrv get_themes_schema_ids(void);
+
+/**
+ * Get config files to save.
+ */
+GStrv get_themes_files(void);
 
 /**
  * Launch the background process.
