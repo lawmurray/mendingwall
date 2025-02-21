@@ -184,13 +184,21 @@ const char** get_system_data_dirs(void) {
 }
 
 GStrv get_themes_schema_ids(void) {
-  return g_key_file_get_string_list(themes_config, desktop, "GSettings",
-      NULL, NULL);
+  const char* group = "Default";
+  if (g_key_file_has_group(themes_config, desktop)) {
+    group = desktop;
+  }
+  return g_key_file_get_string_list(themes_config, group, "GSettings", NULL,
+      NULL);
 }
 
 GStrv get_themes_files(void) {
-  return g_key_file_get_string_list(themes_config, desktop, "ConfigFiles",
-      NULL, NULL);
+  const char* group = "Default";
+  if (g_key_file_has_group(themes_config, desktop)) {
+    group = desktop;
+  }
+  return g_key_file_get_string_list(themes_config, group, "ConfigFiles", NULL,
+      NULL);
 }
 
 GStrv get_menus_only_show_in(const char* basename) {
