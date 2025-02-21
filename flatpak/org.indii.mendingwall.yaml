@@ -10,31 +10,37 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
 
-  # autostart requires; portal is not used as it does not support the earlier
-  # init phases needed to restore themes before first use
+  # directories for writing autostart files; the background portal is not used
+  # as it does not support the earlier init phases needed to restore themes
+  # before first use, specifically the X-GNOME-Autostart-Phase key and, for KDE,
+  # the ~/.config/plasma-workspace/env directory
   - --filesystem=xdg-config/autostart:create
   - --filesystem=xdg-config/plasma-workspace/env:create
 
-  # dconf backend for GSettings, so can save and restore themes
+  # dconf backend for GSettings, so that can save and restore configuration of
+  # desktop environments
   - --filesystem=xdg-run/dconf
   - --filesystem=xdg-config/dconf:rw
   - --talk-name=ca.desrt.dconf
   - --env=GIO_EXTRA_MODULES=/app/lib/gio/modules/
   - --env=GSETTINGS_BACKEND=dconf
 
-  # read and write access to config files of desktop environments to save and
-  # restore; some directories may need to be created
+  # config files, so that can save and restore configuration of desktop
+  # environments
   - --filesystem=xdg-config:rw
   - --filesystem=xdg-config/gtk-3.0:create
   - --filesystem=xdg-config/gtk-4.0:create
   - --filesystem=xdg-config/xsettingsd:create
 
-  # application directories, so can tidy menus
-  - --filesystem=xdg-data/applications:create
+  # application directories, to find .desktop files of installed applications
   - --filesystem=xdg-data/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/flatpak/exports/share/applications:ro
   - --filesystem=/var/lib/snapd/desktop/applications:ro
   - --filesystem=host-os:ro
+
+  # user application directory, to write updated .desktop files of installed
+  # applications
+  - --filesystem=xdg-data/applications:create
 
 cleanup:
   - /include
@@ -91,8 +97,9 @@ modules:
     config-opts:
       - "-Dc_args=-DBUILD_FOR_FLATPAK"
     sources:
-      - type: dir
-        path: ../
+      - type: git
+        url: https://github.com/lawmurray/mendingwall
+        branch: snap
     post-install:
       # for autostart files, which will launch from outside flatpak, wrap
       # calls to mendingwalld with flatpak run...
