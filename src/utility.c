@@ -28,13 +28,10 @@ static const char* user_config_dir = NULL;
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
 static const char* data_dirs[MAX_DATA_DIRS];
-
 static const char* desktop;
-
-static GFile* save_files_dir;
-static GFile* autostart_dir;
-static GFile* plasma_workspace_env_dir;
-
+static const char* save_files_dir;
+static const char* autostart_dir;
+static const char* plasma_workspace_env_dir;
 static const char* watch_filename = "org.indii.mendingwall.watch.desktop";
 static const char* restore_filename = "org.indii.mendingwall.restore.desktop";
 static const char* script_filename = "org.indii.mendingwall.restore.sh";
@@ -141,11 +138,10 @@ void configure_environment(void) {
   }
 
   /* directories */
-  save_files_dir = g_file_new_build_filename(app_data_dir,
-      "mendingwall", "save", desktop, NULL);
-  autostart_dir = g_file_new_build_filename(user_config_dir,
-      "autostart", NULL);
-  plasma_workspace_env_dir = g_file_new_build_filename(user_config_dir,
+  save_files_dir = g_build_filename(app_data_dir, "mendingwall", "save",
+      desktop, NULL);
+  autostart_dir = g_build_filename(user_config_dir, "autostart", NULL);
+  plasma_workspace_env_dir = g_build_filename(user_config_dir,
       "plasma-workspace", "env", NULL);
 
   /* config files */
@@ -246,8 +242,8 @@ static void remove(GFile* file) {
   g_file_delete(file, NULL, NULL);
 }
 
-static void install(const char* path, GFile* to_dir) {
-  g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, path);
+static void install(const char* path, const char* to_dir) {
+  g_autoptr(GFile) to_file = g_file_new_build_filename(to_dir, path, NULL);
   foreach (dir, get_data_dirs()) {
     g_autoptr(GFile) file = g_file_new_build_filename(dir, "mendingwall",
          path, NULL);
@@ -258,8 +254,8 @@ static void install(const char* path, GFile* to_dir) {
   }
 }
 
-static void uninstall(const char* path, GFile* to_dir) {
-  g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, path);
+static void uninstall(const char* path, const char* to_dir) {
+  g_autoptr(GFile) to_file = g_file_new_build_filename(to_dir, path, NULL);
   g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
 }
 
@@ -337,7 +333,7 @@ static void restore_settings(GSettings* settings) {
 
 void save_file(const char* path) {
   g_autoptr(GFile) file = g_file_new_build_filename(user_config_dir, path, NULL);
-  g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
+  g_autoptr(GFile) save = g_file_new_build_filename(save_files_dir, path, NULL);
 
   if (g_file_query_exists(file, NULL)) {
     copy(file, save);
@@ -350,7 +346,7 @@ void save_file(const char* path) {
 
 static void restore_file(const char* path) {
   g_autoptr(GFile) file = g_file_new_build_filename(user_config_dir, path, NULL);
-  g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
+  g_autoptr(GFile) save = g_file_new_build_filename(save_files_dir, path, NULL);
 
   if (g_file_query_exists(save, NULL)) {
     copy(save, file);
