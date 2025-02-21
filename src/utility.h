@@ -55,7 +55,7 @@ void configure_environment(void);
  * It can be interpreted as an app-specific config directory that only Mending
  * Wall has access to.
  */
-GFile* get_app_config_dir(void);
+const char* get_app_config_dir(void);
 
 /**
  * Get user config directory.
@@ -64,7 +64,7 @@ GFile* get_app_config_dir(void);
  * manipulations. It can be interpreted as a user-specific config directory
  * used by multiple applications and desktop environments.
  */
-GFile* get_user_config_dir(void);
+const char* get_user_config_dir(void);
 
 /**
  * Get app data directory.

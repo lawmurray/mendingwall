@@ -23,9 +23,8 @@
 
 #define MAX_DATA_DIRS 32
 
-static GFile* app_config_dir = NULL;
-static GFile* user_config_dir = NULL;
-
+static const char* app_config_dir = NULL;
+static const char* user_config_dir = NULL;
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
 static const char* data_dirs[MAX_DATA_DIRS];
@@ -70,10 +69,10 @@ void configure_environment(void) {
    * don't call them until XDG_CONFIG_HOME and XDG_DATA_HOME are unset though,
    * otherwise value is fixed */
   const char* home = g_getenv("HOME");
-  app_config_dir = g_file_new_for_path(g_getenv("XDG_CONFIG_HOME"));
-  user_config_dir = g_file_new_build_filename(home, ".config", NULL);
-  app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
-  user_data_dir = g_strconcat(home, "/.local/share", NULL);
+  app_config_dir = g_getenv("XDG_CONFIG_HOME");
+  user_config_dir = g_build_filename(home, ".config", NULL);
+  app_data_dir = g_getenv("XDG_DATA_HOME");
+  user_data_dir = g_build_filename(home, ".local", "share", NULL);
 
   /* Hard-code host data directories where applications may be installed. An
    * alternative is to use `flatpak-spawn --host`, but this requires the
@@ -94,10 +93,10 @@ void configure_environment(void) {
    * variable SNAP_REAL_HOME to what HOME used to be, which can be used to
    * reconstruct. */
   const char* home = g_getenv("SNAP_REAL_HOME");
-  app_config_dir = g_file_new_for_path(g_getenv("XDG_CONFIG_HOME"));
-  user_config_dir = g_file_new_build_filename(home, ".config", NULL);
+  app_config_dir = g_getenv("XDG_CONFIG_HOME");
+  user_config_dir = g_build_filename(home, ".config", NULL);
   app_data_dir = g_getenv("XDG_DATA_HOME");
-  user_data_dir = g_strconcat(home, "/.local/share", NULL);
+  user_data_dir = g_build_filename(home, ".local", "share", NULL);
 
   /* Similar to Flatpak, hard code, but locations are different. */
   const char* host_system_data_dirs[] = {
@@ -109,8 +108,8 @@ void configure_environment(void) {
   };
   #else
   /* Everything as normal here. */
-  app_config_dir = g_file_new_for_path(g_get_user_config_dir());
-  user_config_dir = g_file_new_for_path(g_get_user_config_dir());
+  app_config_dir = g_get_user_config_dir();
+  user_config_dir = g_get_user_config_dir();
   app_data_dir = g_get_user_data_dir();
   user_data_dir = g_get_user_data_dir();
 
@@ -142,23 +141,23 @@ void configure_environment(void) {
   }
 
   /* directories */
-  save_files_dir = g_file_new_build_filename(app_data_dir, "mendingwall",
-      "save", desktop, NULL);
-  autostart_dir = g_file_resolve_relative_path(user_config_dir,
-      "autostart");
-  plasma_workspace_env_dir = g_file_resolve_relative_path(user_config_dir,
-      "plasma-workspace/env");
+  save_files_dir = g_file_new_build_filename(app_data_dir,
+      "mendingwall", "save", desktop, NULL);
+  autostart_dir = g_file_new_build_filename(user_config_dir,
+      "autostart", NULL);
+  plasma_workspace_env_dir = g_file_new_build_filename(user_config_dir,
+      "plasma-workspace", "env", NULL);
 
   /* config files */
   themes_config = load_config("mendingwall/themes.conf");
   menus_config = load_config("mendingwall/menus.conf");
 }
 
-GFile* get_app_config_dir(void) {
+const char* get_app_config_dir(void) {
   return app_config_dir;
 }
 
-GFile* get_user_config_dir(void) {
+const char* get_user_config_dir(void) {
   return user_config_dir;
 }
 
@@ -337,8 +336,7 @@ static void restore_settings(GSettings* settings) {
 }
 
 void save_file(const char* path) {
-  g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
-      path);
+  g_autoptr(GFile) file = g_file_new_build_filename(user_config_dir, path, NULL);
   g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
 
   if (g_file_query_exists(file, NULL)) {
@@ -351,8 +349,7 @@ void save_file(const char* path) {
 }
 
 static void restore_file(const char* path) {
-  g_autoptr(GFile) file = g_file_resolve_relative_path(get_user_config_dir(),
-      path);
+  g_autoptr(GFile) file = g_file_new_build_filename(user_config_dir, path, NULL);
   g_autoptr(GFile) save = g_file_resolve_relative_path(save_files_dir, path);
 
   if (g_file_query_exists(save, NULL)) {

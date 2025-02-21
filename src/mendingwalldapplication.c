@@ -40,8 +40,8 @@ static void on_changed_setting(GSettings* settings, gchar* key) {
 }
 
 static void on_changed_file(GFileMonitor* monitor, GFile* file) {
-  g_autofree char* path = g_file_get_relative_path(get_user_config_dir(),
-      file);
+  g_autoptr(GFile) dir = g_file_new_for_path(get_user_config_dir());
+  g_autofree char* path = g_file_get_relative_path(dir, file);
   save_file(path);
 }
 
@@ -61,10 +61,10 @@ static void watch_themes(MendingwallDApplication* self) {
   }
 
   /* watch config files */
+  g_autoptr(GFile) dir = g_file_new_for_path(get_user_config_dir());
   g_auto(GStrv) paths = get_themes_files();
   foreach(path, paths) {
-    g_autoptr(GFile) file = g_file_resolve_relative_path(
-        get_user_config_dir(), path);
+    g_autoptr(GFile) file = g_file_resolve_relative_path(dir, path);
     GFileMonitor* monitor = g_file_monitor_file(file, G_FILE_MONITOR_NONE,
         NULL, NULL);
     g_signal_connect(monitor, "changed", G_CALLBACK(on_changed_file), NULL);
