@@ -21,21 +21,24 @@
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
+#define MAX_DATA_DIRS 32
+
 static GFile* app_config_dir = NULL;
 static GFile* user_config_dir = NULL;
+
 static const char* app_data_dir = NULL;
 static const char* user_data_dir = NULL;
-static const char* data_dirs[64];
+static const char* data_dirs[MAX_DATA_DIRS];
 
 static const char* desktop;
-static const char* save_settings_path;
-static GFile* save_files_dir;
 
+static GFile* save_files_dir;
 static GFile* autostart_dir;
-static GFile* kde_env_dir;
-static const char* watch_path;
-static const char* restore_path;
-static const char* kde_path;
+static GFile* plasma_workspace_env_dir;
+
+static const char* watch_filename = "org.indii.mendingwall.watch.desktop";
+static const char* restore_filename = "org.indii.mendingwall.restore.desktop";
+static const char* script_filename = "org.indii.mendingwall.restore.sh";
 
 static GKeyFile* themes_config;
 static GKeyFile* menus_config;
@@ -93,7 +96,7 @@ void configure_environment(void) {
   const char* home = g_getenv("SNAP_REAL_HOME");
   app_config_dir = g_file_new_for_path(g_getenv("XDG_CONFIG_HOME"));
   user_config_dir = g_file_new_build_filename(home, ".config", NULL);
-  app_data_dir = g_strdup(g_getenv("XDG_DATA_HOME"));
+  app_data_dir = g_getenv("XDG_DATA_HOME");
   user_data_dir = g_strconcat(home, "/.local/share", NULL);
 
   /* Similar to Flatpak, hard code, but locations are different. */
@@ -108,8 +111,8 @@ void configure_environment(void) {
   /* Everything as normal here. */
   app_config_dir = g_file_new_for_path(g_get_user_config_dir());
   user_config_dir = g_file_new_for_path(g_get_user_config_dir());
-  app_data_dir = g_strdup(g_get_user_data_dir());
-  user_data_dir = g_strdup(g_get_user_data_dir());
+  app_data_dir = g_get_user_data_dir();
+  user_data_dir = g_get_user_data_dir();
 
   const char* host_system_data_dirs[] = {
     NULL
@@ -121,13 +124,13 @@ void configure_environment(void) {
   guint i = 0;
   data_dirs[i] = g_strdup(get_app_data_dir());
   ++i;
-  for (guint j = 0; i < 63 && host_system_data_dirs[j]; ++i, ++j) {
+  for (guint j = 0; i < MAX_DATA_DIRS - 1 && host_system_data_dirs[j]; ++i, ++j) {
     data_dirs[i] = g_strdup(host_system_data_dirs[j]);
   }
-  for (guint j = 0; i < 63 && system_data_dirs[j]; ++i, ++j) {
+  for (guint j = 0; i < MAX_DATA_DIRS - 1 && system_data_dirs[j]; ++i, ++j) {
     data_dirs[i] = g_strdup(system_data_dirs[j]);
   }
-  for (; i < 64; ++i) {
+  for (; i < MAX_DATA_DIRS; ++i) {
     data_dirs[i] = NULL;
   }
 
@@ -138,21 +141,13 @@ void configure_environment(void) {
     exit(1);
   }
 
-  /* save paths */
-  g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
-  save_settings_path = g_build_filename(app_data_dir, "mendingwall", "save",
-      filename, NULL);
+  /* directories */
   save_files_dir = g_file_new_build_filename(app_data_dir, "mendingwall",
       "save", desktop, NULL);
-
-  /* autostart paths */
   autostart_dir = g_file_resolve_relative_path(user_config_dir,
       "autostart");
-  kde_env_dir = g_file_resolve_relative_path(user_config_dir,
+  plasma_workspace_env_dir = g_file_resolve_relative_path(user_config_dir,
       "plasma-workspace/env");
-  watch_path = "org.indii.mendingwall.watch.desktop";
-  restore_path = "org.indii.mendingwall.restore.desktop";
-  kde_path = "org.indii.mendingwall.restore.sh";
 
   /* config files */
   themes_config = load_config("mendingwall/themes.conf");
@@ -270,15 +265,15 @@ static void uninstall(const char* path, GFile* to_dir) {
 }
 
 void install_autostart(void) {
-  install(watch_path, autostart_dir);
-  install(restore_path, autostart_dir);
-  install(kde_path, kde_env_dir);
+  install(watch_filename, autostart_dir);
+  install(restore_filename, autostart_dir);
+  install(script_filename, plasma_workspace_env_dir);
 }
 
 void uninstall_autostart(void) {
-  uninstall(watch_path, autostart_dir);
-  uninstall(restore_path, autostart_dir);
-  uninstall(kde_path, kde_env_dir);
+  uninstall(watch_filename, autostart_dir);
+  uninstall(restore_filename, autostart_dir);
+  uninstall(script_filename, plasma_workspace_env_dir);
 }
 
 static GSettingsSchema* get_settings_schema(GSettings* settings) {
@@ -288,7 +283,10 @@ static GSettingsSchema* get_settings_schema(GSettings* settings) {
 }
 
 static GSettingsBackend* get_settings_backend(GSettings* settings) {
-  return g_keyfile_settings_backend_new(save_settings_path, "/", NULL);
+  g_autofree char* filename = g_strconcat(desktop, ".gsettings", NULL);
+  g_autofree char* path = g_build_filename(app_data_dir, "mendingwall",
+      "save", filename, NULL);
+  return g_keyfile_settings_backend_new(path, "/", NULL);
 }
 
 void save_setting(GSettings* settings, gchar* key) {
