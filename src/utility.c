@@ -406,10 +406,14 @@ static GKeyFile* update_app(const char* basename) {
       if (only_show_in) {
         g_key_file_set_string_list(app_file, "Desktop Entry", "OnlyShowIn",
             (const gchar* const*)only_show_in, g_strv_length(only_show_in));
+      } else {
+        g_key_file_remove_key(app_file, "Desktop Entry", "OnlyShowIn", NULL);
       }
       if (not_show_in) {
         g_key_file_set_string_list(app_file, "Desktop Entry", "NotShowIn",
             (const gchar* const*)not_show_in, g_strv_length(not_show_in));
+      } else {
+        g_key_file_remove_key(app_file, "Desktop Entry", "NotShowIn", NULL);
       }
 
       /* an extra marker entry ensures that, in the case of untidy_app(),
