@@ -99,7 +99,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/lawmurray/mendingwall
-        branch: snap
+        tag: v0.3.0
     post-install:
       # for autostart files, which will launch from outside flatpak, wrap
       # calls to mendingwalld with flatpak run...
