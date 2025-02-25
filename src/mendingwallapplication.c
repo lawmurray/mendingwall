@@ -51,6 +51,11 @@ static void on_about(MendingwallApplication* self) {
 }
 
 static void on_startup(MendingwallApplication* self) {
+  /* setup */
+  configure_environment();
+  g_resources_register(mendingwall_get_resource());
+
+  /* builder */
   g_autoptr(GtkBuilder) builder = gtk_builder_new_from_resource("/org/indii/mendingwall/main.ui");
 
   /* main window */
@@ -107,3 +112,4 @@ MendingwallApplication* mendingwall_application_new(void) {
 
   return self;
 }
+

@@ -32,7 +32,10 @@ struct _MendingwallCLIApplication {
 
 G_DEFINE_TYPE(MendingwallCLIApplication, mendingwall_cli_application, G_TYPE_APPLICATION)
 
-static void on_activate(MendingwallCLIApplication* self) {
+static void on_startup(MendingwallCLIApplication* self) {
+  /* setup */
+  configure_environment();
+
   /* update configuration */
   g_autoptr(GSettings) global = g_settings_new("org.indii.mendingwall");
   gboolean themes = g_settings_get_boolean(global, "themes");
@@ -70,6 +73,10 @@ static void on_activate(MendingwallCLIApplication* self) {
       uninstall_autostart();
     }
   }
+}
+
+static void on_activate(MendingwallCLIApplication* self) {
+  //
 }
 
 void mendingwall_cli_application_dispose(GObject* o) {
@@ -127,7 +134,9 @@ MendingwallCLIApplication* mendingwall_cli_application_new(void) {
       "For more information see https://mendingwall.indii.org");
   g_application_add_main_option_entries(G_APPLICATION(self), option_entries);
 
+  g_signal_connect(self, "startup", G_CALLBACK(on_startup), NULL);
   g_signal_connect(self, "activate", G_CALLBACK(on_activate), NULL);
 
   return self;
 }
+

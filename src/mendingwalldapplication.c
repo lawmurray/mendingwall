@@ -133,6 +133,9 @@ static void on_session_state_changed(MendingwallDApplication* self, gboolean,
 }
 
 static void on_startup(MendingwallDApplication* self) {
+  /* setup */
+  configure_environment();
+
   /* basic initialization */
   self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");

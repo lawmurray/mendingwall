@@ -15,15 +15,14 @@
  * with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <utility.h>
- #include <mendingwallcliapplication.h>
- 
- int main(int argc, char* argv[]) {
-   configure_environment();
-   MendingwallCLIApplication* app = mendingwall_cli_application_new();
-   int status = g_application_run(G_APPLICATION(app), argc, argv);
-   g_object_unref(app);
-   return status;
- }
- 
+#include <config.h>
+#include <utility.h>
+#include <mendingwallcliapplication.h>
+
+int main(int argc, char* argv[]) {
+  MendingwallCLIApplication* app = mendingwall_cli_application_new();
+  int status = g_application_run(G_APPLICATION(app), argc, argv);
+  g_object_unref(app);
+  return status;
+}
+

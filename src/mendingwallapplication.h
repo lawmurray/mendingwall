@@ -29,3 +29,4 @@ G_DECLARE_FINAL_TYPE(MendingwallApplication, mendingwall_application, MENDINGWAL
 MendingwallApplication* mendingwall_application_new(void);
 
 G_END_DECLS
+
