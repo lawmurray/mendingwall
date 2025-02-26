@@ -624,8 +624,12 @@ GSettings=org.gnome.desktop.interface
 
 [KDE]
 ConfigFiles=kwinrc;kcminputrc
+
+[Default]
+GSettings=org.gnome.desktop.interface
+ConfigFiles=kwinrc;kcminputrc
 </code></pre>
-<p>The group headers are surrounded by square brackets (<code>[...]</code>) and identify the desktop environments. The environment variable <code>XDG_CURRENT_DESKTOP</code> is used to determine which group to use. If <code>XDG_CURRENT_DESKTOP</code> lists multiple desktop environments (e.g. <code>Budgie:GNOME</code>, note colon-separated in this case, as per the <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">specification</a>) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. <code>Budgie:GNOME</code> really just indicates <a href="https://buddiesofbudgie.org/">Budgie</a>).</p>
+<p>The group headers are surrounded by square brackets (<code>[...]</code>) and identify the desktop environments. The environment variable <code>XDG_CURRENT_DESKTOP</code> is used to determine which group to use, and if no such group exists, then the <code>Default</code> group is used. If <code>XDG_CURRENT_DESKTOP</code> lists multiple desktop environments (e.g. <code>Budgie:GNOME</code>, note colon-separated in this case, as per the <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">specification</a>) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. <code>Budgie:GNOME</code> really just indicates <a href="https://buddiesofbudgie.org/">Budgie</a>).</p>
 <p>Each key is followed by an equals sign (<code>=</code>), and where multiple values are required they are separated by semicolons (<code>;</code>). Recognized keys are:</p>
 <table>
 <thead>
