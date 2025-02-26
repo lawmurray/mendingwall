@@ -61,9 +61,13 @@ GSettings=org.gnome.desktop.interface
 
 [KDE]
 ConfigFiles=kwinrc;kcminputrc
+
+[Default]
+GSettings=org.gnome.desktop.interface
+ConfigFiles=kwinrc;kcminputrc
 ```
 
-The group headers are surrounded by square brackets (`[...]`) and identify the desktop environments. The environment variable `XDG_CURRENT_DESKTOP` is used to determine which group to use. If `XDG_CURRENT_DESKTOP` lists multiple desktop environments (e.g. `Budgie:GNOME`, note colon-separated in this case, as per the [specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/)) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. `Budgie:GNOME` really just indicates [Budgie](https://buddiesofbudgie.org/)).
+The group headers are surrounded by square brackets (`[...]`) and identify the desktop environments. The environment variable `XDG_CURRENT_DESKTOP` is used to determine which group to use, and if no such group exists, then the `Default` group is used. If `XDG_CURRENT_DESKTOP` lists multiple desktop environments (e.g. `Budgie:GNOME`, note colon-separated in this case, as per the [specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/)) then it is treated as if one value; in this context such combinations really indicate a distinct desktop environment (e.g. `Budgie:GNOME` really just indicates [Budgie](https://buddiesofbudgie.org/)).
 
 Each key is followed by an equals sign (`=`), and where multiple values are required they are separated by semicolons (`;`). Recognized keys are:
 
