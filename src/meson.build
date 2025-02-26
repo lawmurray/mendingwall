@@ -13,12 +13,12 @@ blueprints = custom_target('blueprints',
 # following lines can be exchanged to regenerate the files dynamically,
 # and check updated versions into the repository if necessary.
 #
-#resources = ['resources.h', 'resources.c']
-resources = gnome.compile_resources('resources',
-  'mendingwall.gresource.xml',
-  c_name: 'mendingwall',
-  dependencies: blueprints
-)
+resources = ['resources.h', 'resources.c']
+#resources = gnome.compile_resources('resources',
+#  'mendingwall.gresource.xml',
+#  c_name: 'mendingwall',
+#  dependencies: blueprints
+#)
 
 # mendingwall program
 mendingwall_sources = [
