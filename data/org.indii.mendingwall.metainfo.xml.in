@@ -63,6 +63,25 @@
   </provides>
 
   <releases>
+    <release version="0.3.1" date="2025-03-03">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.1</url>
+      <description translate="no">
+        <p>Fixed background process not terminating at end of KDE session under some configurations. Fixed by removing libportal dependency and replacing with the session management encoded in GtkApplication.</p>
+      </description>
+    </release>
+
+    <release version="0.3.0" date="2025-02-26">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.0</url>
+      <description translate="no">
+        <ul>
+          <li>Tweaks to applications affected by Tidy Menus feature.</li>
+          <li>Added Default group to themes.conf file, enabling support for desktop environments with any XDG_CURRENT_DESKTOP value.</li>
+          <li>Added mendingwallcli command-line interface, intended mostly for automated testing.</li>
+          <li>Reorganized some code to ease Flatpak and Snap packaging.</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.2.0" date="2025-02-11">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.2.0</url>
       <description translate="no">

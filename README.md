@@ -14,7 +14,7 @@ Mending Wall is free software, copyright © 2025 Lawrence Murray, licensed under
 
 Packages are available from [download.indii.org](https://download.indii.org). You can also install from source following the instructions provided here. A local installation to your home directory is sufficient; root permissions are not required to install or run.
 
-Building requires Meson, Blueprint, GTK 4, GLib 2, libadwaita, and libportal.
+Building requires Meson, Blueprint, GTK 4, GLib 2, and libadwaita.
 
 On Debian-based systems, install these with:
 ```
@@ -24,9 +24,6 @@ sudo apt install \
     libgtk-4-dev \
     libglib2.0-dev \
     libadwaita-1-dev \
-    libportal-dev \
-    libportal-gtk3-dev \
-    libportal-gtk4-dev \
     gettext \
     appstream \
     desktop-file-utils
@@ -39,9 +36,6 @@ sudo dnf install \
     glib2-devel \
     gtk4-devel \
     libadwaita-devel \
-    libportal-devel \
-    libportal-gtk3-devel \
-    libportal-gtk4-devel \
     gettext \
     appstream \
     desktop-file-utils
@@ -54,9 +48,6 @@ sudo zypper install \
     glib2-devel \
     gtk4-devel \
     libadwaita-devel \
-    libportal-devel \
-    libportal-gtk3-devel \
-    libportal-gtk4-devel \
     gettext \
     appstream \
     desktop-file-utils
@@ -69,9 +60,6 @@ sudo pacman -S \
     glib2 \
     gtk4 \
     libadwaita \
-    libportal \
-    libportal-gtk3 \
-    libportal-gtk4 \
     gettext \
     appstream \
     desktop-file-utils
