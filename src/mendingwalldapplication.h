@@ -16,12 +16,12 @@
  */
 #pragma once
 
-#include <gtk/gtk.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
 #define MENDINGWALL_TYPE_D_APPLICATION mendingwall_d_application_get_type()
-G_DECLARE_FINAL_TYPE(MendingwallDApplication, mendingwall_d_application, MENDINGWALL, D_APPLICATION, GtkApplication)
+G_DECLARE_FINAL_TYPE(MendingwallDApplication, mendingwall_d_application, MENDINGWALL, D_APPLICATION, GApplication)
 
 MendingwallDApplication* mendingwall_d_application_new(void);
 

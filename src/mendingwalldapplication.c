@@ -19,19 +19,20 @@
 #include <mendingwalldapplication.h>
 
 #define G_SETTINGS_ENABLE_BACKEND 1
-#include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
 
 struct _MendingwallDApplication {
-  GtkApplication parent_instance;
+  GApplication parent_instance;
 
+  GDBusProxy* session_manager;
+  GDBusProxy* client_private;
   GSettings* global;
   GPtrArray* theme_settings;
   GPtrArray* theme_monitors;
   GPtrArray* menu_monitors;
 };
 
-G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, GTK_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, G_TYPE_APPLICATION)
 
 static void on_changed_setting(GSettings* settings, gchar* key) {
   save_setting(settings, key);
@@ -121,6 +122,21 @@ static void on_changed_menus(gpointer user_data) {
   }
 }
 
+static void on_query_end_session(gpointer user_data) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
+  g_dbus_proxy_call(self->client_private,
+      "EndSessionResponse",
+      g_variant_new("(bs)", TRUE, ""),
+      G_DBUS_CALL_FLAGS_NONE,
+      G_MAXINT,
+      NULL, NULL, NULL);
+}
+
+static void on_end_session(gpointer user_data) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
+  g_application_quit(G_APPLICATION(self));
+}
+
 static void on_startup(MendingwallDApplication* self) {
   /* setup */
   configure_environment();
@@ -149,6 +165,92 @@ static void on_startup(MendingwallDApplication* self) {
         G_CALLBACK(on_changed_themes), self);
     g_signal_connect_swapped(self->global, "changed::menus",
         G_CALLBACK(on_changed_menus), self);
+
+    /* Register with session manager to terminate on logout. This is necessary
+     * in case systemd (or otherwise) is not configured to kill all user
+     * processes at end of session. An alternative implementation is to have
+     * MendingwallDApplication inherit from GtkApplication instead of
+     * GApplication and use its session management features, on which this
+     * code is based anyway. The downside of doing so is that memory use
+     * of the background process increases a lot (it can be ten fold) because
+     * of everything else that comes with GtkApplication, such as a GDK
+     * surface. */
+    const gchar* app_id = "org.indii.mendingwall.watch";
+    const gchar* desktop_autostart_id = g_getenv("DESKTOP_AUTOSTART_ID");
+    g_autofree const gchar* client_id = g_strdup(desktop_autostart_id ? desktop_autostart_id : "");
+
+    GDBusConnection* dbus = g_application_get_dbus_connection(G_APPLICATION(self));
+    if (dbus) {
+      /* try GNOME session manager first */
+      const char* dbus_name = "org.gnome.SessionManager";
+      const char* dbus_path = "/org/gnome/SessionManager";
+      const char* dbus_interface = "org.gnome.SessionManager";
+      const char* dbus_client_interface = "org.gnome.SessionManager.ClientPrivate";
+      self->session_manager = g_dbus_proxy_new_sync(dbus,
+          G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+          G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
+          G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+          NULL,
+          dbus_name,
+          dbus_path,
+          dbus_interface,
+          NULL,
+          NULL);
+      if (!self->session_manager) {
+        /* try Xfce session manager instead */
+        dbus_name = "org.xfce.SessionManager";
+        dbus_path = "/org/xfce/SessionManager";
+        dbus_interface = "org.xfce.SessionManager";
+        dbus_client_interface = "org.xfce.Session.Client";
+        self->session_manager = g_dbus_proxy_new_sync(dbus,
+            G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+            G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
+            G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+            NULL,
+            dbus_name,
+            dbus_path,
+            dbus_interface,
+            NULL,
+            NULL);
+      }
+      if (self->session_manager) {
+        g_autoptr(GVariant) res = g_dbus_proxy_call_sync(
+            self->session_manager,
+            "RegisterClient",
+            g_variant_new("(ss)", app_id, client_id),
+            G_DBUS_CALL_FLAGS_NONE,
+            G_MAXINT,
+            NULL,
+            NULL);
+        if (res) {
+          g_autofree const gchar* dbus_client_path = NULL;
+          g_variant_get(res, "(o)", &dbus_client_path);
+          if (dbus_path) {
+            /* quit on session end */
+            self->client_private = g_dbus_proxy_new_sync(dbus,
+                G_DBUS_PROXY_FLAGS_NONE,
+                NULL,
+                dbus_name,
+                dbus_client_path,
+                dbus_client_interface,
+                NULL,
+                NULL);
+            if (self->client_private) {
+              g_signal_connect_swapped(
+                  self->client_private,
+                  "g-signal::QueryEndSession",
+                  G_CALLBACK(on_query_end_session),
+                  self);
+              g_signal_connect_swapped(
+                  self->client_private,
+                  "g-signal::EndSession",
+                  G_CALLBACK(on_end_session),
+                  self);
+            }
+          }
+        }
+      }
+    }
   } else {
     /* quit now */
     g_application_quit(G_APPLICATION(self));
@@ -162,6 +264,12 @@ static void on_activate(MendingwallDApplication* self) {
 void mendingwall_d_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
+  if (self->session_manager) {
+    g_clear_object(&self->session_manager);
+  }
+  if (self->client_private) {
+    g_clear_object(&self->client_private);
+  }
   if (self->global) {
     g_clear_object(&self->global);
   }
@@ -191,6 +299,8 @@ void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
 }
 
 void mendingwall_d_application_init(MendingwallDApplication* self) {
+  self->session_manager = NULL;
+  self->client_private = NULL;
   self->global = NULL;
   self->theme_settings = g_ptr_array_new_null_terminated(4, g_object_unref, TRUE);
   self->theme_monitors = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);
@@ -203,7 +313,6 @@ MendingwallDApplication* mendingwall_d_application_new(void) {
           "application-id", "org.indii.mendingwall.watch",
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
-          "register-session", TRUE,
           NULL));
 
   /* command-line options */
