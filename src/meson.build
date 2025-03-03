@@ -60,11 +60,7 @@ mendingwalld_sources = [
   'utility.c',
 ]
 mendingwalld_deps = [
-  dependency('glib-2.0'),
-  dependency('gio-2.0'),
-  dependency('libportal'),
-  dependency('libportal-gtk3'),
-  dependency('libportal-gtk4'),
+  dependency('gtk4'),
 ]
 executable('mendingwalld', mendingwalld_sources,
   dependencies: mendingwalld_deps,

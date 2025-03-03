@@ -21,19 +21,17 @@
 #define G_SETTINGS_ENABLE_BACKEND 1
 #include <gio/gio.h>
 #include <gio/gsettingsbackend.h>
-#include <libportal/portal.h>
 
 struct _MendingwallDApplication {
-  GApplication parent_instance;
+  GtkApplication parent_instance;
 
-  XdpPortal* portal;
   GSettings* global;
   GPtrArray* theme_settings;
   GPtrArray* theme_monitors;
   GPtrArray* menu_monitors;
 };
 
-G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, G_TYPE_APPLICATION)
+G_DEFINE_TYPE(MendingwallDApplication, mendingwall_d_application, GTK_TYPE_APPLICATION)
 
 static void on_changed_setting(GSettings* settings, gchar* key) {
   save_setting(settings, key);
@@ -123,22 +121,11 @@ static void on_changed_menus(gpointer user_data) {
   }
 }
 
-static void on_session_state_changed(gpointer user_data,
-    gboolean screensaver_active, XdpLoginSessionState state) {
-  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
-  if (state == XDP_LOGIN_SESSION_QUERY_END && self->portal) {
-    xdp_portal_session_monitor_query_end_response(self->portal);
-  } else if (state == XDP_LOGIN_SESSION_ENDING) {
-    g_application_quit(G_APPLICATION(self));
-  }
-}
-
 static void on_startup(MendingwallDApplication* self) {
   /* setup */
   configure_environment();
 
   /* basic initialization */
-  self->portal = xdp_portal_initable_new(NULL);
   self->global = g_settings_new("org.indii.mendingwall");
 
   /* start */
@@ -156,16 +143,6 @@ static void on_startup(MendingwallDApplication* self) {
   if (themes || menus) {
     /* keep running as background process */
     g_application_hold(G_APPLICATION(self));
-
-    /* register with portal for session end; this is necessary when systemd
-     * (or otherwise) is not configured to kill user processes at end of
-     * session; also used for the monitoring of background apps in GNOME */
-    if (self->portal) {
-      g_signal_connect_swapped(self->portal, "session-state-changed",
-          G_CALLBACK(on_session_state_changed), self);
-      xdp_portal_session_monitor_start(self->portal, NULL,
-          XDP_SESSION_MONITOR_FLAG_NONE, NULL, NULL, NULL);
-    }
 
     /* watch settings to quit later if disabled */
     g_signal_connect_swapped(self->global, "changed::themes",
@@ -185,10 +162,6 @@ static void on_activate(MendingwallDApplication* self) {
 void mendingwall_d_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
-  if (self->portal) {
-    xdp_portal_session_monitor_stop(self->portal);
-    g_clear_object(&self->portal);
-  }
   if (self->global) {
     g_clear_object(&self->global);
   }
@@ -218,7 +191,6 @@ void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
 }
 
 void mendingwall_d_application_init(MendingwallDApplication* self) {
-  self->portal = NULL;
   self->global = NULL;
   self->theme_settings = g_ptr_array_new_null_terminated(4, g_object_unref, TRUE);
   self->theme_monitors = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);
@@ -231,6 +203,7 @@ MendingwallDApplication* mendingwall_d_application_new(void) {
           "application-id", "org.indii.mendingwall.watch",
           "version", PACKAGE_VERSION,
           "flags", G_APPLICATION_DEFAULT_FLAGS,
+          "register-session", TRUE,
           NULL));
 
   /* command-line options */
