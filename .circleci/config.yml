@@ -19,6 +19,7 @@ commands:
           name: Install dependencies
           command: |
             sudo apt update --assume-yes
+            sudo apt upgrade --assume-yes
             sudo apt install --assume-yes \
               ca-certificates \
               curl \
