@@ -20,6 +20,14 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
 
     [:octicons-arrow-right-24: Go to source repository](https://github.com/lawmurray/mendingwall)
 
+-   :simple-flatpak: __Flatpak__
+
+    ---
+
+    Mending Wall is not yet submitted to Flathub, but a Flatpak beta version can be downloaded directly and installed if preferred.
+
+    [:octicons-arrow-right-24: Download the Flatpak beta](https://github.com/lawmurray/mendingwall/releases/latest/download/mendingwall.flatpak)
+
 </div>
 
 After installation, start the Mending Wall app and switch on the *Tidy Menus* and/or *Mend Themes* toggles. Both are recommended. The best time to do this is before you log in to a second desktop environment.
@@ -29,7 +37,7 @@ Mending Wall is in testing, and could do with [your help](contributing.md). Desk
 |              | :simple-gnome: GNOME | :simple-kde: KDE | :simple-xfce: Xfce | :simple-cinnamon: Cinnamon | [Others](contributing.md) |
 | ------------ | :---: | :-: | :--: | :------: | :----: |
 | :simple-ubuntu:&nbsp;**Ubuntu**<br/>:simple-debian:&nbsp;*Debian*<br/>:simple-linuxmint:&nbsp;*Linux Mint* | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
-| :simple-endeavouros:&nbsp;**EndeavourOS**<br/>:simple-archlinux:&nbsp;*Arch&nbsp;Linux*<br/>:simple-manjaro:&nbsp;*Manjaro*| :material-check: | :material-check: |  :material-check: |  :material-check:| :material-checkbox-blank-circle-outline: |
+| **:simple-archlinux:&nbsp;Arch&nbsp;Linux**<br/>:simple-endeavouros:&nbsp;**EndeavourOS**<br/>:simple-manjaro:&nbsp;*Manjaro*| :material-check: | :material-check: |  :material-check: |  :material-check:| :material-checkbox-blank-circle-outline: |
 | :simple-opensuse:&nbsp;**openSUSE** | :material-check: | :material-check: | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: |
 | :simple-fedora:&nbsp;**Fedora** | :material-check: | :material-check: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
 | [:simple-linux: Others](contributing.md) | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: | :material-checkbox-blank-circle-outline: |
