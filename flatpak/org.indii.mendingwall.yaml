@@ -71,18 +71,6 @@ modules:
         url: https://gitlab.gnome.org/GNOME/dconf
         tag: 0.40.0
 
-  - name: libportal
-    buildsystem: meson
-    config-opts:
-      - "--buildtype=release"
-      - "-Ddocs=false"
-      - "-Dtests=false"
-      - "-Dvapi=false"
-    sources:
-      - type: git
-        url: https://github.com/flatpak/libportal
-        tag: 0.9.0
-
   - name: blueprint-compiler
     buildsystem: meson
     cleanup:
