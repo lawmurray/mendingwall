@@ -123,11 +123,12 @@ static void on_changed_menus(gpointer user_data) {
   }
 }
 
-static void on_session_state_changed(MendingwallDApplication* self, gboolean,
-  XdpLoginSessionState* state) {
-  if (*state == XDP_LOGIN_SESSION_QUERY_END && self->portal) {
+static void on_session_state_changed(gpointer user_data,
+    gboolean screensaver_active, XdpLoginSessionState state) {
+  MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(user_data);
+  if (state == XDP_LOGIN_SESSION_QUERY_END && self->portal) {
     xdp_portal_session_monitor_query_end_response(self->portal);
-  } else if (*state == XDP_LOGIN_SESSION_ENDING) {
+  } else if (state == XDP_LOGIN_SESSION_ENDING) {
     g_application_quit(G_APPLICATION(self));
   }
 }
@@ -161,7 +162,9 @@ static void on_startup(MendingwallDApplication* self) {
      * session; also used for the monitoring of background apps in GNOME */
     if (self->portal) {
       g_signal_connect_swapped(self->portal, "session-state-changed",
-          G_CALLBACK(on_session_state_changed), NULL);
+          G_CALLBACK(on_session_state_changed), self);
+      xdp_portal_session_monitor_start(self->portal, NULL,
+          XDP_SESSION_MONITOR_FLAG_NONE, NULL, NULL, NULL);
     }
 
     /* watch settings to quit later if disabled */
@@ -175,7 +178,7 @@ static void on_startup(MendingwallDApplication* self) {
   }
 }
 
-static void on_activate(MendingwallDApplication*) {
+static void on_activate(MendingwallDApplication* self) {
   //
 }
 
@@ -183,6 +186,7 @@ void mendingwall_d_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
   if (self->portal) {
+    xdp_portal_session_monitor_stop(self->portal);
     g_clear_object(&self->portal);
   }
   if (self->global) {
