@@ -404,7 +404,6 @@ jobs:
   deploy:
     executor: vm
     steps:
-      - environment
       - run:
           name: Trigger package update
           command: |
