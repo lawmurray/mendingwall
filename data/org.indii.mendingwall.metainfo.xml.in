@@ -50,7 +50,14 @@
   </provides>
 
   <releases>
-    <release version="0.3.1" date="2025-03-03">
+    <release version="0.3.2" date="2025-03-03">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.2</url>
+      <description translate="no">
+        <p>Added COSMIC core applications to tidy menus feature.</p>
+      </description>
+    </release>
+
+        <release version="0.3.1" date="2025-03-03">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.1</url>
       <description translate="no">
         <p>Fixed background process not terminating at end of KDE session under some configurations. Fixed by removing libportal dependency and replacing with the session management encoded in GtkApplication.</p>
