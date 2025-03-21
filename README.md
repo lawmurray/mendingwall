@@ -6,10 +6,6 @@ Mending Wall is a Linux application to fix issues when hopping between multiple 
 
 Mending Wall is free software, licensed under the terms of the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-> [!WARNING]
-> This is a testing release. During development, it has been tested with Ubuntu 24.04, Fedora 41, openSUSE Tumbleweed, Arch Linux, and EndeavourOS, with GNOME and KDE, and to a lesser extent Xfce and Cinnamon. You may like to try it in a virtual machine first, or to create a snapshot of your system first (with e.g. [Timeshift](https://github.com/linuxmint/timeshift) or [Snapper](http://snapper.io/)) so that you can restore if necessary.
-
-
 ## Installation
 
 Packages are available for major Linux distributions from [download.indii.org](https://download.indii.org), and a Flatpak for direct download from [GitHub releases](https://github.com/lawmurray/mendingwall/releases/latest). You can also install from source following the instructions provided here. A local installation to your home directory is sufficient; root permissions are not required to install or run.
