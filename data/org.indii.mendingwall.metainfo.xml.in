@@ -38,7 +38,7 @@
       <image type="source" scale="2" width="1044" height="1278">https://mendingwall.indii.org/assets/screenshot_dark.png</image>
       <caption>Mending Wall application, dark mode.</caption>
     </screenshot>
-    <screenshot environment="gnome:light" width="1044" height="1278">
+    <screenshot environment="gnome" width="1044" height="1278">
       <image type="source" scale="2">https://mendingwall.indii.org/assets/screenshot_light.png</image>
       <caption>Mending Wall application, light mode.</caption>
     </screenshot>
