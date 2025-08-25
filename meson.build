@@ -64,7 +64,6 @@ test_c_args = [
   '-Wuninitialized',
   '-Wunused',
   '-fno-strict-aliasing',
-  ['-Werror=format-security', '-Werror=format=2'],
 ]
 if get_option('buildtype') != 'plain'
   test_c_args += '-fstack-protector-strong'
