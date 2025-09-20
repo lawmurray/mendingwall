@@ -1,6 +1,6 @@
 id: org.indii.mendingwall
 runtime: org.gnome.Platform
-runtime-version: '48'
+runtime-version: '49'
 sdk: org.gnome.Sdk
 command: mendingwall
 
@@ -70,15 +70,6 @@ modules:
       - type: git
         url: https://gitlab.gnome.org/GNOME/dconf
         tag: 0.40.0
-
-  - name: blueprint-compiler
-    buildsystem: meson
-    cleanup:
-      - "*"
-    sources:
-      - type: git
-        url: https://gitlab.gnome.org/jwestman/blueprint-compiler
-        tag: v0.16.0
 
   - name: mendingwall
     buildsystem: meson
