@@ -77,7 +77,7 @@ static void on_activate(MendingwallApplication* self) {
   gtk_window_present(GTK_WINDOW(self->window));
 }
 
-void mendingwall_application_dispose(GObject* o) {
+static void mendingwall_application_dispose(GObject* o) {
   MendingwallApplication* self = MENDINGWALL_APPLICATION(o);
   if (self->global) {
     g_object_unref(self->global);
@@ -85,16 +85,16 @@ void mendingwall_application_dispose(GObject* o) {
   G_OBJECT_CLASS(mendingwall_application_parent_class)->dispose(o);
 }
 
-void mendingwall_application_finalize(GObject* o) {
+static void mendingwall_application_finalize(GObject* o) {
   G_OBJECT_CLASS(mendingwall_application_parent_class)->finalize(o);
 }
 
-void mendingwall_application_class_init(MendingwallApplicationClass* klass) {
+static void mendingwall_application_class_init(MendingwallApplicationClass* klass) {
   G_OBJECT_CLASS(klass)->dispose = mendingwall_application_dispose;
   G_OBJECT_CLASS(klass)->finalize = mendingwall_application_finalize;
 }
 
-void mendingwall_application_init(MendingwallApplication* self) {
+static void mendingwall_application_init(MendingwallApplication* self) {
   self->global = g_settings_new("org.indii.mendingwall");
   self->window = NULL;
 }

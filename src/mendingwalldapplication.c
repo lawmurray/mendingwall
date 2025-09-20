@@ -159,7 +159,7 @@ static void on_activate(MendingwallDApplication* self) {
   //
 }
 
-void mendingwall_d_application_dispose(GObject* o) {
+static void mendingwall_d_application_dispose(GObject* o) {
   MendingwallDApplication* self = MENDINGWALL_D_APPLICATION(o);
 
   if (self->global) {
@@ -181,16 +181,16 @@ void mendingwall_d_application_dispose(GObject* o) {
   G_OBJECT_CLASS(mendingwall_d_application_parent_class)->dispose(o);
 }
 
-void mendingwall_d_application_finalize(GObject* o) {
+static void mendingwall_d_application_finalize(GObject* o) {
   G_OBJECT_CLASS(mendingwall_d_application_parent_class)->finalize(o);
 }
 
-void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
+static void mendingwall_d_application_class_init(MendingwallDApplicationClass* klass) {
   G_OBJECT_CLASS(klass)->dispose = mendingwall_d_application_dispose;
   G_OBJECT_CLASS(klass)->finalize = mendingwall_d_application_finalize;
 }
 
-void mendingwall_d_application_init(MendingwallDApplication* self) {
+static void mendingwall_d_application_init(MendingwallDApplication* self) {
   self->global = NULL;
   self->theme_settings = g_ptr_array_new_null_terminated(4, g_object_unref, TRUE);
   self->theme_monitors = g_ptr_array_new_null_terminated(32, g_object_unref, TRUE);

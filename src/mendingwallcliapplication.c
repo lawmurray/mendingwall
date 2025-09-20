@@ -79,20 +79,20 @@ static void on_activate(MendingwallCLIApplication* self) {
   //
 }
 
-void mendingwall_cli_application_dispose(GObject* o) {
+static void mendingwall_cli_application_dispose(GObject* o) {
   G_OBJECT_CLASS(mendingwall_cli_application_parent_class)->dispose(o);
 }
 
-void mendingwall_cli_application_finalize(GObject* o) {
+static void mendingwall_cli_application_finalize(GObject* o) {
   G_OBJECT_CLASS(mendingwall_cli_application_parent_class)->finalize(o);
 }
 
-void mendingwall_cli_application_class_init(MendingwallCLIApplicationClass* klass) {
+static void mendingwall_cli_application_class_init(MendingwallCLIApplicationClass* klass) {
   G_OBJECT_CLASS(klass)->dispose = mendingwall_cli_application_dispose;
   G_OBJECT_CLASS(klass)->finalize = mendingwall_cli_application_finalize;
 }
 
-void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
+static void mendingwall_cli_application_init(MendingwallCLIApplication* self) {
   self->enable_themes = FALSE;
   self->disable_themes = FALSE;
   self->enable_menus = FALSE;
