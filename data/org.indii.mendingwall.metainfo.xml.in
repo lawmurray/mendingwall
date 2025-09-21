@@ -5,9 +5,9 @@
   <project_license>GPL-3.0-or-later</project_license>
 
   <name>Mending Wall</name>
-  <summary>Try a new desktop environment without breaking stuff</summary>
+  <summary>Try another desktop environment</summary>
   <description>
-    <p>Mending Wall eliminates common problems when installing and using two or more desktop environments (e.g. GNOME, KDE Plasma, Xfce, Cinnamon, COSMIC).</p>
+    <p>Mending Wall eliminates common problems when using more than one desktop environment (e.g. GNOME, KDE Plasma, Xfce, Cinnamon, COSMIC).</p>
     <p>For example, if you use KDE Plasma then switch to GNOME, icon and cursor themes may have changed. When you switch back to KDE Plasma, scaling and light/dark mode may have changed. Meanwhile, menus may become cluttered with several core applications of similar functionality (e.g. terminals, file browsers, text editors).</p>
     <p>Mending Wall fixes all this.</p>
     <p>To use, simply launch the app and choose one or more features to enable. The best time to enable is before using a second desktop environment, to prevent issues before they occur. Mending Wall will then run in the background to maintain your setup. You can install any desktop environments in the usual way through your package manager, either before or after starting Mending Wall.</p>
