@@ -7,8 +7,10 @@
   <name>Mending Wall</name>
   <summary>Try a new desktop environment without breaking stuff</summary>
   <description>
-    <p>Mending Wall eliminates common problems when installing and using two or more desktop environments (e.g. GNOME, KDE Plasma, Xfce, Cinnamon, COSMIC). For example, if you are using KDE Plasma and then switch to GNOME, you may find that your icon and cursor themes have been changed. When you switch back to KDE Plasma, you may have scaling issues, or an odd mix of light and dark mode. Meanwhile, you may notice that your menus are becoming cluttered with many core applications from different desktop environments that have similar functionality (e.g. terminals, file browsers, text editors). Mending Wall fixes such issues so that you can enjoy all your desktop environments without having a mess.</p>
-    <p>To use, simply launch Mending Wall and choose one or more features to enable. Mending Wall will then run in the background to maintain your setup. You can enable Mending Wall from within any desktop environment, and the best time to do so is before logging in to a second desktop environment, as this will prevent issues before they occur. You can install any number of desktop environments using your regular package manager, and you can do this before or after enabling Mending Wall.</p>
+    <p>Mending Wall eliminates common problems when installing and using two or more desktop environments (e.g. GNOME, KDE Plasma, Xfce, Cinnamon, COSMIC).</p>
+    <p>For example, if you use KDE Plasma then switch to GNOME, icon and cursor themes may have changed. When you switch back to KDE Plasma, scaling and light/dark mode may have changed. Meanwhile, menus may become cluttered with several core applications of similar functionality (e.g. terminals, file browsers, text editors).</p>
+    <p>Mending Wall fixes all this.</p>
+    <p>To use, simply launch the app and choose one or more features to enable. The best time to enable is before using a second desktop environment, to prevent issues before they occur. Mending Wall will then run in the background to maintain your setup. You can install any desktop environments in the usual way through your package manager, either before or after starting Mending Wall.</p>
   </description>
 
   <developer id="org.indii">
