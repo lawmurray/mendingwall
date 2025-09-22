@@ -53,6 +53,13 @@
   </provides>
 
   <releases>
+    <release version="0.3.4" date="2025-09-22">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.4</url>
+      <description translate="no">
+        <p>Minor updates for Flatpak and Snap packaging.</p>
+      </description>
+    </release>
+
     <release version="0.3.3" date="2025-09-21">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.3</url>
       <description translate="no">
