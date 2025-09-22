@@ -74,14 +74,8 @@ modules:
   - name: mendingwall
     buildsystem: meson
     config-opts:
-      - "-Dc_args=-DBUILD_FOR_FLATPAK"
+      - "-Dbuildfor=flatpak"
     sources:
       - type: dir
         path: ..
-    post-install:
-      # for autostart files, which will launch from outside flatpak, wrap
-      # calls to mendingwalld with flatpak run...
-      - sed -i -E "s,/app/bin/mendingwalld,flatpak run --command=/app/bin/mendingwalld org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.watch.desktop
 
-      # ...and calls to mendingwallcli
-      - sed -i -E "s,/app/bin/mendingwallcli,flatpak run --command=/app/bin/mendingwallcli org.indii.mendingwall,g" /app/share/mendingwall/org.indii.mendingwall.restore.desktop /app/share/mendingwall/org.indii.mendingwall.restore.sh

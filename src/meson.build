@@ -1,5 +1,11 @@
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 
+if get_option('buildfor') == 'flatpak'
+  add_project_arguments('-DBUILD_FOR_FLATPAK', language : 'c')
+elif get_option('buildfor') == 'snap'
+  add_project_arguments('-DBUILD_FOR_SNAP', language : 'c')
+endif
+
 blueprints = custom_target('blueprints',
   input: ['about.blp', 'main.blp'],
   output: '.',

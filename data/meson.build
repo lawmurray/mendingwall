@@ -15,9 +15,14 @@ desktop_file = i18n.merge_file(
   install_dir: get_option('datadir') / 'applications',
 )
 
+autostart_suffix = ''
+if get_option('buildfor') == 'flatpak'
+  autostart_suffix = '-flatpak'
+endif
+
 restore_autostart_file = i18n.merge_file(
         input: configure_file(
-                         input: 'org.indii.mendingwall.watch.desktop.in',
+                         input: 'org.indii.mendingwall.watch.desktop.in' + autostart_suffix,
                         output: 'org.indii.mendingwall.watch.desktop.configure',
                  configuration: conf,
                        install: false,
@@ -31,7 +36,7 @@ restore_autostart_file = i18n.merge_file(
 
 daemon_autostart_file = i18n.merge_file(
         input: configure_file(
-                         input: 'org.indii.mendingwall.restore.desktop.in',
+                         input: 'org.indii.mendingwall.restore.desktop.in' + autostart_suffix,
                         output: 'org.indii.mendingwall.restore.desktop.configure',
                  configuration: conf,
                        install: false,
@@ -44,7 +49,7 @@ daemon_autostart_file = i18n.merge_file(
 )
 
 configure_file(
-          input: 'org.indii.mendingwall.restore.sh.in',
+          input: 'org.indii.mendingwall.restore.sh.in' + autostart_suffix,
          output: 'org.indii.mendingwall.restore.sh',
   configuration: conf,
     install_dir: get_option('datadir') / 'mendingwall'

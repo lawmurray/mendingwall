@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Mending Wall Watch
+Exec=flatpak run --command=@bindir@/mendingwalld org.indii.mendingwall
+Icon=org.indii.mendingwall
+Comment=Save and watch themes and menus
+Terminal=false
+Type=Application
+Categories=Settings
+Keywords=;
+StartupNotify=true
+DBusActivatable=true

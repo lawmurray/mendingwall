@@ -1,0 +1,1 @@
+option('buildfor', type : 'combo', choices : ['default', 'flatpak', 'snap'])

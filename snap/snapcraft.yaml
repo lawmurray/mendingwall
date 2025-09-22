@@ -13,7 +13,7 @@ parts:
     meson-parameters:
       - "--buildtype=release"
       - "--prefix=/usr"
-      - "-Dc_args=-DBUILD_FOR_SNAP"
+      - "-Dbuildfor=snap"
     source: .
     parse-info:
       - usr/share/metainfo/org.indii.mendingwall.metainfo.xml

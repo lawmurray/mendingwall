@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+flatpak run --command=@bindir@/mendingwallcli org.indii.mendingwall --restore
