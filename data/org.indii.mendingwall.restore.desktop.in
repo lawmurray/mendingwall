@@ -1,11 +1,10 @@
 [Desktop Entry]
-Name=Mending Wall Restore
-Exec=@bindir@/mendingwallcli --restore
+Name=Mending Wall
+Exec=sh -c "@bindir@/mendingwallcli --restore && @bindir@/mendingwalld"
 Icon=org.indii.mendingwall
-Comment=Restore themes and menus at initialization, then exit
+Comment=Restore themes and menus at initialization, then watch themes and menus
 Terminal=false
 Type=Application
 Categories=Settings
 Keywords=;
-X-GNOME-Autostart-Phase=Initialization
 NotShowIn=KDE

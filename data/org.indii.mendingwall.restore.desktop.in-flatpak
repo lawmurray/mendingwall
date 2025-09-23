@@ -1,11 +1,10 @@
 [Desktop Entry]
-Name=Mending Wall Restore
-Exec=flatpak run --command=@bindir@/mendingwallcli org.indii.mendingwall --restore
+Name=Mending Wall
+Exec=sh -c "flatpak run --command=@bindir@/mendingwallcli org.indii.mendingwall --restore && flatpak run --command=@bindir@/mendingwalld org.indii.mendingwall"
 Icon=org.indii.mendingwall
-Comment=Restore themes and menus at initialization, then exit
+Comment=Restore themes and menus at initialization, then watch themes and menus
 Terminal=false
 Type=Application
 Categories=Settings
 Keywords=;
-X-GNOME-Autostart-Phase=Initialization
 NotShowIn=KDE

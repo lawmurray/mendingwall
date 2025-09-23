@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Mending Wall Watch
+Name=Mending Wall for KDE
 Exec=@bindir@/mendingwalld
 Icon=org.indii.mendingwall
 Comment=Save and watch themes and menus
@@ -9,3 +9,4 @@ Categories=Settings
 Keywords=;
 StartupNotify=true
 DBusActivatable=true
+OnlyShowIn=KDE
