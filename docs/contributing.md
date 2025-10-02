@@ -42,10 +42,6 @@ Mending Wall is designed to make contributions as easy as possible, either with 
 
 </div>
 
-!!! help "Sponsorship"
-    If you cannot contribute time to the project, you might consider financial support instead by [becoming a sponsor](https://github.com/sponsors/lawmurray).
-
-
 ## Suggested workflow
 
 !!! info
