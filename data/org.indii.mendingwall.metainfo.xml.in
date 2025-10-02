@@ -53,6 +53,13 @@
   </provides>
 
   <releases>
+    <release version="0.3.6" date="2025-10-02">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.6</url>
+      <description translate="no">
+        <p>Icon and branding colour tweaks for Flathub quality guidelines.</p>
+      </description>
+    </release>
+
     <release version="0.3.5" date="2025-09-23">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.5</url>
       <description translate="no">
@@ -60,7 +67,7 @@
       </description>
     </release>
 
-        <release version="0.3.4" date="2025-09-22">
+    <release version="0.3.4" date="2025-09-22">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.4</url>
       <description translate="no">
         <p>Minor updates for Flatpak and Snap packaging.</p>
