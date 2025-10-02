@@ -9,7 +9,7 @@ Mending Wall is free software, licensed under the terms of the [GPLv3](https://w
 ## Installation
 
 > [!TIP]
-> Packages are available for major Linux distributions from [download.indii.org](https://download.indii.org), and a Flatpak for direct download from [GitHub releases](https://github.com/lawmurray/mendingwall/releases/latest). You can also install from source following the instructions provided below.
+> Packages are available for major Linux distributions from [download.indii.org](https://download.indii.org), and a Flatpak from [FlatHub](https://flathub.org/en/apps/org.indii.mendingwall). You can also install from source following the instructions provided below.
 
 A local installation to your home directory is sufficient; root permissions are not required to install or run.
 
