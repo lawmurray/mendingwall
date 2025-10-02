@@ -12,6 +12,14 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
 
     [:octicons-arrow-right-24: Go to package repository](https://download.indii.org)
 
+-   :simple-flatpak: __Install the Flatpak__
+
+    ---
+
+    A Flatpak is available from **Flathub**. You may also find it in the app store on your desktop (e.g. GNOME Software, KDE Discover).
+
+    [:octicons-arrow-right-24: Go to Flathub](https://flathub.org/en/apps/org.indii.mendingwall)
+
 -   :material-git: __Install from source__
 
     ---
@@ -19,14 +27,6 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
     Install from source using the **GitHub repository**
 
     [:octicons-arrow-right-24: Go to source repository](https://github.com/lawmurray/mendingwall)
-
--   :simple-flatpak: __Flatpak__
-
-    ---
-
-    Mending Wall is not yet submitted to Flathub, but a Flatpak beta version can be downloaded directly and installed if preferred.
-
-    [:octicons-arrow-right-24: Download the Flatpak beta](https://github.com/lawmurray/mendingwall/releases/latest/download/mendingwall.flatpak)
 
 </div>
 
