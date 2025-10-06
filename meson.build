@@ -1,5 +1,5 @@
 project('mendingwall', 'c',
-          version: '0.3.6',
+          version: '0.3.7',
     meson_version: '>= 1.1.0',
   default_options: [ 'warning_level=2', 'werror=false', 'c_std=gnu11', ],
 )
