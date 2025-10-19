@@ -155,6 +155,7 @@ commands:
       - run:
           name: Connect Snap interfaces
           command: |
+            sudo snap connect mendingwall:gsettings
             sudo snap connect mendingwall:user-config
             sudo snap connect mendingwall:user-share
             sudo snap connect mendingwall:system-share
