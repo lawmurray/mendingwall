@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall
-Exec=sh -c "@bindir@/mendingwall.mendingwallcli --restore && @bindir@/mendingwall.mendingwalld"
+Exec=sh -c "mendingwall.mendingwallcli --restore && mendingwall.mendingwalld"
 Icon=org.indii.mendingwall
 Comment=Restore themes and menus at initialization, then watch themes and menus
 Terminal=false

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall for KDE
-Exec=@bindir@/mendingwall.mendingwalld
+Exec=mendingwall.mendingwalld
 Icon=org.indii.mendingwall
 Comment=Save and watch themes and menus
 Terminal=false
