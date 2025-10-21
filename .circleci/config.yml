@@ -175,9 +175,9 @@ commands:
             echo 'export SAVE_DIR=$HOME/snap/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
 
   test:
-    shell: dbus-run-session -- bash
     steps:
       - run:
+          shell: dbus-run-session -- bash
           name: Does help work?
           command: |
             $MENDINGWALLCLI -h
@@ -188,44 +188,54 @@ commands:
             sudo apt install --assume-yes vanilla-gnome-desktop
 
       - run:
+          shell: dbus-run-session -- bash
           name: Is mend themes disabled by default?
           command: |
             [[ `gsettings get org.indii.mendingwall themes` == false ]] || exit 1
       - run:
+          shell: dbus-run-session -- bash
           name: Enable mend themes
           command: |
             $MENDINGWALLCLI --enable-themes
       - run:
+          shell: dbus-run-session -- bash
           name: Is mend themes now enabled?
           command: |
             [[ `gsettings get org.indii.mendingwall themes` == true ]] || exit 1
 
       - run:
+          shell: dbus-run-session -- bash
           name: Is tidy menus disabled by default?
           command: |
             [[ `gsettings get org.indii.mendingwall menus` == false ]] || exit 1
       - run:
+          shell: dbus-run-session -- bash
           name: Enable tidy menus
           command: |
             $MENDINGWALLCLI --enable-menus
       - run:
+          shell: dbus-run-session -- bash
           name: Is tidy menus now enabled?
           command: |
             [[ `gsettings get org.indii.mendingwall menus` == true ]] || exit 1
 
       - run:
+          shell: dbus-run-session -- bash
           name: Start daemon
           command: |
             $MENDINGWALLCLI --watch
       - run:
+          shell: dbus-run-session -- bash
           name: Is daemon now running?
           command: |
             sleep 5
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
       - run:
+          shell: dbus-run-session -- bash
           name: Sleep, in case daemon is just waiting for activate signal
           command: sleep 10
       - run:
+          shell: dbus-run-session -- bash
           name: Is daemon still running?
           command: |
             [[ `ps -C mendingwalld -o pid= | wc -l` == 1 ]] || exit 1
