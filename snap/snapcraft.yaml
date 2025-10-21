@@ -93,7 +93,7 @@ apps:
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
-    common-id: org.indii.mendingwall
+    common-id: org.indii.mendingwall.cli
     bus-name: org.indii.mendingwall.cli
     extensions:
       - gnome
@@ -109,7 +109,7 @@ apps:
 
   mendingwalld:
     command: usr/bin/mendingwalld
-    common-id: org.indii.mendingwall
+    common-id: org.indii.mendingwall.watch
     bus-name: org.indii.mendingwall.watch
     extensions:
       - gnome
