@@ -136,6 +136,7 @@ commands:
            name: Start DBus
            command: |
              sudo systemctl start dbus.service
+             systemctl --user start dbus.service
              echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
       - run:
           # docker interferes with lxd, see
