@@ -168,13 +168,14 @@ commands:
       - run:
           name: Set environment variable for command
           command: |
-            echo "export MENDINGWALLCLI='dbus-run-session -- mendingwall.mendingwallcli'" >> $BASH_ENV
+            echo "export MENDINGWALLCLI=mendingwall.mendingwallcli" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/snap/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
 
   test:
+    shell: dbus-run-session -- bash
     steps:
       - run:
           name: Does help work?
