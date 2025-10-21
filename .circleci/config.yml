@@ -168,7 +168,7 @@ commands:
       - run:
           name: Set environment variable for command
           command: |
-            echo "export MENDINGWALLCLI=mendingwall.mendingwallcli" >> $BASH_ENV
+            echo "export MENDINGWALLCLI='dbus-run-session -- mendingwall.mendingwallcli'" >> $BASH_ENV
       - run:
           name: Set environment variable for save directory
           command: |
