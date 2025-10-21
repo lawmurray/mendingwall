@@ -18,6 +18,8 @@ desktop_file = i18n.merge_file(
 autostart_suffix = ''
 if get_option('buildfor') == 'flatpak'
   autostart_suffix = '-flatpak'
+elif get_option('buildfor') == 'snap'
+  autostart_suffix = '-snap'
 endif
 
 restore_autostart_file = i18n.merge_file(
