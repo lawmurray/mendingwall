@@ -73,6 +73,7 @@ apps:
     command: usr/bin/mendingwall
     desktop: usr/share/applications/org.indii.mendingwall.desktop
     common-id: org.indii.mendingwall
+    bus-name: org.indii.mendingwall
     extensions:
       - gnome
     slots:
@@ -92,7 +93,8 @@ apps:
 
   mendingwallcli:
     command: usr/bin/mendingwallcli
-    common-id: org.indii.mendingwall.cli
+    common-id: org.indii.mendingwall
+    bus-name: org.indii.mendingwall.cli
     extensions:
       - gnome
     slots:
@@ -107,7 +109,8 @@ apps:
 
   mendingwalld:
     command: usr/bin/mendingwalld
-    common-id: org.indii.mendingwall.watch
+    common-id: org.indii.mendingwall
+    bus-name: org.indii.mendingwall.watch
     extensions:
       - gnome
     slots:
