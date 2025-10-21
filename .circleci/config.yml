@@ -5,6 +5,7 @@ executors:
   vm:
     machine:
       image: ubuntu-2404:edge
+      shell: dbus-run-session -- bash
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
@@ -41,11 +42,6 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-user-session
-      - run:
-           name: Start DBus
-           command: |
-             systemctl --user start dbus.service
-             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
 
   build_source:
     steps:
