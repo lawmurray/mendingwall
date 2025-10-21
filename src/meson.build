@@ -51,8 +51,7 @@ mendingwallcli_sources = [
   'utility.c',
 ]
 mendingwallcli_deps = [
-  dependency('glib-2.0'),
-  dependency('gio-2.0'),
+  dependency('gtk4'),
 ]
 executable('mendingwallcli', mendingwallcli_sources,
   dependencies: mendingwallcli_deps,
