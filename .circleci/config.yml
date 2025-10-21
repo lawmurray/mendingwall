@@ -122,11 +122,9 @@ commands:
              mkdir -p $HOME/.config/dconf
              touch $HOME/.config/dconf/user
       - run:
-           # snap does not seem to like dbus-launch, use systemd instead
-           name: Start DBus
-           command: |
-             systemctl --user start dbus.service
-             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
       - run:
           # docker interferes with lxd, see
           # https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
@@ -155,7 +153,6 @@ commands:
       - run:
           name: Connect Snap interfaces
           command: |
-            sudo snap connect mendingwall:gsettings
             sudo snap connect mendingwall:user-config
             sudo snap connect mendingwall:user-share
             sudo snap connect mendingwall:system-share
