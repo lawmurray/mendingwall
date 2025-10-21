@@ -42,6 +42,10 @@ commands:
               libportal-gtk3-dev \
               libportal-gtk4-dev \
               dbus-user-session
+      - run:
+          name: Set environment variable for bus address
+          command: |
+             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
 
   build_source:
     steps:
