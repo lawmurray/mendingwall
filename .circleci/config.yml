@@ -42,6 +42,7 @@ commands:
               libportal-gtk4-dev \
               dbus-x11 \
               dbus-user-session
+            sudo systemctl restart dbus.service
 
   build_source:
     steps:
