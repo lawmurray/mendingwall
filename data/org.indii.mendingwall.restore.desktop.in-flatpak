@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Mending Wall
-Exec=sh -c "flatpak run --command=@bindir@/mendingwallcli org.indii.mendingwall --restore && flatpak run --command=@bindir@/mendingwalld org.indii.mendingwall"
+Exec=flatpak run --command=@bindir@/mendingwallcli org.indii.mendingwall --restore --watch
 Icon=org.indii.mendingwall
 Comment=Restore themes and menus at initialization, then watch themes and menus
 Terminal=false
