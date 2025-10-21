@@ -11,6 +11,16 @@ executors:
       NEEDRESTART_MODE: a
       XDG_CURRENT_DESKTOP: GNOME
 
+  vm_snap:
+    machine:
+      image: ubuntu-2404:edge
+      shell: dbus-run-session -- bash
+    resource_class: medium
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      NEEDRESTART_MODE: a
+      XDG_CURRENT_DESKTOP: GNOME
+
 commands:
 
   environment:
@@ -392,7 +402,7 @@ jobs:
       - test
 
   snap:
-    executor: vm
+    executor: vm_snap
     steps:
       - checkout
       - environment
