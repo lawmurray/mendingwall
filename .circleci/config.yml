@@ -5,7 +5,6 @@ executors:
   vm:
     machine:
       image: ubuntu-2404:edge
-      shell: dbus-run-session -- bash
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
@@ -41,22 +40,15 @@ commands:
               libportal-dev \
               libportal-gtk3-dev \
               libportal-gtk4-dev \
+              dbus-x11 \
               dbus-user-session
-      - run:
-           # workaround for a very strange issue with Snap where writes to
-           # GSettings can be lost if ~/.config/dconf/user does not yet exist;
-           # creating an empty file seems sufficient to fix it
-           name: Workaround for dconf user database issue
-           command: |
-             mkdir -p $HOME/.config/dconf
-             touch $HOME/.config/dconf/user
-      - run:
-          name: Set environment variable for bus address
-          command: |
-             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
 
   build_source:
     steps:
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
       - run:
           name: Build
           command: |
@@ -80,6 +72,10 @@ commands:
           command: |
             flatpak --print-updated-env >> $BASH_ENV
             echo 'export XDG_DATA_DIRS' >> $BASH_ENV
+      - run:
+          name: Start DBus
+          command: |
+            dbus-launch --auto-syntax >> $BASH_ENV
       - run:
           name: Configure Flathub
           command: |
@@ -117,6 +113,20 @@ commands:
 
   build_snap:
     steps:
+      - run:
+           # workaround for a very strange issue where writes to GSettings can
+           # be lost if ~/.config/dconf/user does not yet exist; creating an
+           # empty file seems sufficient to fix it
+           name: Workaround for dconf user database issue
+           command: |
+             mkdir -p $HOME/.config/dconf
+             touch $HOME/.config/dconf/user
+      - run:
+           # snap does not seem to like dbus-launch, use systemd instead
+           name: Start DBus
+           command: |
+             sudo systemctl start dbus.service
+             echo "export DBUS_SESSION_BUS_ADDRESS='unix:path=$XDG_RUNTIME_DIR/bus'" >> $BASH_ENV
       - run:
           # docker interferes with lxd, see
           # https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
