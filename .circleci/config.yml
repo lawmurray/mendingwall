@@ -383,9 +383,7 @@ jobs:
       - checkout
       - environment
       - build_snap
-
-      # not working, for reasons that may be platform related
-      #- test
+      - test
 
   deploy:
     executor: vm
