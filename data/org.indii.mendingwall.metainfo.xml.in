@@ -53,6 +53,16 @@
   </provides>
 
   <releases>
+    <release version="0.3.8" date="2025-11-17">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.8</url>
+      <description translate="no">
+        <ul>
+          <li>In KDE Plasma, fixed applications remaining in menu after removal.</li>
+          <li>Additional applications added for tidy menus.</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.3.7" date="2025-10-06">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.7</url>
       <description translate="no">
