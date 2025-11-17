@@ -429,6 +429,20 @@ static GKeyFile* update_app(const char* basename) {
   return app_file;
 }
 
+static void uninstall_app(const char* basename) {
+  /* remove the given desktop entry file in user's applications directory,
+   * as long as it contains the X-MendingWall-Tidy entry */
+  g_autoptr(GFile) to_file = g_file_new_build_filename(get_user_data_dir(),
+      "applications", basename, NULL);
+  g_autofree char* to_path = g_file_get_path(to_file);
+  g_autoptr(GKeyFile) key_file = g_key_file_new();
+  if (g_key_file_load_from_file(key_file, to_path, G_KEY_FILE_NONE, NULL)) {
+    if (g_key_file_get_boolean(key_file, "Desktop Entry", "X-MendingWall-Tidy", NULL)) {
+      g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
+    }
+  }
+}
+
 void tidy_app(const char* basename) {
   /* load desktop entry file, if it exists */
   g_autoptr(GKeyFile) app_file = update_app(basename);
@@ -443,18 +457,19 @@ void tidy_app(const char* basename) {
       g_autofree char* to_path = g_file_get_path(to_file);
       g_key_file_save_to_file(app_file, to_path, NULL);
     }
+  } else {
+    uninstall_app(basename);
   }
 }
 
-static void untidy_app(const char* basename) {
+void untidy_app(const char* basename) {
   /* load desktop entry file, if it exists */
   g_autoptr(GKeyFile) app_file = update_app(basename);
   if (app_file) {
     /* check if a matching desktop entry file exists in the user's
      * applications directory; if so and its contents match what would be
      * written, delete it, otherwise custom changes have been made so leave
-     * it; the match includes the extra marker entry X-MendingWall-Tidy, so
-     * that the files will not match merely by coincidence */
+     * it; the match includes the X-MendingWall-Tidy entry */
     g_autoptr(GFile) to_dir = g_file_new_build_filename(get_user_data_dir(),
         "applications", NULL);
     g_autoptr(GFile) to_file = g_file_resolve_relative_path(to_dir, basename);
@@ -466,6 +481,8 @@ static void untidy_app(const char* basename) {
         g_file_delete_async(to_file, G_PRIORITY_DEFAULT, NULL, NULL, NULL);
       }
     }
+  } else {
+    uninstall_app(basename);
   }
 }
 

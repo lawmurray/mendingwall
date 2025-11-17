@@ -43,9 +43,13 @@ static void on_changed_file(GFileMonitor* monitor, GFile* file) {
   save_file(path);
 }
 
-static void on_changed_app(GFileMonitor* monitor, GFile* file) {
+static void on_changed_app(GFileMonitor* monitor, GFile* file, GFileMonitorEvent event_type) {
   g_autofree char* basename = g_file_get_basename(file);
-  tidy_app(basename);
+  if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
+    untidy_app(basename);
+  } else {
+    tidy_app(basename);
+  }
 }
 
 static void watch_themes(MendingwallDApplication* self) {

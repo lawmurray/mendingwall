@@ -164,6 +164,11 @@ void restore_themes(void);
 void tidy_app(const char* basename);
 
 /**
+ * Untidy single app.
+ */
+void untidy_app(const char* basename);
+
+/**
  * Tidy all apps.
  */
 void tidy_menus(void);
