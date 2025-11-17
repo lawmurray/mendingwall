@@ -298,6 +298,16 @@ commands:
             [[ `grep icon-theme $SAVE_DIR/GNOME.gsettings` == "icon-theme='Breeze'" ]] || exit 1
 
       - run:
+          name: Uninstall KDE Plasma
+          command: |
+            sudo ap remove --assume-yes kde-plasma-desktop
+      - run:
+          name: Have KDE apps been untidied?
+          command: |
+            sleep 5
+            [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` == 0 ]] || exit 1
+
+      - run:
           name: Disable mend themes
           command: |
             $MENDINGWALLCLI --disable-themes --install
