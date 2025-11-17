@@ -300,7 +300,7 @@ commands:
       - run:
           name: Uninstall KDE Plasma
           command: |
-            sudo ap remove --assume-yes kde-plasma-desktop
+            sudo apt remove --assume-yes kde-plasma-desktop
       - run:
           name: Have KDE apps been untidied?
           command: |
