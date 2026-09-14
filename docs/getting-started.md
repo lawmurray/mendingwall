@@ -12,6 +12,8 @@ Mending Wall is free and open source software distributed under the [GPLv3](http
 
     [:octicons-arrow-right-24: Go to package repository](https://download.indii.org)
 
+    Packages are also available for [Arch Linux](https://aur.archlinux.org/packages/mendingwall) (in the AUR) and [NixOS](https://search.nixos.org/packages?channel=unstable&query=mendingwall#show=mendingwall).
+
 -   :simple-flatpak: __Install the Flatpak__
 
     ---
