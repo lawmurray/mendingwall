@@ -6,29 +6,26 @@
 
 When it comes to desktop environments, it is unclear where walls should and should not exist, and user preference surely has a role. Mending Wall, the app, expresses the view that the current state needs some repair.
 
-## Which desktop environments are supported?
+## Which desktop environments does Mending Wall work with?
 
-At this stage GNOME and KDE Plasma are supported, and Xfce and Cinnamon to a lesser degree (they have not been tested as thoroughly). Supported desktop environments are likely protected from interference from unsupported desktop environments, but not vice versa.
+GNOME, KDE Plasma and COSMIC are used by developers and so the most tested. Xfce and Cinnamon have been tested but are not regularly used by developers.
 
-[Help is sought](contributing.md) for additional desktop environments, especially from daily drivers whose regular use will help weed out issues.
+## Which Linux distributions does Mending Wall work with?
 
-There is a table on the [Getting Started](getting-started.md) page to track desktop environment support.
+Arch Linux and openSUSE Tumbleweed are used by developers and so the most tested. Debian, Fedora and Ubuntu have been tested but are not regularly used by developers.
 
-## Which Linux distributions are supported?
+Generally any distribution should work, however, but those that do extensive theming out-of-the-box are more likely to have [issues](https://github.com/lawmurray/mendingwall/issues).
 
-Generally any, but those that do extensive theming out-of-the-box are more likely to have unresolved issues that are yet to be [reported](https://github.com/lawmurray/mendingwall/issues).
+## Help! My theme is already a mess!
 
-[Help is sought](contributing.md) for additional Linux distributions, especially from daily drivers whose regular use will help weed out issues.
+If you can fix it manually then Mending Wall can maintain those fixes, but it is not yet able to restore from a broken state automatically.
 
-There is a table on the [Getting Started](getting-started.md) page to track Linux distribution support.
+On GNOME, most issues are fixed by using GNOME Tweaks and selecting *Reset to Defaults* from the menu. Be aware that this will usually restore a default GNOME look without any customizations from your Linux distribution. You may also need to use the Settings app to fix scaling and dark/light mode issues: head to the *Displays* and *Appearance* sections.
 
-## What if my theme is already broken?
+On KDE Plasma, applying a new global theme and cursor theme will get you most of the way out.
 
-If you can fix it manually then Mending Wall is able to keep your fixes and prevent it breaking again, but Mending Wall is not yet able to restore from a broken state.
+If that doesn't work, you can try the following approach (mileage may vary):
 
-!!! help "Work in progress"
-    Restoring from a broken state is work in progress. Consider [contributing your time](contributing.md) or [becoming a sponsor](https://github.com/sponsors/lawmurray) to help.
-
-On GNOME, most issues are fixed by using GNOME Tweaks and selecting *Reset to Defaults* from the menu. Be aware that this will usually restore a default GNOME look without any customizations from your Linux distribution, however. You may also need to use the Settings app to fix scaling and dark/light mode issues: head to the *Displays* and *Appearance* sections.
-
-On KDE Plasma, applying a new global theme and cursor theme gets you most of the way.
+1. Make sure Mending Wall is running.
+2. From a desktop environment different to the broken one, go to `~/.local/share/mendingwall/save`, and move the save for the broken desktop environment somewhere else (move, rather than delete, in case you want to restore it later).
+3. Log into the broken desktop environment. Mending Wall will act as though you are logging in for the first time, and try to restore a default theme.
