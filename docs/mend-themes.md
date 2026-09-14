@@ -76,8 +76,8 @@ Each key is followed by an equals sign (`=`), and where multiple values are requ
 | `GSettings` | GSettings schemas to save and restore. |
 | `ConfigFiles` | Config files to save and restore. Each should be relative to the `$XDG_CONFIG_HOME/` (or default `$HOME/.config/`) directory. There is no support for directories or recursion. |
 
-!!! tip
-    You may notice that the current `themes.conf` has the same `GSettings` and `ConfigFiles` for all desktop environments. If the pattern continues, the config file may be simplified in future, but for now it allows different configuration for different desktop environments, in case that becomes useful.
+!!! info
+    After modifying `themes.conf`, disable the Mend Themes feature, then enable it again, to apply changes.
 
 ## Related specifications
 

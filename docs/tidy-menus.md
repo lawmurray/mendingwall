@@ -70,6 +70,8 @@ Each key is followed by an equals sign (`=`), and where multiple values are requ
 
 It only makes sense to use one of these. They are copied into the `.desktop` file of the application. Valid values are the same as those that appear in the `XDG_CURRENT_DESKTOP` environment variable set by desktop environments, e.g. `GNOME` and `KDE`. These are case sensitive.
 
+!!! info
+    After modifying `menus.conf`, disable the Tidy Menus feature, then enable it again, to apply changes.
 
 ## Relevant specifications
 
