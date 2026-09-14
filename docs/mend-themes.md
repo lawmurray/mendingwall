@@ -39,10 +39,10 @@ When *Mend Themes* is enabled, Mending Wall starts a background process named `m
 
 A save includes:
 
-1. Any number of [GSettings](https://docs.gtk.org/gio/class.Settings.html) paths. These are typically used for configuration by desktop environments based on [GTK](https://gtk.org), such as GNOME and Cinnamon. The save is kept as a keyfile at `$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP.gsettings`, where groups identify the GSettings paths and keys the GSettings keys.
-2. Any number of config files under `$XDG_CONFIG_HOME/`. Such config files may be used by any desktop environments, including those based on GTK, but also [Qt](https://contribute.qt-project.org/), such as KDE Plasma, or other toolkits. Saved files are kept under `$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP/`.
+1. Any number of [GSettings](https://docs.gtk.org/gio/class.Settings.html) paths. These are typically used for configuration by desktop environments based on [GTK](https://gtk.org), such as GNOME and Cinnamon. The save is kept as a keyfile at `$XDG_DATA_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP.gsettings`, where groups identify the GSettings paths and keys the GSettings keys.
+2. Any number of config files under `$XDG_CONFIG_HOME/`. Such config files may be used by any desktop environments, including those based on GTK, but also [Qt](https://contribute.qt-project.org/), such as KDE Plasma, or other toolkits. Saved files are kept under `$XDG_DATA_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP/`.
 
-`XDG_CURRENT_DESKTOP` is an environment variable set by the desktop environment. `XDG_CONFIG_HOME` is an environment variable that may or may not be set by the desktop environment; if not set, the default value of `$HOME/.config` is used.
+`XDG_CURRENT_DESKTOP` is an environment variable set by the desktop environment. `XDG_DATA_HOME` is an environment variable that may or may not be set by the desktop environment; if not set, the default value of `$HOME/.local/share` is used.
 
 
 ## Configuration
@@ -50,9 +50,9 @@ A save includes:
 !!! info
     This section is for contributors to help improve Mending Wall. The installed configuration is meant to be suitable for everyone with no adjustments required, rather than something that is routinely modified.
 
-The specific GSettings paths and config files to back up and restore are set in the config file `themes.conf`. If the environment variable `XDG_CONFIG_HOME` is set and `$XDG_CONFIG_HOME/mendingwall/themes.conf` exists then that file is used, otherwise `$HOME/.config/mendingwall/themes.conf`, otherwise the directories listed in `XDG_CONFIG_DIRS` are checked in order for `mendingwall/themes.conf` until the file is found.
+The specific GSettings paths and config files to back up and restore are set in the config file `themes.conf`. If the environment variable `XDG_DATA_HOME` is set and `$XDG_DATA_HOME/mendingwall/themes.conf` exists then that file is used, otherwise `$HOME/.local/share/mendingwall/themes.conf`, otherwise the directories listed in `XDG_DATA_DIRS` are checked in order for `mendingwall/themes.conf` until the file is found.
 
-If `themes.conf` is in a system directory and you wish to make changes to it, first copy it to `$XDG_CONFIG_HOME/mendingwall/themes.conf` or `$HOME/.config/mendingwall/themes.conf`.
+If `themes.conf` is in a system directory and you wish to make changes to it, first copy it to `$XDG_DATA_HOME/mendingwall/themes.conf` or `$HOME/.local/share/mendingwall/themes.conf`.
 
 The config file is a [KeyFile](https://docs.gtk.org/glib/struct.KeyFile.html). It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:
 ```
@@ -81,6 +81,6 @@ Each key is followed by an equals sign (`=`), and where multiple values are requ
 
 ## Related specifications
 
-* The [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) for the `XDG_CONFIG_HOME` environment variable.
+* The [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/latest/) for the `XDG_DATA_HOME` environment variable.
 * The [Recognized desktop entry keys](https://specifications.freedesktop.org/desktop-entry-spec/latest/recognized-keys.html) section of the [XDG Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/) for the `XDG_CURRENT_DESKTOP` environment variable.
 
