@@ -19,8 +19,11 @@
         <link rel="next" href="../tidy-menus/">
       
       
+        
+      
+      
       <link rel="icon" href="../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -28,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.2a3383ac.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -58,8 +61,20 @@
 
     
     
-    
-  </head>
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Mend Themes - Mending Wall" />
+<meta property="og:description" content="A Linux app for hopping between desktop environments without breakages." />
+<meta property="og:image" content="https://mendingwall.indii.org/assets/images/social/mend-themes.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://mendingwall.indii.org/mend-themes/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Mend Themes - Mending Wall" />
+<meta property="twitter:description" content="A Linux app for hopping between desktop environments without breakages." />
+<meta property="twitter:image" content="https://mendingwall.indii.org/assets/images/social/mend-themes.png" />
+</head>
   
   
     
@@ -273,9 +288,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -295,9 +315,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Getting Started
+  
+
     
   </span>
+  
   
 
       </a>
@@ -326,9 +351,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Mend Themes
+  
+
     
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -339,9 +369,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Mend Themes
+  
+
     
   </span>
+  
   
 
       </a>
@@ -364,7 +399,9 @@
         <li class="md-nav__item">
   <a href="#what-it-does" class="md-nav__link">
     <span class="md-ellipsis">
-      What it does
+      
+        What it does
+      
     </span>
   </a>
   
@@ -373,7 +410,9 @@
         <li class="md-nav__item">
   <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
-      How it works
+      
+        How it works
+      
     </span>
   </a>
   
@@ -382,7 +421,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration
+      
+        Configuration
+      
     </span>
   </a>
   
@@ -391,7 +432,9 @@
         <li class="md-nav__item">
   <a href="#related-specifications" class="md-nav__link">
     <span class="md-ellipsis">
-      Related specifications
+      
+        Related specifications
+      
     </span>
   </a>
   
@@ -417,9 +460,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Tidy Menus
+  
+
     
   </span>
+  
   
 
       </a>
@@ -439,9 +487,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     How You Can Help
+  
+
     
   </span>
+  
   
 
       </a>
@@ -461,9 +514,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Q &amp; A
+  
+
     
   </span>
+  
   
 
       </a>
@@ -500,7 +558,9 @@
         <li class="md-nav__item">
   <a href="#what-it-does" class="md-nav__link">
     <span class="md-ellipsis">
-      What it does
+      
+        What it does
+      
     </span>
   </a>
   
@@ -509,7 +569,9 @@
         <li class="md-nav__item">
   <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
-      How it works
+      
+        How it works
+      
     </span>
   </a>
   
@@ -518,7 +580,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration
+      
+        Configuration
+      
     </span>
   </a>
   
@@ -527,7 +591,9 @@
         <li class="md-nav__item">
   <a href="#related-specifications" class="md-nav__link">
     <span class="md-ellipsis">
-      Related specifications
+      
+        Related specifications
+      
     </span>
   </a>
   
@@ -543,6 +609,7 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -588,17 +655,17 @@
 </ol>
 <p>A save includes:</p>
 <ol>
-<li>Any number of <a href="https://docs.gtk.org/gio/class.Settings.html">GSettings</a> paths. These are typically used for configuration by desktop environments based on <a href="https://gtk.org">GTK</a>, such as GNOME and Cinnamon. The save is kept as a keyfile at <code>$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP.gsettings</code>, where groups identify the GSettings paths and keys the GSettings keys.</li>
-<li>Any number of config files under <code>$XDG_CONFIG_HOME/</code>. Such config files may be used by any desktop environments, including those based on GTK, but also <a href="https://contribute.qt-project.org/">Qt</a>, such as KDE Plasma, or other toolkits. Saved files are kept under <code>$XDG_CONFIG_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP/</code>.</li>
+<li>Any number of <a href="https://docs.gtk.org/gio/class.Settings.html">GSettings</a> paths. These are typically used for configuration by desktop environments based on <a href="https://gtk.org">GTK</a>, such as GNOME and Cinnamon. The save is kept as a keyfile at <code>$XDG_DATA_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP.gsettings</code>, where groups identify the GSettings paths and keys the GSettings keys.</li>
+<li>Any number of config files under <code>$XDG_CONFIG_HOME/</code>. Such config files may be used by any desktop environments, including those based on GTK, but also <a href="https://contribute.qt-project.org/">Qt</a>, such as KDE Plasma, or other toolkits. Saved files are kept under <code>$XDG_DATA_HOME/mendingwall/save/$XDG_CURRENT_DESKTOP/</code>.</li>
 </ol>
-<p><code>XDG_CURRENT_DESKTOP</code> is an environment variable set by the desktop environment. <code>XDG_CONFIG_HOME</code> is an environment variable that may or may not be set by the desktop environment; if not set, the default value of <code>$HOME/.config</code> is used.</p>
+<p><code>XDG_CURRENT_DESKTOP</code> is an environment variable set by the desktop environment. <code>XDG_DATA_HOME</code> is an environment variable that may or may not be set by the desktop environment; if not set, the default value of <code>$HOME/.local/share</code> is used.</p>
 <h2 id="configuration">Configuration</h2>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>This section is for contributors to help improve Mending Wall. The installed configuration is meant to be suitable for everyone with no adjustments required, rather than something that is routinely modified.</p>
 </div>
-<p>The specific GSettings paths and config files to back up and restore are set in the config file <code>themes.conf</code>. If the environment variable <code>XDG_CONFIG_HOME</code> is set and <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> exists then that file is used, otherwise <code>$HOME/.config/mendingwall/themes.conf</code>, otherwise the directories listed in <code>XDG_CONFIG_DIRS</code> are checked in order for <code>mendingwall/themes.conf</code> until the file is found.</p>
-<p>If <code>themes.conf</code> is in a system directory and you wish to make changes to it, first copy it to <code>$XDG_CONFIG_HOME/mendingwall/themes.conf</code> or <code>$HOME/.config/mendingwall/themes.conf</code>.</p>
+<p>The specific GSettings paths and config files to back up and restore are set in the config file <code>themes.conf</code>. If the environment variable <code>XDG_DATA_HOME</code> is set and <code>$XDG_DATA_HOME/mendingwall/themes.conf</code> exists then that file is used, otherwise <code>$HOME/.local/share/mendingwall/themes.conf</code>, otherwise the directories listed in <code>XDG_DATA_DIRS</code> are checked in order for <code>mendingwall/themes.conf</code> until the file is found.</p>
+<p>If <code>themes.conf</code> is in a system directory and you wish to make changes to it, first copy it to <code>$XDG_DATA_HOME/mendingwall/themes.conf</code> or <code>$HOME/.local/share/mendingwall/themes.conf</code>.</p>
 <p>The config file is a <a href="https://docs.gtk.org/glib/struct.KeyFile.html">KeyFile</a>. It contains any number of group headers to identify desktop environments, each followed by key-value pairs that specify the GSettings paths and config files to backup and restore. For example:</p>
 <pre><code>[GNOME]
 GSettings=org.gnome.desktop.interface
@@ -630,13 +697,13 @@ ConfigFiles=kwinrc;kcminputrc
 </tr>
 </tbody>
 </table>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>You may notice that the current <code>themes.conf</code> has the same <code>GSettings</code> and <code>ConfigFiles</code> for all desktop environments. If the pattern continues, the config file may be simplified in future, but for now it allows different configuration for different desktop environments, in case that becomes useful.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>After modifying <code>themes.conf</code>, disable the Mend Themes feature, then enable it again, to apply changes.</p>
 </div>
 <h2 id="related-specifications">Related specifications</h2>
 <ul>
-<li>The <a href="https://specifications.freedesktop.org/basedir-spec/latest/">XDG Base Directory Specification</a> for the <code>XDG_CONFIG_HOME</code> environment variable.</li>
+<li>The <a href="https://specifications.freedesktop.org/basedir-spec/latest/">XDG Base Directory Specification</a> for the <code>XDG_DATA_HOME</code> environment variable.</li>
 <li>The <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/recognized-keys.html">Recognized desktop entry keys</a> section of the <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">XDG Desktop Entry Specification</a> for the <code>XDG_CURRENT_DESKTOP</code> environment variable.</li>
 </ul>
 
@@ -774,10 +841,11 @@ ConfigFiles=kwinrc;kcminputrc
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.footer", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.footer", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
