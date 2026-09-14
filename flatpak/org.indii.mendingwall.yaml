@@ -60,7 +60,6 @@ modules:
     config-opts:
       - -Dbash_completion=false
       - -Dman=false
-      - -Dsystemduserunitdir=' '
     cleanup:
       - /include
       - /lib/pkgconfig
