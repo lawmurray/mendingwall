@@ -2,7 +2,7 @@
 Name=Mending Wall
 Exec=@bindir@/mendingwall
 Icon=org.indii.mendingwall
-Comment=Hop between desktop environments, enjoy them all
+Comment=Try another desktop environment
 Terminal=false
 Type=Application
 Categories=Settings

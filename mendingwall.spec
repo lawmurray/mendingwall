@@ -1,7 +1,7 @@
 Name: mendingwall
 Version: 0.0.0
 Release: 1
-Summary: Hop between multiple desktop environments
+Summary: Try another desktop environment
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: GPL-3.0-or-later
 Group: Applications/System
