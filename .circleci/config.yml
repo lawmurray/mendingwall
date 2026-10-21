@@ -4,7 +4,7 @@ executors:
 
   vm:
     machine:
-      image: ubuntu-2404:edge
+      image: ubuntu-2604:edge
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
@@ -132,6 +132,7 @@ commands:
           # https://documentation.ubuntu.com/lxd/en/latest/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker
           name: Fix Snap network issues
           command: |
+            sudo systemctl disable --now docker.service docker.socket
             sudo iptables  -I DOCKER-USER -i lxdbr0 -j ACCEPT
             sudo ip6tables -I DOCKER-USER -i lxdbr0 -j ACCEPT
             sudo iptables  -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -279,7 +280,7 @@ commands:
       - run:
           name: Install KDE Plasma
           command: |
-            sudo apt install --assume-yes kde-plasma-desktop
+            sudo apt install --assume-yes plasma-desktop
       - run:
           name: Have KDE apps been tidied?
           command: |
@@ -300,14 +301,16 @@ commands:
       - run:
           name: Uninstall KDE Plasma
           command: |
-            sudo apt remove kde-* konsole
+            sudo apt remove plasma-desktop plasma-workspace kwalletmanager
             sudo apt autoremove
       - run:
           name: Have KDE apps been untidied?
           command: |
             sleep 5
-            [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` == 0 ]] || exit 1
-
+            if [[ `ls ~/.local/share/applications/org.kde.*.desktop | wc -l` > 0 ]]; then
+              ls ~/.local/share/applications/org.kde.*.desktop
+              exit 1
+            fi
       - run:
           name: Disable mend themes
           command: |
