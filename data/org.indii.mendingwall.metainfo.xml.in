@@ -17,15 +17,15 @@
     <name>Lawrence Murray</name>
   </developer>
 
-  <url type="homepage">https://mendingwall.indii.org/</url>
+  <url type="homepage">https://indii.org/software/mendingwall</url>
   <url type="vcs-browser">https://github.com/lawmurray/mendingwall</url>
   <url type="bugtracker">https://github.com/lawmurray/mendingwall/issues</url>
   <url type="translate">https://github.com/lawmurray/mendingwall</url>
-  <url type="faq">https://mendingwall.indii.org/faq</url>
-  <url type="help">https://mendingwall.indii.org</url>
+  <url type="faq">https://indii.org/software/mendingwall/faq</url>
+  <url type="help">https://indii.org/software/mendingwall</url>
   <url type="donation">https://github.com/sponsors/lawmurray</url>
   <url type="contact">https://indii.org/about</url>
-  <url type="contribute">https://mendingwall.indii.org/contributing</url>
+  <url type="contribute">https://indii.org/software/mendingwall/contributing</url>
 
   <translation type="gettext">mendingwall</translation>
   <launchable type="desktop-id">org.indii.mendingwall.desktop</launchable>
@@ -38,11 +38,11 @@
 
   <screenshots>
     <screenshot type="default" environment="gnome:dark">
-      <image type="source" scale="2" width="1044" height="1278">https://mendingwall.indii.org/assets/screenshot_dark.png</image>
+      <image type="source" scale="2" width="1044" height="1278">https://indii.org/software/mendingwall/screenshot_dark.png</image>
       <caption>Mending Wall application, dark mode.</caption>
     </screenshot>
     <screenshot environment="gnome" width="1044" height="1278">
-      <image type="source" scale="2">https://mendingwall.indii.org/assets/screenshot_light.png</image>
+      <image type="source" scale="2">https://indii.org/software/mendingwall/screenshot_light.png</image>
       <caption>Mending Wall application, light mode.</caption>
     </screenshot>
   </screenshots>

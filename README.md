@@ -87,5 +87,5 @@ In brief, Mending Wall starts a background process `mendingwalld` that:
 
 * If *Tidy Menus* is enabled, monitors for the installation of certain core applications (e.g. terminals, file managers, text editors), as well as many games, and configures the `OnlyShowIn` and `NotShowIn` entries of their `.desktop` files (in e.g. `/usr/share/applications`) to show only in their native desktop environment, saving to the standard directory `~/.local/share/applications`. So, for example, GNOME Terminal shows in GNOME but not KDE, Konsole shows in KDE but not GNOME, etc. If *Tidy Menus* is later disabled, these changes are undone, as long as each `.desktop` file has not been modified with further custom changes (e.g. with a menu editor app).
 
-Much more information is available at [mendingwall.indii.org](https://mendingwall.indii.org).
+Much more information is available at [indii.org/software/mendingwall](https://indii.org/software/mendingwall).
 

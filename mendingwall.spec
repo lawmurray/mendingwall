@@ -5,7 +5,7 @@ Summary: Hop between multiple desktop environments
 Vendor: Lawrence Murray <lawrence@indii.org>
 License: GPL-3.0-or-later
 Group: Applications/System
-URL: https://mendingwall.indii.org
+URL: https://indii.org/software/mendingwall
 Source0: %{name}-%{version}.tar.gz
 BuildRequires: gcc meson blueprint-compiler gettext desktop-file-utils glib2-devel gtk4-devel libadwaita-devel libportal-devel
 
