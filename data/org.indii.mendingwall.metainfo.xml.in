@@ -53,6 +53,15 @@
   </provides>
 
   <releases>
+    <release version="0.3.10" date="2026-10-21">
+      <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.10</url>
+      <description translate="no">
+        <ul>
+          <li>Updates for KDE Plasma 6.8.</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="0.3.9" date="2026-09-14">
       <url type="details">https://github.com/lawmurray/mendingwall/releases/tag/v0.3.9</url>
       <description translate="no">
