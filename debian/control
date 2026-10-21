@@ -9,6 +9,6 @@ Homepage: https://indii.org/software/mendingwall
 Package: mendingwall
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: hop between multiple desktop environments
+Description: try another desktop environment
  Linux distributions offer a choice of desktop environment, but installing
  more than one can break themes and clutter menus. Mending Wall fixes this.
