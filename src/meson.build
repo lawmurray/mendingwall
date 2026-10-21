@@ -12,19 +12,11 @@ blueprints = custom_target('blueprints',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
-#
-# glib-compile-resources seems problematic in some containers, e.g. Fedora 41
-# ARM has an issue at time of writing. As a workaround for now, the generated
-# files are included in the source repository. On a platform with support, the
-# following lines can be exchanged to regenerate the files dynamically,
-# and check updated versions into the repository if necessary.
-#
-resources = ['resources.h', 'resources.c']
-#resources = gnome.compile_resources('resources',
-#  'mendingwall.gresource.xml',
-#  c_name: 'mendingwall',
-#  dependencies: blueprints
-#)
+resources = gnome.compile_resources('resources',
+  'mendingwall.gresource.xml',
+  c_name: 'mendingwall',
+  dependencies: blueprints
+)
 
 # mendingwall program
 mendingwall_sources = [
