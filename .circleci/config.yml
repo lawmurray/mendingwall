@@ -173,6 +173,10 @@ commands:
           name: Set environment variable for save directory
           command: |
             echo 'export SAVE_DIR=$HOME/snap/mendingwall/x1/.local/share/mendingwall/save' >> $BASH_ENV
+      - run:
+          name: Reload apparmor
+          command: |
+            sudo systemctl reload apparmor
 
   test:
     steps:
