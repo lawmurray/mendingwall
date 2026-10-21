@@ -4,7 +4,7 @@ executors:
 
   vm:
     machine:
-      image: ubuntu-2604:edge
+      image: ubuntu-2604:current
     resource_class: medium
     environment:
       DEBIAN_FRONTEND: noninteractive
