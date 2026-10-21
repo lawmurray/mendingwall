@@ -19,7 +19,6 @@ commands:
           name: Install dependencies
           command: |
             sudo apt update --assume-yes
-            sudo apt upgrade --assume-yes
             sudo apt install --assume-yes \
               ca-certificates \
               curl \
@@ -411,9 +410,7 @@ jobs:
       - checkout
       - environment
       - build_snap
-
-      # not working, for reasons that may be platform related
-      #- test
+      - test
 
   deploy:
     executor: vm
